@@ -39,13 +39,16 @@ const ResetPassword = () => {
       setError("Passwords do not match");
     } else {
       setError("");
-      const response = await fetch("http://localhost:5000/reset-password", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, role, password }),
-      });
+      const response = await fetch(
+        "https://doc-link-backend.onrender.com/reset-password",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, role, password }),
+        }
+      );
       const data = await response.json();
       if (response.ok) {
         navigate("/login");

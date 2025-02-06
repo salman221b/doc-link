@@ -193,7 +193,7 @@ const Registration = () => {
     });
 
     if (validate()) {
-      const url = "http://localhost:5000/registerdoctor";
+      const url = "https://doc-link-backend.onrender.com/registerdoctor";
 
       try {
         const response = await fetch(url, {
@@ -228,11 +228,14 @@ const Registration = () => {
     event.preventDefault();
     if (validate()) {
       try {
-        const response = await fetch("http://localhost:5000/register", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData),
-        });
+        const response = await fetch(
+          "https://doc-link-backend.onrender.com/register",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(formData),
+          }
+        );
 
         if (!response.ok) {
           const errorData = await response.json(); // Parse error message from the backend

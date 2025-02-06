@@ -21,14 +21,17 @@ const Dashboard = () => {
     // Verify token and fetch user data
     const fetchUser = async () => {
       try {
-        const response = await fetch("http://localhost:5000/dashboard", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-            Role: role,
-          },
-        });
+        const response = await fetch(
+          "https://doc-link-backend.onrender.com/dashboard",
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+              Role: role,
+            },
+          }
+        );
 
         const data = await response.json();
 

@@ -90,13 +90,16 @@ const VerifyEmail = () => {
     setTimer(10); // Reset the timer
 
     try {
-      const response = await fetch("http://localhost:5000/resend-otp", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email: email, role: role }), // Pass the email to the backend
-      });
+      const response = await fetch(
+        "https://doc-link-backend.onrender.com/resend-otp",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email: email, role: role }), // Pass the email to the backend
+        }
+      );
 
       const data = await response.json();
 

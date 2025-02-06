@@ -23,13 +23,16 @@ const ForgotPassword = () => {
     setError("");
 
     try {
-      const response = await fetch("http://localhost:5000/forgot-password", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, role }),
-      });
+      const response = await fetch(
+        "https://doc-link-backend.onrender.com/forgot-password",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, role }),
+        }
+      );
 
       const data = await response.json();
 
