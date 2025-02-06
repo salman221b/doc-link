@@ -1,5 +1,5 @@
 const express = require("express");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const Patient = require("../models/patientsModel");
 const Doctor = require("../models/doctorsModel");
@@ -27,11 +27,9 @@ router.post("/login", async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
     if (user.verified === false) {
-      return res
-        .status(403)
-        .json({
-          message: "Account not verified, Click on forgot password and verify",
-        });
+      return res.status(403).json({
+        message: "Account not verified, Click on forgot password and verify",
+      });
     }
     // Check the password
     const isPasswordValid = await bcrypt.compare(password, user.password);

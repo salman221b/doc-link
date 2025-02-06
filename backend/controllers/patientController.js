@@ -1,5 +1,5 @@
 const asyncHandler = require("express-async-handler");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const Patient = require("../models/patientsModel");
 const Otp = require("../models/otpModel");
 const sendOtpEmail = require("../otp_verification/sendOtpEmail");
