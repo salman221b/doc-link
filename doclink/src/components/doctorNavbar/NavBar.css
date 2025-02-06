@@ -1,0 +1,212 @@
+    *{
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Poppins', sans-serif;
+    }
+    .header{
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        padding: 1.3rem 10%;
+        
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        z-index: 100;
+    }
+    .header::before{
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, .03);
+        backdrop-filter: blur(50px);
+        z-index: -1;
+    }
+    .header::after{
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background:linear-gradient(90deg, transparent, rgba(255, 255, 255, .4), transparent);
+        transition: .5s;
+        
+    }
+    .header:hover::after{
+        left: 100%;
+    }
+    
+    .logo{
+        font-size: 25px;
+        color: #fff;
+        text-decoration: none;
+        font-weight: 600;
+    }
+    .navbar a{
+        display: inline-block;
+        font-size: 1.15rem;
+        color: #030E82;
+        text-decoration: none;
+        font-weight: 500;
+        margin-left: 2.5rem;
+        transition: .3s;
+    }
+    #check{
+        display: none;
+    }
+
+    .icons{
+        position: absolute;
+        right: 5%;
+        font-size: 2.8rem;
+        color: #fff;
+        cursor: pointer;
+        display: none;
+    }
+    .main-container{
+        margin-bottom: 8rem;
+    }
+    /* @media (max-width:1400px){
+        .navbar a{
+            font-size: 1.0rem;
+        }
+        .header{
+            padding: 1rem 5%;
+        }
+
+    }
+   
+    @media (max-width:1350px){
+        .navbar a{
+            font-size: 1.0rem;
+        }
+        .header{
+            padding: 1rem 5%;
+        }
+
+    }
+    @media (max-width:1290px){
+        .navbar a{
+            font-size: 1.0rem;
+        }
+        .header{
+            padding: 1rem 5%;
+        }
+
+    }
+    @media (max-width:1200px){
+        .navbar a{
+            font-size: 0.9rem;
+        }
+        .header{
+            padding: 0.9rem 5%;
+        }
+
+    }
+    @media (max-width:1125px){
+        .navbar a{
+            font-size: 0.8rem;
+        }
+        .header{
+            padding: 0.7rem 5%;
+        }
+
+    }
+    @media (max-width:1040px){
+        .navbar a{
+            font-size: 0.8rem;
+        }
+        
+
+    } */
+    
+    @media (max-width: 992px) {
+        .icons{
+            display: inline-flex;
+        }
+        #check:checked ~ .icons #menu-icon{
+            display: none;
+        }
+        
+        .icons #close-icon{
+            display: none;
+        }
+        #check:checked ~ .icons #close-icon{
+            display: block ;
+        }
+
+        .navbar{
+            display: flex;
+            flex-direction: column;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            height: 0;
+            background: rgba(0, 0, 0, .01);
+            backdrop-filter: blur(50px);
+            /* box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .1); */
+            overflow: hidden;
+            transition: .3s ease;
+            
+        }
+        #check:checked ~ .navbar{
+            height: 17.7rem;
+        }
+        .navbar a{
+            display: block;
+            font-size: 1.2rem;
+            margin: .5rem 0;
+            text-align: center;
+            transform: translateY(-50px);
+            opacity: 0;
+            transform: .3s ease;
+
+        }
+        #check:checked ~ .navbar a{
+            transform: translateY(0px);
+            opacity: 1;
+            transition-delay: calc(.15s * var(--i));
+        }
+        .notification-icon{
+            margin-right: -60%;
+
+        }
+        .account-icon{
+            margin-right: 8%;
+        }
+        
+    }
+    @media (max-width: 768px) {
+        .notification-icon{
+            margin-right: -60%;
+
+        }
+        .account-icon{
+            margin-right: 8%;
+        }
+    }
+    @media (max-width: 600px) {
+        .notification-icon{
+            margin-right: -50%;
+
+        }
+        .account-icon{
+            margin-right: 8%;
+        }
+    }
+    @media (max-width: 480px) {
+        .notification-icon{
+            margin-right: -40%;
+
+        }
+        .account-icon{
+            margin-right: 8%;
+        }
+    }
