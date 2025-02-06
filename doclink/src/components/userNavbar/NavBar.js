@@ -2,9 +2,15 @@ import React, { useState } from "react";
 import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import logo from "../../static/Logo_Navbar.png";
+import { useNavigate } from "react-router-dom";
+import LogoutIcon from "@mui/icons-material/Logout";
+import SettingsIcon from "@mui/icons-material/Settings";
+import PersonIcon from "@mui/icons-material/Person";
+
 import "./NavBar.css";
 
 const NavBar = () => {
+  const navigate = useNavigate();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   // Toggle dropdown visibility
@@ -26,6 +32,11 @@ const NavBar = () => {
       document.removeEventListener("click", closeDropdown);
     };
   }, []);
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    navigate("/");
+  };
 
   return (
     <div className="main-container">
@@ -65,9 +76,16 @@ const NavBar = () => {
         {/* Dropdown Menu */}
         {isDropdownOpen && (
           <div className="dropdown-content">
-            <a href="/profile">Profile</a>
-            <a href="/settings">Settings</a>
-            <a href="/logout">Logout</a>
+            <a href="/profile">
+              <PersonIcon /> Profile
+            </a>
+            <a href="/settings">
+              <SettingsIcon /> Settings
+            </a>
+            <a onClick={handleLogout}>
+              {" "}
+              <LogoutIcon style={{ color: "red" }} /> Logout
+            </a>
           </div>
         )}
       </header>
