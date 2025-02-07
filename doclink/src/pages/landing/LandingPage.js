@@ -2,6 +2,7 @@ import React from "react";
 import logo from "../../static/DocLink_Logo_Bg.png";
 import image from "../../static/LandingPic.png";
 import "./LandingPage.css";
+import LandingPageIllustration from "../../components/illustrations/LandingPageIllustration";
 const LandingPage = () => {
   return (
     <div style={{ marginBottom: "20px" }} className="landing-container">
@@ -61,7 +62,7 @@ const LandingPage = () => {
       </div>
 
       <div className="picture">
-        <img src={image} height={400} width={400} />
+        <LandingPageIllustration />
       </div>
     </div>
   );
