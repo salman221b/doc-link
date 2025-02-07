@@ -1,0 +1,21 @@
+.landing-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+  }
+  
+  /* Make hero and carousel take equal space */
+  .hero, .picture {
+    flex: 1;
+  }
+  
+  /* Responsive for small screens */
+  @media (max-width: 992px) {
+    .landing-container {
+      flex-direction: column; /* Stack items in a column */
+    }
+
+  }
+  

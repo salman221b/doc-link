@@ -20,13 +20,15 @@ import Appointment from "./pages/user/newAppointment/Appointment";
 import UpcomingAppointment from "./pages/user/upcomingAppointment/UpcomingAppointment";
 import MedicalRecords from "./pages/user/medicalRecords/MedicalRecords";
 import Prescriptions from "./pages/user/prescriptions/Prescriptions";
+import LandingPage from "./pages/landing/LandingPage";
 
 const App = () => {
   return (
     <>
       <div className="container">
         <Routes>
-          <Route path="/" element={<Dashboard />} />
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/landing" element={<LandingPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Registration />} />
           <Route path="/verify_email" element={<VerifyEmail />} />
