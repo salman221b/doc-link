@@ -5,6 +5,8 @@ import LandingPageIllustration from "../../components/illustrations/LandingPageI
 import Services from "./Services";
 import { useNavigate } from "react-router-dom";
 import ScrollToTop from "../../components/scrollToTop/ScrollToTop";
+import Features from "./Features";
+import HowItWorks from "./HowItWorks";
 const LandingPage = () => {
   const navigate = useNavigate();
   const servicesRef = useRef(null);
@@ -75,6 +77,8 @@ const LandingPage = () => {
       </div>
       <div ref={servicesRef}>
         <Services />
+        <Features />
+        <HowItWorks />
       </div>
       <ScrollToTop />
     </>
