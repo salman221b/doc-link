@@ -72,60 +72,34 @@
     .main-container{
         margin-bottom: 8rem;
     }
-    /* @media (max-width:1400px){
-        .navbar a{
-            font-size: 1.0rem;
-        }
-        .header{
-            padding: 1rem 5%;
-        }
-
-    }
-   
-    @media (max-width:1350px){
-        .navbar a{
-            font-size: 1.0rem;
-        }
-        .header{
-            padding: 1rem 5%;
-        }
-
-    }
-    @media (max-width:1290px){
-        .navbar a{
-            font-size: 1.0rem;
-        }
-        .header{
-            padding: 1rem 5%;
-        }
-
-    }
-    @media (max-width:1200px){
-        .navbar a{
-            font-size: 0.9rem;
-        }
-        .header{
-            padding: 0.9rem 5%;
-        }
-
-    }
-    @media (max-width:1125px){
-        .navbar a{
-            font-size: 0.8rem;
-        }
-        .header{
-            padding: 0.7rem 5%;
-        }
-
-    }
-    @media (max-width:1040px){
-        .navbar a{
-            font-size: 0.8rem;
-        }
-        
-
-    } */
-    
+    .notification-icon,
+  .account-icon {
+    cursor: pointer;
+  }
+  
+  /* Dropdown Menu */
+  .dropdown-content {
+    position: absolute;
+    top: 100%;
+    right: 180px;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+  }
+  
+  .dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    cursor: pointer;
+  }
+  
+  .dropdown-content a:hover {
+    background-color: #f1f1f1;
+  }
+  
     @media (max-width: 992px) {
         .icons{
             display: inline-flex;
