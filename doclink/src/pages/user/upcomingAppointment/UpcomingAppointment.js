@@ -28,13 +28,13 @@ const UpcomingAppointment = () => {
           }}
         >
           <FormControl sx={{ width: "200px", marginTop: "-20px" }}>
-            <InputLabel id="demo-simple-select-helper-label">Status</InputLabel>
+            <InputLabel id="demo-simple-select-helper-label">Mode</InputLabel>
             <Select
               labelId="demo-simple-select-helper-label"
               id="demo-simple-select-helper"
               // value={formData.specialization}
-              label="Status"
-              name="status"
+              label="Mode"
+              name="mode"
               // onChange={handleChange}
             >
               <MenuItem value={"in-person"} selected>
