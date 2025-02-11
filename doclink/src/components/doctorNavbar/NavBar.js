@@ -51,7 +51,7 @@ const NavBar = () => {
           <box-icon name="x" id="close-icon"></box-icon>
         </label>
         <nav className="navbar">
-          <a href="/" style={{ "--i": 0 }}>
+          <a href="/manage-appointments" style={{ "--i": 0 }}>
             Manage Appointments
           </a>
 

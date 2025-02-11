@@ -14,7 +14,7 @@ const NotFoundPage = () => {
         Sorry, the page you're looking for doesn't exist. It might have been
         removed or the link is incorrect.
       </p>
-      <button style={styles.button} onClick={() => navigate("/login")}>
+      <button style={styles.button} onClick={() => navigate("/")}>
         Go to Homepage
       </button>
     </div>

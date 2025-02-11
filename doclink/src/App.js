@@ -26,6 +26,7 @@ import UpcomingAppointment from "./pages/user/upcomingAppointment/UpcomingAppoin
 import MedicalRecords from "./pages/user/medicalRecords/MedicalRecords";
 import Prescriptions from "./pages/user/prescriptions/Prescriptions";
 import LandingPage from "./pages/landing/LandingPage";
+import ManageAppointments from "./pages/doctor/manage-appointments/ManageAppointments";
 
 const App = () => {
   const [user, setUser] = useState(null);
@@ -57,6 +58,7 @@ const App = () => {
           />
           <Route path="/medical-records" element={<MedicalRecords />} />
           <Route path="/prescriptions" element={<Prescriptions />} />
+          <Route path="/manage-appointments" element={<ManageAppointments />} />
           <Route path="/unauthorized" element={<NotFoundPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>

@@ -1,5 +1,7 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 const HeroSection = () => {
+  const navigate = useNavigate();
   return (
     <div>
       <div>
@@ -32,6 +34,7 @@ const HeroSection = () => {
         </p>
         <div className="button-container">
           <button
+            onClick={() => navigate("/manage-appointments")}
             id="button"
             style={{
               marginRight: "20px",
@@ -39,7 +42,6 @@ const HeroSection = () => {
               width: "200px",
               height: "60px",
               backgroundColor: "#F49696",
-              color: "white",
               border: "none",
               borderRadius: "10px",
               cursor: "pointer",

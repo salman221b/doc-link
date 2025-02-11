@@ -1,5 +1,6 @@
 import {
   Box,
+  Button,
   FormControl,
   FormHelperText,
   InputLabel,
@@ -265,7 +266,38 @@ const Registration = () => {
       <img src={logo} width={100} height={100} alt="Logo" />
       <h1 className="title1">Join DocLink</h1>
       <h1 className="title2">and Stay Connected to Your Health.</h1>
-      <div style={{ justifyItems: "center", marginTop: "70px" }}>
+
+      <div
+        className="decider"
+        style={{
+          marginTop: "20px",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          gap: "20px",
+        }}
+      >
+        <div className="decider1" style={{ backgroundColor: "" }}>
+          <Button
+            className="button btn btn-primary"
+            variant="contained"
+            disabled
+          >
+            Register
+          </Button>
+        </div>
+        {"|"}
+        <div className="decider2" style={{ backgroundColor: "" }}>
+          <Button
+            className="button btn btn-primary"
+            variant="outlined"
+            onClick={() => navigate("/login")}
+          >
+            Login
+          </Button>
+        </div>
+      </div>
+      <div style={{ justifyItems: "center", marginTop: "50px" }}>
         <Box sx={{ width: 500, maxWidth: "100%" }}>
           <form
             onSubmit={

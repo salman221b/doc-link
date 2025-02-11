@@ -10,7 +10,7 @@ import FormControl from "@mui/material/FormControl";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import Select from "@mui/material/Select";
-import { MenuItem } from "@mui/material";
+import { Button, MenuItem } from "@mui/material";
 import logo from "../../static/DocLink_Logo_Bg.png";
 
 function Login() {
@@ -61,6 +61,36 @@ function Login() {
       <img src={logo} width={100} height={100} alt="Logo" />
       <h1 className="title1">Your Health,</h1>
       <h1 className="title2">Just a Click Away.</h1>
+      <div
+        className="decider"
+        style={{
+          marginTop: "20px",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          gap: "20px",
+        }}
+      >
+        <div className="decider1" style={{ backgroundColor: "" }}>
+          <Button
+            className="button btn btn-primary"
+            variant="outlined"
+            onClick={() => navigate("/register")}
+          >
+            Register
+          </Button>
+        </div>
+        {"|"}
+        <div className="decider2" style={{ backgroundColor: "" }}>
+          <Button
+            className="button btn btn-primary"
+            variant="contained"
+            disabled
+          >
+            Login
+          </Button>
+        </div>
+      </div>
       <form onSubmit={handleLogin}>
         <div
           style={{
