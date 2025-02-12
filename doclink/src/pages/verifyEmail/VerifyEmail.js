@@ -49,11 +49,14 @@ const VerifyEmail = () => {
     const fullOtp = otp.join("");
     console.log("Entered OTP:", fullOtp);
     if (type === "register") {
-      const response = await fetch("http://localhost:5000/verify-otp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email, otp: fullOtp, role: role }),
-      });
+      const response = await fetch(
+        "https://doc-link-backend.onrender.com/verify-otp",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: email, otp: fullOtp, role: role }),
+        }
+      );
 
       if (response.ok) {
         setStatus("OTP verified successfully!");
@@ -65,11 +68,14 @@ const VerifyEmail = () => {
       }
     }
     if (type === "forgotPassword") {
-      const response = await fetch("http://localhost:5000/verify-otp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email, otp: fullOtp, role: role }),
-      });
+      const response = await fetch(
+        "https://doc-link-backend.onrender.com/verify-otp",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: email, otp: fullOtp, role: role }),
+        }
+      );
 
       if (response.ok) {
         setStatus("OTP verified successfully!");
