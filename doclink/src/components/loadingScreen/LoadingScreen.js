@@ -15,7 +15,7 @@ export default function LoadingScreen() {
     >
       <CircularProgress
         size={80}
-        thickness={4}
+        thickness={1}
         sx={{
           color: "#F49696", // Light Red Spinner
         }}

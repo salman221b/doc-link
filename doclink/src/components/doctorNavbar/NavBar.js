@@ -55,7 +55,7 @@ const NavBar = () => {
             Manage Appointments
           </a>
 
-          <a href="/login" style={{ "--i": 1 }}>
+          <a href="/patients-list" style={{ "--i": 1 }}>
             Patient List
           </a>
 

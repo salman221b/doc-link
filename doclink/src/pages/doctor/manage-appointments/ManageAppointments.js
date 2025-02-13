@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import NavBar from "../../../components/doctorNavbar/NavBar";
 import {
   FormControl,
@@ -8,12 +8,20 @@ import {
   TextField,
 } from "@mui/material";
 import { Card, Button, Container, Row, Col } from "react-bootstrap";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+} from "@mui/material";
 
 import ScrollToTop from "../../../components/scrollToTop/ScrollToTop";
 import PersonIcon from "@mui/icons-material/Person";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 
 const ManageAppointments = () => {
+  const [open, setOpen] = useState(false); // State to track modal visibility
+
   return (
     <div>
       <NavBar />
@@ -95,9 +103,9 @@ const ManageAppointments = () => {
         <div
           className="searchById"
           style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
+            // display: "flex",
+            // justifyContent: "center",
+            // alignItems: "center",
             borderRadius: "10px",
             border: "1px solid #030E82",
             padding: "5px",
@@ -123,36 +131,52 @@ const ManageAppointments = () => {
               backgroundColor: "transparent",
               borderRadius: "5px",
               boxShadow: "0px 0px 5px rgba(0, 0, 0, 0)",
+              textAlign: "center",
             }}
           />
-          <ArrowForwardIcon />
+          <ArrowForwardIcon
+            style={{
+              color: "#82EAAC",
+              fontSize: "30px",
+              float: "right",
+              margin: "2px",
+              cursor: "pointer",
+              backgroundColor: "rgba(0, 0, 0, 0.3)",
+              borderRadius: "5px",
+            }}
+          />
         </div>
         <Container className="mt-4">
           <Row>
             <Col md={6} xs={12} className="mb-3">
               <Card>
                 <Card.Body>
-                  <Card.Title>
-                    <PersonIcon />{" "}
-                    <span style={{ marginLeft: "20px" }}>Name</span>
-                    <span
-                      style={{
-                        float: "right",
-                        fontSize: "15px",
-                        marginRight: "30px",
-                      }}
-                    >
-                      Specialization
-                    </span>
-                  </Card.Title>
-                  <Card.Text>
-                    Appointment date & time{" "}
-                    <span style={{ float: "right", marginRight: "30px" }}>
-                      Status
-                    </span>
-                    <p>Mode (Video Call / In-Person)</p>
-                    <p>Prescription / Notes</p>
-                  </Card.Text>
+                  <div
+                    style={{ cursor: "pointer" }}
+                    onClick={() => setOpen(true)}
+                  >
+                    <Card.Title>
+                      <PersonIcon />{" "}
+                      <span style={{ marginLeft: "20px" }}>Name</span>
+                      <span
+                        style={{
+                          float: "right",
+                          fontSize: "15px",
+                          marginRight: "30px",
+                        }}
+                      >
+                        Specialization
+                      </span>
+                    </Card.Title>
+                    <Card.Text>
+                      Appointment date & time{" "}
+                      <span style={{ float: "right", marginRight: "30px" }}>
+                        Status
+                      </span>
+                      <p>Mode (Video Call / In-Person)</p>
+                      <p>Prescription / Notes</p>
+                    </Card.Text>
+                  </div>
                   <Button
                     style={{
                       width: "100%",
@@ -160,245 +184,8 @@ const ManageAppointments = () => {
                       backgroundColor: "#82EAAC",
                       fontWeight: "bold",
                     }}
-                  >
-                    Join
-                    <ArrowForwardIcon style={{ color: "#F49696" }} />
-                  </Button>
-                  <Button
-                    style={{
-                      width: "49%",
-                      marginTop: "10px",
-                      backgroundColor: "#030E82",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    Reschedule
-                  </Button>
-                  <Button
-                    style={{
-                      width: "49%",
-                      marginTop: "10px",
-                      backgroundColor: "#F49696",
-                      fontWeight: "bold",
-                      float: "right",
-                    }}
-                  >
-                    Cancel
-                  </Button>
-                </Card.Body>
-              </Card>
-            </Col>
-
-            <Col md={6} xs={12} className="mb-3">
-              <Card>
-                <Card.Body>
-                  <Card.Title>
-                    <PersonIcon />{" "}
-                    <span style={{ marginLeft: "20px" }}>Name</span>
-                    <span
-                      style={{
-                        float: "right",
-                        fontSize: "15px",
-                        marginRight: "30px",
-                      }}
-                    >
-                      Specialization
-                    </span>
-                  </Card.Title>
-                  <Card.Text>
-                    Appointment date & time{" "}
-                    <span style={{ float: "right", marginRight: "30px" }}>
-                      Status
-                    </span>
-                    <p>Mode (Video Call / In-Person)</p>
-                    <p>Prescription / Notes</p>
-                  </Card.Text>
-                  <Button
-                    style={{
-                      width: "100%",
-                      color: "#030E82",
-                      backgroundColor: "#82EAAC",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    Join
-                    <ArrowForwardIcon style={{ color: "#F49696" }} />
-                  </Button>
-                  <Button
-                    style={{
-                      width: "49%",
-                      marginTop: "10px",
-                      backgroundColor: "#030E82",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    Reschedule
-                  </Button>
-                  <Button
-                    style={{
-                      width: "49%",
-                      marginTop: "10px",
-                      backgroundColor: "#F49696",
-                      fontWeight: "bold",
-                      float: "right",
-                    }}
-                  >
-                    Cancel
-                  </Button>
-                </Card.Body>
-              </Card>
-            </Col>
-
-            <Col md={6} xs={12} className="mb-3">
-              <Card>
-                <Card.Body>
-                  <Card.Title>
-                    <PersonIcon />{" "}
-                    <span style={{ marginLeft: "20px" }}>Name</span>
-                    <span
-                      style={{
-                        float: "right",
-                        fontSize: "15px",
-                        marginRight: "30px",
-                      }}
-                    >
-                      Specialization
-                    </span>
-                  </Card.Title>
-                  <Card.Text>
-                    Appointment date & time{" "}
-                    <span style={{ float: "right", marginRight: "30px" }}>
-                      Status
-                    </span>
-                    <p>Mode (Video Call / In-Person)</p>
-                    <p>Prescription / Notes</p>
-                  </Card.Text>
-                  <Button
-                    style={{
-                      width: "100%",
-                      color: "#030E82",
-                      backgroundColor: "#82EAAC",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    Join
-                    <ArrowForwardIcon style={{ color: "#F49696" }} />
-                  </Button>
-                  <Button
-                    style={{
-                      width: "49%",
-                      marginTop: "10px",
-                      backgroundColor: "#030E82",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    Reschedule
-                  </Button>
-                  <Button
-                    style={{
-                      width: "49%",
-                      marginTop: "10px",
-                      backgroundColor: "#F49696",
-                      fontWeight: "bold",
-                      float: "right",
-                    }}
-                  >
-                    Cancel
-                  </Button>
-                </Card.Body>
-              </Card>
-            </Col>
-
-            <Col md={6} xs={12} className="mb-3">
-              <Card>
-                <Card.Body>
-                  <Card.Title>
-                    <PersonIcon />{" "}
-                    <span style={{ marginLeft: "20px" }}>Name</span>
-                    <span
-                      style={{
-                        float: "right",
-                        fontSize: "15px",
-                        marginRight: "30px",
-                      }}
-                    >
-                      Specialization
-                    </span>
-                  </Card.Title>
-                  <Card.Text>
-                    Appointment date & time{" "}
-                    <span style={{ float: "right", marginRight: "30px" }}>
-                      Status
-                    </span>
-                    <p>Mode (Video Call / In-Person)</p>
-                    <p>Prescription / Notes</p>
-                  </Card.Text>
-                  <Button
-                    style={{
-                      width: "100%",
-                      color: "#030E82",
-                      backgroundColor: "#82EAAC",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    Join
-                    <ArrowForwardIcon style={{ color: "#F49696" }} />
-                  </Button>
-                  <Button
-                    style={{
-                      width: "49%",
-                      marginTop: "10px",
-                      backgroundColor: "#030E82",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    Reschedule
-                  </Button>
-                  <Button
-                    style={{
-                      width: "49%",
-                      marginTop: "10px",
-                      backgroundColor: "#F49696",
-                      fontWeight: "bold",
-                      float: "right",
-                    }}
-                  >
-                    Cancel
-                  </Button>
-                </Card.Body>
-              </Card>
-            </Col>
-
-            <Col md={6} xs={12} className="mb-3">
-              <Card>
-                <Card.Body>
-                  <Card.Title>
-                    <PersonIcon />{" "}
-                    <span style={{ marginLeft: "20px" }}>Name</span>
-                    <span
-                      style={{
-                        float: "right",
-                        fontSize: "15px",
-                        marginRight: "30px",
-                      }}
-                    >
-                      Specialization
-                    </span>
-                  </Card.Title>
-                  <Card.Text>
-                    Appointment date & time{" "}
-                    <span style={{ float: "right", marginRight: "30px" }}>
-                      Status
-                    </span>
-                    <p>Mode (Video Call / In-Person)</p>
-                    <p>Prescription / Notes</p>
-                  </Card.Text>
-                  <Button
-                    style={{
-                      width: "100%",
-                      color: "#030E82",
-                      backgroundColor: "#82EAAC",
-                      fontWeight: "bold",
+                    onClick={() => {
+                      alert(" join clicked");
                     }}
                   >
                     Join
@@ -430,6 +217,18 @@ const ManageAppointments = () => {
             </Col>
           </Row>
         </Container>
+        {/* Modal Component */}
+        <Dialog open={open} onClose={() => setOpen(false)}>
+          <DialogTitle>Modal Title</DialogTitle>
+          <DialogContent>
+            <p>This is the content of the modal.</p>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setOpen(false)} color="secondary">
+              Close
+            </Button>
+          </DialogActions>
+        </Dialog>
         <ScrollToTop />
       </div>
     </div>
