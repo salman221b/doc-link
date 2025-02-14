@@ -18,6 +18,7 @@ import {
 import ScrollToTop from "../../../components/scrollToTop/ScrollToTop";
 import PersonIcon from "@mui/icons-material/Person";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import CloseIcon from "@mui/icons-material/Close";
 
 const ManageAppointments = () => {
   const [open, setOpen] = useState(false); // State to track modal visibility
@@ -218,15 +219,94 @@ const ManageAppointments = () => {
           </Row>
         </Container>
         {/* Modal Component */}
-        <Dialog open={open} onClose={() => setOpen(false)}>
-          <DialogTitle>Modal Title</DialogTitle>
+        <Dialog open={open} onClose={() => setOpen(false)} fullWidth>
+          <DialogTitle>
+            <CloseIcon
+              style={{ float: "right", cursor: "pointer" }}
+              onClick={() => setOpen(false)}
+              color="secondary"
+            />
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                width: "100%",
+                padding: "20px",
+                borderRadius: "10px",
+                // boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+                backgroundColor: "#fff",
+              }}
+            >
+              {/* Left: Profile Picture */}
+              <PersonIcon
+                alt="Profile"
+                style={{
+                  width: "20%",
+                  height: "100px",
+                  borderRadius: "50%",
+                  objectFit: "cover",
+                }}
+              />
+
+              {/* Right: Name & Contacts */}
+              <div style={{ marginLeft: "20px", width: "80%" }}>
+                <h3 style={{ margin: "0", color: "#333" }}>
+                  Patient Name (Age)
+                </h3>
+                <p style={{ margin: "5px 0", fontSize: "1rem" }}>
+                  Medical Condition
+                </p>
+                <p style={{ margin: "5px 0", fontSize: "1rem" }}>
+                  📞 +91 98765 43210
+                </p>
+                <p style={{ margin: "5px 0", fontSize: "1rem" }}>
+                  ✉️ johndoe@email.com
+                </p>
+              </div>
+            </div>
+          </DialogTitle>
           <DialogContent>
-            <p>This is the content of the modal.</p>
+            <div>Symptoms</div>
+            <div style={{ marginTop: "20px" }}>Reason for Visit</div>
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => setOpen(false)} color="secondary">
-              Close
-            </Button>
+            <div style={{ width: "100%" }}>
+              <Button
+                style={{
+                  width: "100%",
+                  color: "#030E82",
+                  backgroundColor: "#82EAAC",
+                  fontWeight: "bold",
+                }}
+                onClick={() => {
+                  alert(" join clicked");
+                }}
+              >
+                Accept
+              </Button>
+              <br />
+              <Button
+                style={{
+                  width: "49%",
+                  marginTop: "10px",
+                  backgroundColor: "#030E82",
+                  fontWeight: "bold",
+                }}
+              >
+                Reschedule
+              </Button>
+              <Button
+                style={{
+                  width: "49%",
+                  marginTop: "10px",
+                  backgroundColor: "#F49696",
+                  fontWeight: "bold",
+                  float: "right",
+                }}
+              >
+                Cancel
+              </Button>
+            </div>
           </DialogActions>
         </Dialog>
         <ScrollToTop />
