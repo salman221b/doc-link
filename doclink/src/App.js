@@ -24,6 +24,8 @@ import Dashboard from "./pages/dashboard/Dashboard";
 import Appointment from "./pages/user/newAppointment/Appointment";
 import UpcomingAppointment from "./pages/user/upcomingAppointment/UpcomingAppointment";
 import MedicalRecords from "./pages/user/medicalRecords/MedicalRecords";
+import MedicalRecordsDoctor from "./pages/doctor/medical-records/MedicalRecords";
+
 import Prescriptions from "./pages/user/prescriptions/Prescriptions";
 import LandingPage from "./pages/landing/LandingPage";
 import ManageAppointments from "./pages/doctor/manage-appointments/ManageAppointments";
@@ -58,9 +60,13 @@ const App = () => {
             element={<UpcomingAppointment />}
           />
           <Route path="/patients-list" element={<PatientsList />} />
-          <Route path="/medical-records" element={<MedicalRecords />} />
+          <Route path="/medical-records-patient" element={<MedicalRecords />} />
           <Route path="/prescriptions" element={<Prescriptions />} />
           <Route path="/manage-appointments" element={<ManageAppointments />} />
+          <Route
+            path="medical-records-doctor"
+            element={<MedicalRecordsDoctor />}
+          />
           <Route path="/unauthorized" element={<NotFoundPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>

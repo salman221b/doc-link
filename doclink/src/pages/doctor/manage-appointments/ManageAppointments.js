@@ -158,16 +158,7 @@ const ManageAppointments = () => {
                   >
                     <Card.Title>
                       <PersonIcon />{" "}
-                      <span style={{ marginLeft: "20px" }}>Name</span>
-                      <span
-                        style={{
-                          float: "right",
-                          fontSize: "15px",
-                          marginRight: "30px",
-                        }}
-                      >
-                        Specialization
-                      </span>
+                      <span style={{ marginLeft: "20px" }}>Patient Name</span>
                     </Card.Title>
                     <Card.Text>
                       Appointment date & time{" "}

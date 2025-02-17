@@ -59,7 +59,7 @@ const NavBar = () => {
             Patient List
           </a>
 
-          <a href="/register" style={{ "--i": 2 }}>
+          <a href="/medical-records-doctor" style={{ "--i": 2 }}>
             Medical Records
           </a>
         </nav>

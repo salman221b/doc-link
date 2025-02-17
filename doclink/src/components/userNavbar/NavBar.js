@@ -58,7 +58,7 @@ const NavBar = () => {
           <a href="/upcoming-appointment" style={{ "--i": 1 }}>
             Upcoming Appointments
           </a>
-          <a href="/medical-records" style={{ "--i": 2 }}>
+          <a href="/medical-records-patient" style={{ "--i": 2 }}>
             Medical Records
           </a>
           <a href="/prescriptions" style={{ "--i": 3 }}>

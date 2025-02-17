@@ -1,13 +1,27 @@
-import React from "react";
+import React, { useState } from "react";
 import NavBar from "../../../components/doctorNavbar/NavBar";
-import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+} from "@mui/material";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { blue } from "@mui/material/colors";
 import FilterPatients from "../../../components/filter/FilterPatients";
 import CloseIcon from "@mui/icons-material/Close";
+import { Card, Col, Container, Row } from "react-bootstrap";
+import PersonIcon from "@mui/icons-material/Person";
 
 const PatientsList = () => {
   const [filter, setFilter] = React.useState(false);
+  const [open, setOpen] = useState(false); // State to track modal visibility
+
   return (
     <div>
       <NavBar />
@@ -139,6 +153,154 @@ const PatientsList = () => {
           onClick={() => setFilter(false)}
         />
         {filter && <FilterPatients />}
+        {/* ------------------------------------------------------------------------------------------------------------------------- */}
+        <Container className="mt-4">
+          <Row>
+            <Col md={6} xs={12} className="mb-3">
+              <Card>
+                <Card.Body>
+                  <Card.Title>
+                    <PersonIcon />{" "}
+                    <span style={{ marginLeft: "20px" }}>
+                      Patient Name (Age), Male
+                    </span>
+                    <span style={{ float: "right" }}>ID: 123</span>
+                  </Card.Title>
+                  <Card.Text>
+                    Contact Information
+                    <p>Last Visit</p>
+                    <p>Medical Condition (if available)</p>
+                    <p>Appointment History (upcoming & past visits)</p>
+                  </Card.Text>
+                  <Button
+                    style={{
+                      width: "100%",
+                      color: "#030E82",
+                      backgroundColor: "#82EAAC",
+                      fontWeight: "bold",
+                    }}
+                    onClick={() => setOpen(true)}
+                  >
+                    View Profile
+                    <ArrowForwardIcon style={{ color: "#F49696" }} />
+                  </Button>
+                </Card.Body>
+              </Card>
+            </Col>
+          </Row>
+        </Container>
+        {/* Modal Component */}
+        <Dialog open={open} onClose={() => setOpen(false)} fullWidth>
+          <DialogTitle>
+            <CloseIcon
+              style={{ float: "right", cursor: "pointer" }}
+              onClick={() => setOpen(false)}
+              color="secondary"
+            />
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                width: "100%",
+                padding: "20px",
+                borderRadius: "10px",
+                // boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+                backgroundColor: "#fff",
+              }}
+            >
+              {/* Left: Profile Picture */}
+              <PersonIcon
+                alt="Profile"
+                style={{
+                  width: "20%",
+                  height: "100px",
+                  borderRadius: "50%",
+                  objectFit: "cover",
+                }}
+              />
+
+              {/* Right: Name & Contacts */}
+              <div style={{ marginLeft: "20px", width: "80%" }}>
+                <h3 style={{ margin: "0", color: "#333" }}>
+                  Patient Name (Age), &nbsp; Male
+                </h3>
+
+                <p style={{ margin: "5px 0", fontSize: "1rem" }}>
+                  📞 +91 98765 43210
+                </p>
+                <p style={{ margin: "5px 0", fontSize: "1rem" }}>
+                  ✉️ johndoe@email.com
+                </p>
+                <p style={{ margin: "5px 0", fontSize: "1rem" }}>
+                  Medical History
+                </p>
+              </div>
+            </div>
+          </DialogTitle>
+          <DialogContent>
+            <div>
+              Appointments
+              <p> (Upcoming, Completed, and Canceled)</p>
+            </div>
+            <div style={{ marginTop: "20px" }}>
+              Prescriptions(Doctor’s past prescriptions)
+            </div>
+            <div style={{ marginTop: "20px" }}>
+              Reports & Test Results (Blood test, X-rays, MRI, etc.)
+            </div>
+            <p
+              style={{
+                float: "right",
+                color: "blue",
+                cursor: "pointer",
+                textDecoration: "underline",
+              }}
+            >
+              Download / Print
+            </p>
+          </DialogContent>
+          <DialogActions>
+            <div style={{ width: "100%" }}>
+              <Button
+                style={{
+                  width: "100%",
+                  color: "#030E82",
+                  backgroundColor: "#82EAAC",
+                  fontWeight: "bold",
+                }}
+                onClick={() => {
+                  alert(" join clicked");
+                }}
+              >
+                Schedule a New Appointment{" "}
+              </Button>
+              <br />
+              <Button
+                style={{
+                  width: "49%",
+                  marginTop: "10px",
+                  backgroundColor: "#030E82",
+                  fontWeight: "bold",
+                  color: "#fff",
+                }}
+              >
+                View/Write Prescription
+              </Button>
+              <Button
+                style={{
+                  width: "49%",
+                  marginTop: "10px",
+                  backgroundColor: "#F49696",
+                  fontWeight: "bold",
+                  float: "right",
+                  color: "#fff",
+                }}
+              >
+                Upload Medical Reports
+              </Button>
+            </div>
+          </DialogActions>
+        </Dialog>
       </div>
     </div>
   );
