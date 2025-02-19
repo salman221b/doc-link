@@ -24,9 +24,7 @@ router.post("/resend-otp", async (req, res) => {
 
     // Send OTP via email using Nodemailer
     const transporter = nodemailer.createTransport({
-      host: "smtp.office365.com", // Outlook SMTP server
-      port: 587,
-      secure: false,
+      service: "gmail",
       auth: {
         user: process.env.EMAIL_ADDRESS,
         pass: process.env.EMAIL_PASSWORD, // Use App Password for Gmail
