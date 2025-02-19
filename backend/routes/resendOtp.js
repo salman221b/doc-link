@@ -24,7 +24,6 @@ router.post("/resend-otp", async (req, res) => {
 
     // Send OTP via email using Nodemailer
     const transporter = nodemailer.createTransport({
-      service: "gmail",
       host: "smtp.gmail.com",
       port: 465,
       secure: true,
