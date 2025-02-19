@@ -3,7 +3,9 @@ const dotenv = require("dotenv");
 
 const sendOtpEmail = async (firstName, email, otp) => {
   const transporter = nodemailer.createTransport({
-    service: "gmail",
+    host: "smtp.office365.com", // Outlook SMTP server
+    port: 587,
+    secure: false,
     auth: {
       user: process.env.EMAIL_ADDRESS, // Replace with your email
       pass: process.env.EMAIL_PASSWORD, // Replace with your email password or app-specific password
