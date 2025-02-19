@@ -3,12 +3,10 @@ const dotenv = require("dotenv");
 
 const sendOtpEmail = async (firstName, email, otp) => {
   const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 465,
-    secure: true,
+    service: "gmail",
     auth: {
-      user: process.env.EMAIL_ADDRESS,
-      pass: process.env.EMAIL_PASSWORD,
+      user: process.env.EMAIL_ADDRESS, // Replace with your email
+      pass: process.env.EMAIL_PASSWORD, // Replace with your email password or app-specific password
     },
   });
 
