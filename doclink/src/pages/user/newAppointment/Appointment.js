@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import NavBar from "../../../components/userNavbar/NavBar";
 import {
   Box,
@@ -10,8 +10,13 @@ import {
 } from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import { useNavigate } from "react-router-dom";
 
 const Appointment = () => {
+  const navigate = useNavigate();
+  const [specialization, setSpecialization] = React.useState("");
+  const fetchData = async () => {};
+
   return (
     <div>
       <NavBar />
@@ -33,10 +38,10 @@ const Appointment = () => {
               <Select
                 labelId="demo-simple-select-helper-label"
                 id="demo-simple-select-helper"
-                // value={formData.specialization}
+                value={specialization}
                 label="Specialization"
                 name="specialization"
-                // onChange={handleChange}
+                onChange={(e) => setSpecialization(e.target.value)}
               >
                 <MenuItem value="" disabled>
                   <em>None</em>

@@ -15,7 +15,10 @@ import Checkbox from "@mui/material/Checkbox";
 import Switch from "@mui/material/Switch";
 import PasswordField from "../../components/passwordField";
 import logo from "../../static/DocLink_Logo_Bg.png";
+import LoadingScreen from "../../components/loadingScreen/LoadingScreen";
 const Registration = () => {
+  const [loading, setLoading] = useState(false);
+
   const navigate = useNavigate();
   const [formData, setFormData] = React.useState({
     firstName: "",
@@ -29,8 +32,8 @@ const Registration = () => {
     confirmPassword: "",
     role: "",
     medicalLicenseNumber: "",
-    specialization: "",
-    qualification: "",
+    specialization: [],
+    qualification: [],
     yearOfExperience: "",
     hospitalName: "",
     registrationAuthority: "",
@@ -84,14 +87,7 @@ const Registration = () => {
     },
     clinicAddress: "",
 
-    language: {
-      english: false,
-      hindi: false,
-      malayalam: false,
-      kannada: false,
-      tamil: false,
-      telungu: false,
-    },
+    language: [],
     shortBio: "",
     profileLinks: {
       website: "",
@@ -149,18 +145,44 @@ const Registration = () => {
         pointer = pointer[keys[i]];
       }
 
-      // Update the target value
-      pointer[keys[keys.length - 1]] = value;
+      // Handle multiple selection for fields like qualification
+      const lastKey = keys[keys.length - 1];
+      if (Array.isArray(pointer[lastKey])) {
+        // If value is already in array, remove it; otherwise, add it
+        const newValue = pointer[lastKey].includes(value)
+          ? pointer[lastKey].filter((item) => item !== value)
+          : [...pointer[lastKey], value];
+        pointer[lastKey] = newValue;
+      } else {
+        // Update the target value normally
+        pointer[lastKey] = value;
+      }
+
       return updated;
     });
   };
+
   const handleChange = (event) => {
     const { name, type, checked, value } = event.target;
+
     if (type === "checkbox") {
       updateNestedField(name, checked);
+    } else if (event.target.multiple) {
+      // Handle multiple selection in <Select>
+      const selectedValues = Array.from(
+        event.target.selectedOptions,
+        (option) => option.value
+      );
+      updateNestedField(name, selectedValues);
     } else {
       updateNestedField(name, value);
     }
+  };
+  const handleRemoveItem = (field, value) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: prev[field].filter((item) => item !== value),
+    }));
   };
 
   // Unified File Upload Handler
@@ -175,17 +197,18 @@ const Registration = () => {
   // Submit Form
   const handleSubmitDoctor = async (event) => {
     event.preventDefault();
+    setLoading(true);
     const formDataToSend = new FormData();
-
-    // Append text fields
     Object.keys(formData).forEach((key) => {
-      if (typeof formData[key] === "object" && !Array.isArray(formData[key])) {
+      if (Array.isArray(formData[key])) {
+        //  Convert arrays (qualification, specialization, languages) to JSON
         formDataToSend.append(key, JSON.stringify(formData[key]));
+      } else if (typeof formData[key] === "object") {
+        formDataToSend.append(key, JSON.stringify(formData[key])); // Handle nested objects
       } else {
         formDataToSend.append(key, formData[key]);
       }
     });
-
     // Append files
     Object.keys(files).forEach((key) => {
       if (files[key]) {
@@ -220,13 +243,18 @@ const Registration = () => {
         setErrorMessage(
           error.message || "An unexpected error occurred. Please try again."
         );
+      } finally {
+        setLoading(false); // Stop loading after request
       }
     } else {
       console.log("Validation failed");
+      setLoading(false);
     }
   };
   const handleSubmitPatient = async (event) => {
     event.preventDefault();
+    setLoading(true);
+
     if (validate()) {
       try {
         const response = await fetch(
@@ -256,10 +284,46 @@ const Registration = () => {
         setErrorMessage(
           error.message || "An unexpected error occurred. Please try again."
         );
+      } finally {
+        setLoading(false); // Stop loading after request
       }
     } else {
       console.log("Validation failed");
+      setLoading(false);
     }
+  };
+  const LoadingPopup = () => {
+    return (
+      <div
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          background: "rgba(0, 0, 0, 0.5)",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          zIndex: 1000,
+        }}
+      >
+        <div
+          style={{
+            padding: "20px",
+            borderRadius: "10px",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <span style={{ fontSize: "18px", marginBottom: "10px" }}>
+            Processing...
+          </span>
+          <LoadingScreen /> {/* Your existing loading component */}
+        </div>
+      </div>
+    );
   };
   return (
     <>
@@ -297,6 +361,7 @@ const Registration = () => {
           </Button>
         </div>
       </div>
+      {loading && <LoadingPopup />}
       <div style={{ justifyItems: "center", marginTop: "50px" }}>
         <Box sx={{ width: 500, maxWidth: "100%" }}>
           <form
@@ -1972,46 +2037,73 @@ const Registration = () => {
                     <MenuItem value="" disabled>
                       <em>None</em>
                     </MenuItem>
-                    <MenuItem value={"anesthesiology"}>Anesthesiology</MenuItem>
-                    <MenuItem value={"cardiology"}>Cardiology</MenuItem>
-                    <MenuItem value={"dermatology"}>Dermatology</MenuItem>
-                    <MenuItem value={"emergency_medicine"}>
+                    <MenuItem value="Anesthesiology">Anesthesiology</MenuItem>
+                    <MenuItem value="Cardiology">Cardiology</MenuItem>
+                    <MenuItem value="Dermatology">Dermatology</MenuItem>
+                    <MenuItem value="Emergency Medicine">
                       Emergency Medicine
                     </MenuItem>
-                    <MenuItem value={"endocrinology"}>Endocrinology</MenuItem>
-                    <MenuItem value={"gastroenterology"}>
+                    <MenuItem value="Endocrinology">Endocrinology</MenuItem>
+                    <MenuItem value="Gastroenterology">
                       Gastroenterology
                     </MenuItem>
-                    <MenuItem value={"general_surgery"}>
-                      General Surgery
-                    </MenuItem>
-                    <MenuItem value={"geriatrics"}>Geriatrics</MenuItem>
-                    <MenuItem value={"hematology"}>Hematology</MenuItem>
-                    <MenuItem value={"infectious_disease"}>
+                    <MenuItem value="General Surgery">General Surgery</MenuItem>
+                    <MenuItem value="Geriatrics">Geriatrics</MenuItem>
+                    <MenuItem value="Hematology">Hematology</MenuItem>
+                    <MenuItem value="Infectious Disease">
                       Infectious Disease
                     </MenuItem>
-                    <MenuItem value={"internal_medicine"}>
+                    <MenuItem value="Internal Medicine">
                       Internal Medicine
                     </MenuItem>
-                    <MenuItem value={"nephrology"}>Nephrology</MenuItem>
-                    <MenuItem value={"neurology"}>Neurology</MenuItem>
-                    <MenuItem value={"obstetrics_gynecology"}>
+                    <MenuItem value="Nephrology">Nephrology</MenuItem>
+                    <MenuItem value="Neurology">Neurology</MenuItem>
+                    <MenuItem value="Obstetrics and Gynecology">
                       Obstetrics and Gynecology
                     </MenuItem>
-                    <MenuItem value={"oncology"}>Oncology</MenuItem>
-                    <MenuItem value={"ophthalmology"}>Ophthalmology</MenuItem>
-                    <MenuItem value={"orthopedics"}>Orthopedics</MenuItem>
-                    <MenuItem value={"otolaryngology"}>
+                    <MenuItem value="Oncology">Oncology</MenuItem>
+                    <MenuItem value="Ophthalmology">Ophthalmology</MenuItem>
+                    <MenuItem value="Orthopedics">Orthopedics</MenuItem>
+                    <MenuItem value="Otolaryngology (ENT)">
                       Otolaryngology (ENT)
                     </MenuItem>
-                    <MenuItem value={"pediatrics"}>Pediatrics</MenuItem>
-                    <MenuItem value={"psychiatry"}>Psychiatry</MenuItem>
-                    <MenuItem value={"pulmonology"}>Pulmonology</MenuItem>
-                    <MenuItem value={"radiology"}>Radiology</MenuItem>
-                    <MenuItem value={"rheumatology"}>Rheumatology</MenuItem>
-                    <MenuItem value={"urology"}>Urology</MenuItem>
+                    <MenuItem value="Pediatrics">Pediatrics</MenuItem>
+                    <MenuItem value="Psychiatry">Psychiatry</MenuItem>
+                    <MenuItem value="Pulmonology">Pulmonology</MenuItem>
+                    <MenuItem value="Radiology">Radiology</MenuItem>
+                    <MenuItem value="Rheumatology">Rheumatology</MenuItem>
+                    <MenuItem value="Urology">Urology</MenuItem>
                   </Select>
-                  {/* <FormHelperText>With label + helper text</FormHelperText> */}
+                  <FormHelperText>
+                    {" "}
+                    {formData.specialization.map((item, index) => (
+                      <Box
+                        key={index}
+                        component="span"
+                        style={{
+                          border: "1px solid",
+                          padding: "5px",
+                          borderRadius: "5px",
+                          margin: "5px",
+                          display: "inline-block",
+                        }}
+                      >
+                        {item}
+                        <span
+                          style={{
+                            marginLeft: "10px",
+                            cursor: "pointer",
+                            color: "red",
+                          }}
+                          onClick={() =>
+                            handleRemoveItem("specialization", item)
+                          }
+                        >
+                          X
+                        </span>
+                      </Box>
+                    ))}
+                  </FormHelperText>
                 </FormControl>
                 <FormControl sx={{ minWidth: "100%", marginTop: "20px" }}>
                   <InputLabel id="demo-simple-select-helper-label">
@@ -2028,11 +2120,105 @@ const Registration = () => {
                     <MenuItem value="" disabled>
                       <em>None</em>
                     </MenuItem>
-                    <MenuItem value={"MBBS"}>MBBS</MenuItem>
-                    <MenuItem value={"MD"}>MD</MenuItem>
-                    <MenuItem value={"DO"}>DO</MenuItem>
+                    <MenuItem value="MBBS">
+                      MBBS (Bachelor of Medicine, Bachelor of Surgery)
+                    </MenuItem>
+                    <MenuItem value="BDS">
+                      BDS (Bachelor of Dental Surgery)
+                    </MenuItem>
+                    <MenuItem value="BAMS">
+                      BAMS (Bachelor of Ayurvedic Medicine and Surgery)
+                    </MenuItem>
+                    <MenuItem value="BHMS">
+                      BHMS (Bachelor of Homeopathic Medicine and Surgery)
+                    </MenuItem>
+                    <MenuItem value="BUMS">
+                      BUMS (Bachelor of Unani Medicine and Surgery)
+                    </MenuItem>
+                    <MenuItem value="BSMS">
+                      BSMS (Bachelor of Siddha Medicine and Surgery)
+                    </MenuItem>
+                    <MenuItem value="BNYS">
+                      BNYS (Bachelor of Naturopathy and Yogic Sciences)
+                    </MenuItem>
+                    <MenuItem value="MD">
+                      MD (Doctor of Medicine - Specialization)
+                    </MenuItem>
+                    <MenuItem value="MS">MS (Master of Surgery)</MenuItem>
+                    <MenuItem value="DM">
+                      DM (Doctorate of Medicine - Super Specialization)
+                    </MenuItem>
+                    <MenuItem value="MCh">
+                      MCh (Master of Chirurgiae - Super Specialization)
+                    </MenuItem>
+                    <MenuItem value="DNB">
+                      DNB (Diplomate of National Board)
+                    </MenuItem>
+                    <MenuItem value="Fellowship">
+                      Fellowship in Medical Specialties
+                    </MenuItem>
+                    <MenuItem value="PGD">
+                      PG Diploma in Medical Specialties
+                    </MenuItem>
+                    <MenuItem value="PhD">PhD in Medical Sciences</MenuItem>
+                    <MenuItem value="MDS">
+                      MDS (Master of Dental Surgery)
+                    </MenuItem>
+                    <MenuItem value="MSc">MSc in Medical Sciences</MenuItem>
+                    <MenuItem value="DGO">
+                      DGO (Diploma in Obstetrics and Gynaecology)
+                    </MenuItem>
+                    <MenuItem value="DCH">
+                      DCH (Diploma in Child Health)
+                    </MenuItem>
+                    <MenuItem value="DOMS">
+                      DOMS (Diploma in Ophthalmic Medicine & Surgery)
+                    </MenuItem>
+                    <MenuItem value="DA">
+                      DA (Diploma in Anesthesiology)
+                    </MenuItem>
+                    <MenuItem value="DLO">
+                      DLO (Diploma in Otorhinolaryngology - ENT)
+                    </MenuItem>
+                    <MenuItem value="DPM">
+                      DPM (Diploma in Psychological Medicine)
+                    </MenuItem>
+                    <MenuItem value="DVD">
+                      DVD (Diploma in Venereology & Dermatology)
+                    </MenuItem>
+                    <MenuItem value="DO">
+                      DO (Diploma in Ophthalmology)
+                    </MenuItem>
                   </Select>
-                  {/* <FormHelperText>With label + helper text</FormHelperText> */}
+                  <FormHelperText>
+                    {formData.qualification.map((item, index) => (
+                      <Box
+                        key={index}
+                        component="span"
+                        style={{
+                          border: "1px solid",
+                          padding: "5px",
+                          borderRadius: "5px",
+                          margin: "5px",
+                          display: "inline-block",
+                        }}
+                      >
+                        {item}
+                        <span
+                          style={{
+                            marginLeft: "10px",
+                            cursor: "pointer",
+                            color: "red",
+                          }}
+                          onClick={() =>
+                            handleRemoveItem("qualification", item)
+                          }
+                        >
+                          X
+                        </span>
+                      </Box>
+                    ))}
+                  </FormHelperText>
                 </FormControl>
                 <TextField
                   fullWidth
@@ -2426,53 +2612,76 @@ const Registration = () => {
                 <hr />
                 <h2>Additional Details</h2>
                 <h3>Languages Spoken</h3>
-                <Checkbox
-                  type="checkbox"
-                  onChange={handleChange}
-                  name="language.english"
-                  checked={formData.language.english}
-                />
-                <label>English</label>
-                <br />
-                <Checkbox
-                  type="checkbox"
-                  onChange={handleChange}
-                  name="language.malayalam"
-                  checked={formData.language.malayalam}
-                />
-                <label>Malayalam</label>
-                <br />
-                <Checkbox
-                  type="checkbox"
-                  onChange={handleChange}
-                  name="language.tamil"
-                  checked={formData.language.tamil}
-                />
-                <label>Tamil</label>
-                <br />
-                <Checkbox
-                  type="checkbox"
-                  onChange={handleChange}
-                  name="language.hindi"
-                  checked={formData.language.hindi}
-                />
-                <label>Hindi</label>
-                <br />
-                <Checkbox
-                  type="checkbox"
-                  onChange={handleChange}
-                  name="language.kannada"
-                  checked={formData.language.kannada}
-                />
-                <label>Kannada</label>
-                <br />
-                <Checkbox
-                  type="checkbox"
-                  onChange={handleChange}
-                  name="language.telungu"
-                  checked={formData.language.telungu}
-                />
-                <label>Telungu</label>
+                <FormControl sx={{ minWidth: "100%", marginTop: "20px" }}>
+                  <InputLabel id="demo-simple-select-helper-label">
+                    Languages
+                  </InputLabel>
+                  <Select
+                    labelId="demo-simple-select-helper-label"
+                    id="demo-simple-select-helper"
+                    value={formData.language}
+                    name="language"
+                    onChange={handleChange}
+                    label="Language"
+                  >
+                    <MenuItem value="" disabled>
+                      <em>None</em>
+                    </MenuItem>
+                    <MenuItem value="Arabic">Arabic</MenuItem>
+                    <MenuItem value="Assamese">Assamese</MenuItem>
+                    <MenuItem value="Bengali">Bengali</MenuItem>
+                    <MenuItem value="Bodo">Bodo</MenuItem>
+                    <MenuItem value="Dogri">Dogri</MenuItem>
+                    <MenuItem value="English">English</MenuItem>
+                    <MenuItem value="Gujarati">Gujarati</MenuItem>
+                    <MenuItem value="Hindi">Hindi</MenuItem>
+                    <MenuItem value="Japanese">Japanese</MenuItem>
+
+                    <MenuItem value="Kannada">Kannada</MenuItem>
+                    <MenuItem value="Kashmiri">Kashmiri</MenuItem>
+                    <MenuItem value="Konkani">Konkani</MenuItem>
+                    <MenuItem value="Maithili">Maithili</MenuItem>
+                    <MenuItem value="Malayalam">Malayalam</MenuItem>
+                    <MenuItem value="Manipuri">Manipuri</MenuItem>
+                    <MenuItem value="Marathi">Marathi</MenuItem>
+                    <MenuItem value="Nepali">Nepali</MenuItem>
+                    <MenuItem value="Odia">Odia</MenuItem>
+                    <MenuItem value="Punjabi">Punjabi</MenuItem>
+                    <MenuItem value="Sanskrit">Sanskrit</MenuItem>
+                    <MenuItem value="Santali">Santali</MenuItem>
+                    <MenuItem value="Sindhi">Sindhi</MenuItem>
+                    <MenuItem value="Tamil">Tamil</MenuItem>
+                    <MenuItem value="Telugu">Telugu</MenuItem>
+                    <MenuItem value="Urdu">Urdu</MenuItem>
+                  </Select>
+                  <FormHelperText>
+                    {formData.language.map((item, index) => (
+                      <Box
+                        key={index}
+                        component="span"
+                        style={{
+                          border: "1px solid",
+                          padding: "5px",
+                          borderRadius: "5px",
+                          margin: "5px",
+                          display: "inline-block",
+                        }}
+                      >
+                        {item}
+                        <span
+                          style={{
+                            marginLeft: "10px",
+                            cursor: "pointer",
+                            color: "red",
+                          }}
+                          onClick={() => handleRemoveItem("language", item)}
+                        >
+                          X
+                        </span>
+                      </Box>
+                    ))}
+                  </FormHelperText>
+                </FormControl>
                 <h3>Short Bio/Description</h3>
                 <TextField
                   id="outlined-textarea"
@@ -2543,11 +2752,12 @@ const Registration = () => {
             )}
             <button
               type="submit"
+              disabled={loading}
               class="btn btn-primary"
               style={{ marginTop: "20px", width: "100%", fontWeight: "bold" }}
               // onClick={handleSubmit}
             >
-              Register
+              {loading ? "Registering..." : "Register"}
             </button>
             <center>
               <label

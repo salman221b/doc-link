@@ -11,8 +11,8 @@ const DoctorSchema = new mongoose.Schema(
     password: String,
     role: String,
     medicalLicenseNumber: String,
-    specialization: String,
-    qualification: String,
+    specialization: [String],
+    qualification: [String],
     yearOfExperience: String,
     hospitalName: String,
     registrationAuthority: String,
@@ -44,7 +44,7 @@ const DoctorSchema = new mongoose.Schema(
       file_type: String,
       file_data: String, // Path to file
     },
-    language: Object,
+    language: [String],
     shortBio: String,
     profileLinks: {
       linkedin: String,

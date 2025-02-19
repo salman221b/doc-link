@@ -25,6 +25,7 @@ app.use("/", require("./routes/login"));
 app.use("/", require("./routes/forgotPassword"));
 app.use("/", require("./routes/resetPassword"));
 app.use("/", require("./routes/dashboard"));
+app.use("/", require("./routes/appointment"));
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

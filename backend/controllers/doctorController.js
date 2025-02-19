@@ -43,6 +43,14 @@ const registerDoctor = asyncHandler(async (req, res) => {
   // console.log("Uploaded Files:", req.files);
   // return res.send(req.body);
   // console.log("First name", firstName);
+  // Ensure qualification is stored as an array
+  const formattedQualification = Array.isArray(qualification)
+    ? qualification
+    : [qualification];
+  const formattedSpecialization = Array.isArray(specialization)
+    ? specialization
+    : [specialization];
+  const formattedLanguage = Array.isArray(language) ? language : [language];
   if (
     !firstName ||
     !lastName ||
@@ -90,7 +98,6 @@ const registerDoctor = asyncHandler(async (req, res) => {
     const consultationFeeObj = JSON.parse(consultationFee);
     const availableConsultationsObj = JSON.parse(availableConsultations);
     const availabilityScheduleObj = JSON.parse(availabilitySchedule);
-    const languageObj = JSON.parse(language);
     const profileLinksObj = JSON.parse(profileLinks);
 
     const doctor = await Doctor.create({
@@ -104,8 +111,8 @@ const registerDoctor = asyncHandler(async (req, res) => {
       password: hashedPassword,
       role,
       medicalLicenseNumber,
-      specialization,
-      qualification,
+      specialization: formattedSpecialization,
+      qualification: formattedQualification,
       yearOfExperience,
       hospitalName,
       registrationAuthority,
@@ -137,7 +144,7 @@ const registerDoctor = asyncHandler(async (req, res) => {
         file_type: governmentIdFile.mimetype,
         file_data: governmentIdFile.path, // Store the path
       },
-      language: languageObj,
+      language: formattedLanguage,
       shortBio,
       profileLinks: profileLinksObj,
       verified: false,
