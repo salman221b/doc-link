@@ -102,7 +102,7 @@ function Login() {
           <Box sx={{ width: 500, maxWidth: "100%" }}>
             <TextField
               fullWidth
-              label="Username/Email"
+              label="Email"
               id="fullWidth"
               type="email"
               value={email}
