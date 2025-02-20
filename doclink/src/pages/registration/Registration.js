@@ -117,6 +117,9 @@ const Registration = () => {
     } else if (formData.age <= 1 || formData.age >= 150) {
       tempErrors.age = "Age is not valid, Age should be between 2 and 150";
     }
+    if (formData.phone.length < 10 || formData.phone.length > 10) {
+      tempErrors.phone = "Phone number is not valid";
+    }
     if (!formData.password) {
       tempErrors.password = "Password is required";
     } else if (!pattern.test(formData.password)) {
@@ -1997,7 +2000,7 @@ const Registration = () => {
                 labelId="demo-simple-select-helper-label"
                 id="demo-simple-select-helper"
                 value={formData.role}
-                label="Role"
+                label="Select Role"
                 name="role"
                 onChange={handleChange}
               >
