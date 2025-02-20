@@ -45,46 +45,27 @@ const VerifyEmail = () => {
 
   // Handle OTP submission
   const handleVerifyOtp = async () => {
-    // Add logic to verify the OTP (API call)
     const fullOtp = otp.join("");
     console.log("Entered OTP:", fullOtp);
-    if (type === "register") {
-      const response = await fetch(
-        "https://doc-link-backend.onrender.com/verify-otp",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: email, otp: fullOtp, role: role }),
-        }
-      );
 
-      if (response.ok) {
-        setStatus("OTP verified successfully!");
-        navigate("/login");
-
-        // Redirect user to the next step or dashboard
-      } else {
-        setStatus("Invalid OTP. Please try again.");
+    const response = await fetch(
+      "https://doc-link-backend.onrender.com/verify-otp",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email, otp: fullOtp, role: role }),
       }
-    }
-    if (type === "forgotPassword") {
-      const response = await fetch(
-        "https://doc-link-backend.onrender.com/verify-otp",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: email, otp: fullOtp, role: role }),
-        }
-      );
+    );
 
-      if (response.ok) {
-        setStatus("OTP verified successfully!");
-        navigate("/reset_password", { state: { email: email, role: role } });
+    const data = await response.json(); // Read response body
 
-        // Redirect user to the next step or dashboard
-      } else {
-        setStatus("Invalid OTP. Please try again.");
-      }
+    if (response.ok) {
+      setStatus("OTP verified successfully!");
+      navigate(type === "register" ? "/login" : "/reset_password", {
+        state: { email: email, role: role },
+      });
+    } else {
+      setStatus(data.message || "Invalid OTP. Please try again.");
     }
   };
 

@@ -7,9 +7,10 @@ const Doctor = require("../models/doctorsModel");
 
 router.post("/verify-otp", async (req, res) => {
   const { email, otp, role } = req.body;
-  console.log(email, otp, role);
+  // console.log(email, otp, role);
 
-  const record = await Otp.findOne({ email, otp, role });
+  // const record = await Otp.findOne({ email, otp, role });
+  const record = await Otp.findOne({ email, otp: String(otp), role });
 
   if (!record) {
     return res.status(400).json({ message: "Invalid OTP" });
@@ -20,7 +21,8 @@ router.post("/verify-otp", async (req, res) => {
   }
 
   // OTP is valid; delete it from the database
-  await Otp.deleteOne({ email, role });
+  // await Otp.deleteOne({ email, role });
+  await Otp.deleteOne({ email, otp: String(otp), role });
 
   if (role === "patient") {
     await Patient.updateOne({ email }, { verified: true });

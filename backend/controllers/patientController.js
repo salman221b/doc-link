@@ -43,6 +43,8 @@ const registerPatient = asyncHandler(async (req, res) => {
   const generateOtp = () => {
     return Math.floor(1000 + Math.random() * 9000); // Generates a 4-digit OTP
   };
+  await Otp.deleteMany({ email, role });
+
   const otp = generateOtp();
 
   try {
