@@ -278,7 +278,7 @@ const Registration = () => {
         console.log("Registration successful:", responseData);
         setErrorMessage(""); // Clear error message on success
         navigate("/verify_email", {
-          state: { email: formData.email, role: "patient" },
+          state: { email: formData.email, role: "patient", type: "register" },
         });
       } catch (error) {
         console.error("Error during registration:", error.message);
