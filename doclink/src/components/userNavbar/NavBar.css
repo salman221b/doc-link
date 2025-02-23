@@ -46,7 +46,7 @@
   
   .logo {
     font-size: 25px;
-    color: #fff;
+    /* color: #fff; */
     text-decoration: none;
     font-weight: 600;
   }
@@ -54,7 +54,7 @@
   .navbar a {
     display: inline-block;
     font-size: 1.15rem;
-    color: #030e82;
+    /* color: #030e82; */
     text-decoration: none;
     font-weight: 500;
     margin-left: 2.5rem;
@@ -69,7 +69,7 @@
     position: absolute;
     right: 5%;
     font-size: 2.8rem;
-    color: #fff;
+    /* color: #fff; */
     cursor: pointer;
     display: none;
   }
@@ -150,6 +150,10 @@
     .icons {
       display: inline-flex;
     }
+    #menu-icon,
+#close-icon {
+  fill: #f1f1f1 !important; /* Set icon color */
+}
   
     #check:checked ~ .icons #menu-icon {
       display: none;
@@ -161,7 +165,7 @@
   
     #check:checked ~ .icons #close-icon {
       display: block;
-    }
+          }
   
     .navbar {
       display: flex;

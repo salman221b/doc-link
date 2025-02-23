@@ -1,13 +1,43 @@
-body{
-  background-color: #F1F9F1 !important;
+/* Default Light Mode */
+:root {
+  --bg-color: #F1F9F1;
+  --text-color-primary: #030E82;
+  --text-color-secondary: #030E82;
+  --font-weight-primary: bold;
+  --font-weight-secondary: 100;
+  --navbar-text-color: #030e82;
 }
-.title1{
-  color: #030E82;
-  font-weight: bold;
-}
-.title2{
-  color: #030E82;
-  font-style: italic;
-  font-weight: 100;
 
+/* Dark Mode */
+.dark-theme {
+  --bg-color: #030E82;
+  --text-color-primary: #F1F9F1;
+  --text-color-secondary: #F1F9F1;
+  --navbar-text-color: #F1F9F1;
+  --navbar-icons-color: #F1F9F1;
 }
+
+body{
+  background-color: var(--bg-color) !important;
+}
+.title1 {
+  color: var(--text-color-primary);
+  font-weight: var(--font-weight-primary);
+}
+
+.title2 {
+  color: var(--text-color-secondary);
+  font-style: italic;
+  font-weight: var(--font-weight-secondary);
+}
+.navbar a{
+  color: var(--navbar-text-color) !important;
+}
+.notification-icon,
+  .account-icon {
+    cursor: pointer;
+    color: var(--navbar-icons-color) !important;
+  }
+  .icons{
+    color: var(--navbar-icons-color) !important;
+  }

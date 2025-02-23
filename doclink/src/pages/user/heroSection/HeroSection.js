@@ -5,25 +5,8 @@ const HeroSection = () => {
   return (
     <div>
       <div>
-        <h1
-          style={{
-            color: "#030E82",
-            fontWeight: "bold",
-            fontSize: "60px",
-          }}
-        >
-          Your Health,
-        </h1>
-        <h1
-          style={{
-            color: "#030E82",
-            fontStyle: "italic",
-            fontSize: "60px",
-            marginTop: "10px",
-          }}
-        >
-          Just a Click Away.
-        </h1>
+        <h1 className="title1">Your Health,</h1>
+        <h1 className="title2">Just a Click Away.</h1>
         <div className="button-container">
           <button
             onClick={() => {
