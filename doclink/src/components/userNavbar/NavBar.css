@@ -150,10 +150,6 @@
     .icons {
       display: inline-flex;
     }
-    #menu-icon,
-#close-icon {
-  fill: #f1f1f1 !important; /* Set icon color */
-}
   
     #check:checked ~ .icons #menu-icon {
       display: none;
@@ -165,7 +161,7 @@
   
     #check:checked ~ .icons #close-icon {
       display: block;
-          }
+    }
   
     .navbar {
       display: flex;
@@ -201,10 +197,10 @@
       transition-delay: calc(0.15s * var(--i));
     }
   
-    .notification-icon,
+    /* .notification-icon,
     .account-icon {
       margin-right: calc(-10% - 5vw);
-    }
+    } */
     .dropdown-content{
       right: 100px !important;
     }

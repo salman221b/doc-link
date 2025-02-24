@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import ScrollToTop from "../../components/scrollToTop/ScrollToTop";
 import Features from "./Features";
 import HowItWorks from "./HowItWorks";
+import CustomizedSwitches from "../../components/theme/Theme";
 const LandingPage = () => {
   const navigate = useNavigate();
   const servicesRef = useRef(null);
@@ -18,10 +19,14 @@ const LandingPage = () => {
       <div style={{ marginBottom: "20px" }} className="landing-container">
         <div className="hero">
           <img src={logo} width={100} height={100} alt="Logo" />
+          <div style={{ float: "right", right: 0 }}>
+            <CustomizedSwitches />
+          </div>
           <h1 className="title1">Your Health,</h1>
           <h1 className="title2">Just a Click Away.</h1>
           <h5
-            style={{ fontWeight: "1px", fontStyle: "italic", color: "#030E82" }}
+            className="text"
+            style={{ fontWeight: "1px", fontStyle: "italic" }}
           >
             Seamless Healthcare, Anytime, Anywhere!
           </h5>

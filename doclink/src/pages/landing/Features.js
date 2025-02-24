@@ -12,8 +12,8 @@ const Features = () => {
     <div className="features">
       <hr />
       <h4
+        className="text"
         style={{
-          color: "#030E82",
           fontWeight: "bold",
           fontStyle: "italic",
           textAlign: "center",
@@ -37,11 +37,10 @@ const Features = () => {
                       alt="Logo"
                     />
                   </Card.Title>
-                  <Card.Text>
+                  <Card.Text className="body">
                     <p
                       style={{
                         fontWeight: "bold",
-                        color: "#030E82",
                         fontStyle: "italic",
                         fontSize: "1.2rem",
                       }}
@@ -60,11 +59,10 @@ const Features = () => {
                   <Card.Title>
                     <img src={Doctor} width={100} height={100} alt="Logo" />
                   </Card.Title>
-                  <Card.Text>
+                  <Card.Text className="body">
                     <p
                       style={{
                         fontWeight: "bold",
-                        color: "#030E82",
                         fontStyle: "italic",
                         fontSize: "1.2rem",
                       }}
@@ -83,11 +81,10 @@ const Features = () => {
                   <Card.Title>
                     <img src={Secure} width={100} height={100} alt="Logo" />
                   </Card.Title>
-                  <Card.Text>
+                  <Card.Text className="body">
                     <p
                       style={{
                         fontWeight: "bold",
-                        color: "#030E82",
                         fontStyle: "italic",
                         fontSize: "1.2rem",
                       }}
@@ -106,11 +103,10 @@ const Features = () => {
                   <Card.Title>
                     <img src={AI} width={100} height={100} alt="Logo" />
                   </Card.Title>
-                  <Card.Text>
+                  <Card.Text className="body">
                     <p
                       style={{
                         fontWeight: "bold",
-                        color: "#030E82",
                         fontStyle: "italic",
                         fontSize: "1.2rem",
                       }}
@@ -129,11 +125,10 @@ const Features = () => {
                   <Card.Title>
                     <img src={Devices} width={100} height={100} alt="Logo" />
                   </Card.Title>
-                  <Card.Text>
+                  <Card.Text className="body">
                     <p
                       style={{
                         fontWeight: "bold",
-                        color: "#030E82",
                         fontStyle: "italic",
                         fontSize: "1.2rem",
                       }}
@@ -152,11 +147,10 @@ const Features = () => {
                   <Card.Title>
                     <img src={Plans} width={100} height={100} alt="Logo" />
                   </Card.Title>
-                  <Card.Text>
+                  <Card.Text className="body">
                     <p
                       style={{
                         fontWeight: "bold",
-                        color: "#030E82",
                         fontStyle: "italic",
                         fontSize: "1.2rem",
                       }}

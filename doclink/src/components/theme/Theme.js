@@ -3,6 +3,7 @@ import { styled } from "@mui/material/styles";
 import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
+import { ThemeContext } from "../../context/ThemeContext";
 const MaterialUISwitch = styled(Switch)(({ theme }) => ({
   width: 62,
   height: 34,
@@ -59,19 +60,21 @@ const MaterialUISwitch = styled(Switch)(({ theme }) => ({
   },
 }));
 export default function CustomizedSwitches() {
-  const [darkMode, setDarkMode] = React.useState(
-    localStorage.getItem("theme") === "dark"
-  );
-
+  const { darkMode, setDarkMode } = React.useContext(ThemeContext);
   React.useEffect(() => {
-    if (darkMode) {
-      document.body.classList.add("dark-theme");
-      localStorage.setItem("theme", "dark");
-    } else {
-      document.body.classList.remove("dark-theme");
-      localStorage.setItem("theme", "light");
+    const storedTheme = localStorage.getItem("darkMode");
+    if (storedTheme !== null) {
+      setDarkMode(JSON.parse(storedTheme));
     }
-  }, [darkMode]);
+  }, []);
+
+  const toggleTheme = () => {
+    setDarkMode((prevMode) => {
+      localStorage.setItem("darkMode", JSON.stringify(!prevMode));
+      return !prevMode;
+    });
+  };
+
   return (
     <FormGroup>
       <FormControlLabel
@@ -79,7 +82,7 @@ export default function CustomizedSwitches() {
           <MaterialUISwitch
             sx={{ m: 1 }}
             checked={darkMode}
-            onChange={() => setDarkMode(!darkMode)}
+            onChange={toggleTheme}
             color="default"
           />
         }

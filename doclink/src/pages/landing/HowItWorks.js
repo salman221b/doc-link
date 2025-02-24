@@ -11,8 +11,8 @@ const HowItWorks = () => {
     <div className="how-it-works">
       <hr />
       <h4
+        className="text"
         style={{
-          color: "#030E82",
           fontWeight: "bold",
           fontStyle: "italic",
           textAlign: "center",
@@ -31,11 +31,10 @@ const HowItWorks = () => {
                   <Card.Title>
                     <img src={SignUp} width={100} height={100} alt="Logo" />
                   </Card.Title>
-                  <Card.Text>
+                  <Card.Text className="body">
                     <p
                       style={{
                         fontWeight: "bold",
-                        color: "#030E82",
                         fontStyle: "italic",
                         fontSize: "1.2rem",
                       }}
@@ -57,11 +56,10 @@ const HowItWorks = () => {
                   <Card.Title>
                     <img src={DoctorIcon} width={100} height={100} alt="Logo" />
                   </Card.Title>
-                  <Card.Text>
+                  <Card.Text className="body">
                     <p
                       style={{
                         fontWeight: "bold",
-                        color: "#030E82",
                         fontStyle: "italic",
                         fontSize: "1.2rem",
                       }}
@@ -83,11 +81,10 @@ const HowItWorks = () => {
                   <Card.Title>
                     <img src={VideoCall} width={100} height={100} alt="Logo" />
                   </Card.Title>
-                  <Card.Text>
+                  <Card.Text className="body">
                     <p
                       style={{
                         fontWeight: "bold",
-                        color: "#030E82",
                         fontStyle: "italic",
                         fontSize: "1.2rem",
                       }}
@@ -115,11 +112,10 @@ const HowItWorks = () => {
                       alt="Logo"
                     />
                   </Card.Title>
-                  <Card.Text>
+                  <Card.Text className="body">
                     <p
                       style={{
                         fontWeight: "bold",
-                        color: "#030E82",
                         fontStyle: "italic",
                         fontSize: "1.2rem",
                       }}
@@ -141,11 +137,10 @@ const HowItWorks = () => {
                   <Card.Title>
                     <img src={Wellness} width={100} height={100} alt="Logo" />
                   </Card.Title>
-                  <Card.Text>
+                  <Card.Text className="body">
                     <p
                       style={{
                         fontWeight: "bold",
-                        color: "#030E82",
                         fontStyle: "italic",
                         fontSize: "1.2rem",
                       }}

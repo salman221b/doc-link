@@ -1,16 +1,19 @@
 /* Default Light Mode */
 :root {
   --bg-color: #F1F9F1;
+  --bg-color-card:#fff;
   --text-color-primary: #030E82;
   --text-color-secondary: #030E82;
   --font-weight-primary: bold;
   --font-weight-secondary: 100;
   --navbar-text-color: #030e82;
+  --navbar-icons-color: #030e82;
 }
 
 /* Dark Mode */
 .dark-theme {
-  --bg-color: #030E82;
+  --bg-color: #070b2d;
+  --bg-color-card:#010102;
   --text-color-primary: #F1F9F1;
   --text-color-secondary: #F1F9F1;
   --navbar-text-color: #F1F9F1;
@@ -30,14 +33,32 @@ body{
   font-style: italic;
   font-weight: var(--font-weight-secondary);
 }
+.text{
+  color: var(--text-color-primary);
+}
+.card{
+  background-color: var(--bg-color-card) !important;
+}
+.card .body{
+  color: var(--text-color-primary) ;
+}
 .navbar a{
   color: var(--navbar-text-color) !important;
+}
+#lr-button{
+  background-color: var(--text-color-secondary) ;
+  color: var(--bg-color);
+}
+.input{
+  background-color: var(--text-color-primary) ;
+  
 }
 .notification-icon,
   .account-icon {
     cursor: pointer;
     color: var(--navbar-icons-color) !important;
   }
-  .icons{
-    color: var(--navbar-icons-color) !important;
-  }
+#menu-icon,
+#close-icon {
+fill: var(--navbar-icons-color) !important; /* Set icon color */
+}

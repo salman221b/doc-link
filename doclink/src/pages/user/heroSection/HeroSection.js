@@ -22,10 +22,10 @@ const HeroSection = () => {
               border: "none",
               borderRadius: "10px",
               cursor: "pointer",
-              color: "#030E82",
               fontWeight: "bold",
               fontSize: "20px",
             }}
+            className="text"
           >
             Book New Appointment
           </button>
@@ -43,10 +43,10 @@ const HeroSection = () => {
               border: "none",
               borderRadius: "10px",
               cursor: "pointer",
-              color: "#030E82",
               fontWeight: "bold",
               fontSize: "20px",
             }}
+            className="text"
           >
             Upcoming Appointments
           </button>

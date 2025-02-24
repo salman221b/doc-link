@@ -12,8 +12,8 @@ const Services = () => {
     <div id="services">
       <div className="explore-services">
         <h4
+          className="text"
           style={{
-            color: "#030E82",
             fontWeight: "bold",
             fontStyle: "italic",
             textAlign: "center",
@@ -36,11 +36,10 @@ const Services = () => {
                         alt="Logo"
                       />
                     </Card.Title>
-                    <Card.Text>
+                    <Card.Text className="body">
                       <p
                         style={{
                           fontWeight: "bold",
-                          color: "#030E82",
                           fontStyle: "italic",
                           fontSize: "1.2rem",
                         }}
@@ -64,11 +63,10 @@ const Services = () => {
                         alt="Logo"
                       />
                     </Card.Title>
-                    <Card.Text>
+                    <Card.Text className="body">
                       <p
                         style={{
                           fontWeight: "bold",
-                          color: "#030E82",
                           fontStyle: "italic",
                           fontSize: "1.2rem",
                         }}
@@ -92,11 +90,10 @@ const Services = () => {
                         alt="Logo"
                       />
                     </Card.Title>
-                    <Card.Text>
+                    <Card.Text className="body">
                       <p
                         style={{
                           fontWeight: "bold",
-                          color: "#030E82",
                           fontStyle: "italic",
                           fontSize: "1.2rem",
                         }}
@@ -120,11 +117,10 @@ const Services = () => {
                         alt="Logo"
                       />
                     </Card.Title>
-                    <Card.Text>
+                    <Card.Text className="body">
                       <p
                         style={{
                           fontWeight: "bold",
-                          color: "#030E82",
                           fontStyle: "italic",
                           fontSize: "1.2rem",
                         }}
@@ -148,11 +144,10 @@ const Services = () => {
                         alt="Logo"
                       />
                     </Card.Title>
-                    <Card.Text>
+                    <Card.Text className="body">
                       <p
                         style={{
                           fontWeight: "bold",
-                          color: "#030E82",
                           fontStyle: "italic",
                           fontSize: "1.2rem",
                         }}
@@ -171,11 +166,10 @@ const Services = () => {
                     <Card.Title>
                       <img src={Support} width={100} height={100} alt="Logo" />
                     </Card.Title>
-                    <Card.Text>
+                    <Card.Text className="body">
                       <p
                         style={{
                           fontWeight: "bold",
-                          color: "#030E82",
                           fontStyle: "italic",
                           fontSize: "1.2rem",
                         }}

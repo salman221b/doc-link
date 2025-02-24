@@ -12,6 +12,7 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import Select from "@mui/material/Select";
 import { Button, MenuItem } from "@mui/material";
 import logo from "../../static/DocLink_Logo_Bg.png";
+import CustomizedSwitches from "../../components/theme/Theme";
 
 function Login() {
   const navigate = useNavigate();
@@ -58,7 +59,16 @@ function Login() {
   return (
     <>
       {" "}
-      <img src={logo} width={100} height={100} alt="Logo" />
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <img src={logo} width={100} height={100} alt="Logo" />
+        <CustomizedSwitches />
+      </div>
       <h1 className="title1">Your Health,</h1>
       <h1 className="title2">Just a Click Away.</h1>
       <div
@@ -71,19 +81,22 @@ function Login() {
           gap: "20px",
         }}
       >
-        <div className="decider1" style={{ backgroundColor: "" }}>
+        <div className="decider1">
           <Button
-            className="button btn btn-primary"
+            className="button btn lr"
+            id="lr-button"
             variant="outlined"
             onClick={() => navigate("/register")}
           >
             Register
           </Button>
         </div>
-        {"|"}
+        <span className="text">|</span>
+
         <div className="decider2" style={{ backgroundColor: "" }}>
           <Button
-            className="button btn btn-primary"
+            className="button btn "
+            id="lr-button"
             variant="contained"
             disabled
           >
@@ -101,6 +114,7 @@ function Login() {
         >
           <Box sx={{ width: 500, maxWidth: "100%" }}>
             <TextField
+              style={{ backgroundColor: "white", borderRadius: "8px" }}
               fullWidth
               label="Email"
               id="fullWidth"
@@ -119,6 +133,7 @@ function Login() {
                   Password
                 </InputLabel>
                 <OutlinedInput
+                  style={{ backgroundColor: "white", borderRadius: "8px" }}
                   label="Password"
                   // id="fullWidth"
                   //   style={{ marginTop: "20px" }}
@@ -148,6 +163,7 @@ function Login() {
             <FormControl sx={{ minWidth: "100%", marginTop: "20px" }}>
               <InputLabel id="demo-simple-select-helper-label">Role</InputLabel>
               <Select
+                style={{ backgroundColor: "white", borderRadius: "8px" }}
                 labelId="demo-simple-select-helper-label"
                 id="demo-simple-select-helper"
                 value={role}
@@ -193,7 +209,7 @@ function Login() {
             >
               Login
             </button>
-            <label style={{ marginTop: "30px" }}>
+            <label style={{ marginTop: "30px" }} className="text">
               Don't have an account?{" "}
               <a style={{ cursor: "pointer", textDecoration: "underline" }}>
                 <Link to="/register">Signup here.</Link>

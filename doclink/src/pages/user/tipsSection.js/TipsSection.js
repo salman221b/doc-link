@@ -13,7 +13,7 @@ const TipsSection = () => {
     <div>
       <div className="marquee-container">
         <div className="marquee">
-          <ul className="marquee-content">
+          <ul className="marquee-content text">
             <li>🧘 Stay Active & Exercise Daily</li>
             <li>🥗 Eat a Balanced Diet</li>
             <li>💧 Stay Hydrated</li>
@@ -26,20 +26,20 @@ const TipsSection = () => {
       {/* --------------------------- */}
       <div class="card mb-3" style={{ maxWidth: "100%" }}>
         <div class="row g-0">
-          <div class="col-md-4">
+          <div class="col-md-4 ">
             <img src={diet} class="img-fluid rounded-start" alt="..." />
           </div>
-          <div class="col-md-8">
+          <div class="col-md-8 text">
             <div class="card-body">
-              <h5 class="card-title">Eat a Balanced Diet</h5>
-              <p class="card-text">
+              <h5 class="card-title ">Eat a Balanced Diet</h5>
+              <p class="card-text ">
                 Include a variety of foods in your diet, such as fruits,
                 vegetables, whole grains, dairy, and protein. Aim for at least
                 five portions of fruits and vegetables per day, which is about
                 400 grams.
               </p>
-              <p class="card-text">
-                <small class="text-body-secondary">Last updated Just now</small>
+              <p class="card-text ">
+                <small>Last updated Just now</small>
               </p>
             </div>
           </div>
@@ -48,10 +48,10 @@ const TipsSection = () => {
       {/* --------------------------- */}
       <div class="card mb-3" style={{ maxWidth: "100%" }}>
         <div class="row g-0">
-          <div class="col-md-4">
+          <div class="col-md-4 ">
             <img src={sugar_salt} class="img-fluid rounded-start" alt="..." />
           </div>
-          <div class="col-md-8">
+          <div class="col-md-8 text">
             <div class="card-body">
               <h5 class="card-title">Limit Sugar and Salt Intake</h5>
               <p class="card-text">
@@ -60,9 +60,7 @@ const TipsSection = () => {
                 intake to 5 grams per day, equivalent to about one teaspoon.
               </p>
               <p class="card-text">
-                <small class="text-body-secondary">
-                  Last updated 2 mins ago
-                </small>
+                <small>Last updated 2 mins ago</small>
               </p>
             </div>
           </div>
@@ -74,7 +72,7 @@ const TipsSection = () => {
           <div class="col-md-4">
             <img src={hydration} class="img-fluid rounded-start" alt="..." />
           </div>
-          <div class="col-md-8">
+          <div class="col-md-8 text">
             <div class="card-body">
               <h5 class="card-title">Stay Hydrated</h5>
               <p class="card-text">
@@ -83,9 +81,7 @@ const TipsSection = () => {
                 supports various bodily functions.
               </p>
               <p class="card-text">
-                <small class="text-body-secondary">
-                  Last updated 3 mins ago
-                </small>
+                <small>Last updated 3 mins ago</small>
               </p>
             </div>
           </div>
@@ -97,7 +93,7 @@ const TipsSection = () => {
           <div class="col-md-4">
             <img src={fitness} class="img-fluid rounded-start" alt="..." />
           </div>
-          <div class="col-md-8">
+          <div class="col-md-8 text">
             <div class="card-body">
               <h5 class="card-title">Regular Physical Activity</h5>
               <p class="card-text">
@@ -107,9 +103,7 @@ const TipsSection = () => {
                 cycling, or swimming.
               </p>
               <p class="card-text">
-                <small class="text-body-secondary">
-                  Last updated 5 mins ago
-                </small>
+                <small>Last updated 5 mins ago</small>
               </p>
             </div>
           </div>
@@ -121,7 +115,7 @@ const TipsSection = () => {
           <div class="col-md-4">
             <img src={smoking} class="img-fluid rounded-start" alt="..." />
           </div>
-          <div class="col-md-8">
+          <div class="col-md-8 text">
             <div class="card-body">
               <h5 class="card-title">Avoid Smoking and Limit Alcohol</h5>
               <p class="card-text">
@@ -130,9 +124,7 @@ const TipsSection = () => {
                 alcohol intake to moderate levels.
               </p>
               <p class="card-text">
-                <small class="text-body-secondary">
-                  Last updated 8 mins ago
-                </small>
+                <small>Last updated 8 mins ago</small>
               </p>
             </div>
           </div>
@@ -142,10 +134,10 @@ const TipsSection = () => {
       {/* -------------------------------------- */}
       <div class="card mb-3" style={{ maxWidth: "100%" }}>
         <div class="row g-0">
-          <div class="col-md-4">
+          <div class="col-md-4 ">
             <img src={sleep} class="img-fluid rounded-start" alt="..." />
           </div>
-          <div class="col-md-8">
+          <div class="col-md-8 text">
             <div class="card-body">
               <h5 class="card-title">Quality Sleep</h5>
               <p class="card-text">
@@ -158,9 +150,7 @@ const TipsSection = () => {
                 you consume before you go to bed.
               </p>
               <p class="card-text">
-                <small class="text-body-secondary">
-                  Last updated 11 mins ago
-                </small>
+                <small>Last updated 11 mins ago</small>
               </p>
             </div>
           </div>

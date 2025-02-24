@@ -12,6 +12,7 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import logo from "../../static/DocLink_Logo_Bg.png";
 
 import { useLocation, useNavigate } from "react-router-dom";
+import CustomizedSwitches from "../../components/theme/Theme";
 
 const ResetPassword = () => {
   const location = useLocation();
@@ -60,7 +61,16 @@ const ResetPassword = () => {
 
   return (
     <div>
-      <img src={logo} width={100} height={100} alt="Logo" />
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <img src={logo} width={100} height={100} alt="Logo" />
+        <CustomizedSwitches />
+      </div>{" "}
       <h1 className="title1">Your Health,</h1>
       <h1 className="title2">Just a Click Away.</h1>
       <div
@@ -81,6 +91,7 @@ const ResetPassword = () => {
                 Password
               </InputLabel>
               <OutlinedInput
+                style={{ backgroundColor: "white", borderRadius: "8px" }}
                 label="Password"
                 // id="fullWidth"
                 //   style={{ marginTop: "20px" }}
@@ -115,6 +126,7 @@ const ResetPassword = () => {
                 Confirm Password
               </InputLabel>
               <OutlinedInput
+                style={{ backgroundColor: "white", borderRadius: "8px" }}
                 label="Confirm Password"
                 // id="fullWidth"
                 //   style={{ marginTop: "20px" }}

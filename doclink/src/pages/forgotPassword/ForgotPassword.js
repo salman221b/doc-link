@@ -9,6 +9,7 @@ import {
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import logo from "../../static/DocLink_Logo_Bg.png";
+import CustomizedSwitches from "../../components/theme/Theme";
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
@@ -51,7 +52,16 @@ const ForgotPassword = () => {
   };
   return (
     <div>
-      <img src={logo} width={100} height={100} alt="Logo" />
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <img src={logo} width={100} height={100} alt="Logo" />
+        <CustomizedSwitches />
+      </div>
       <h1 className="title1">Forgot Password?</h1>
       <h1 className="title2">Let’s Fix That!</h1>
       <div
@@ -63,6 +73,7 @@ const ForgotPassword = () => {
       >
         <Box sx={{ width: 500, maxWidth: "100%" }}>
           <TextField
+            style={{ backgroundColor: "white", borderRadius: "8px" }}
             fullWidth
             label="Email Address"
             id="fullWidth"
@@ -74,6 +85,7 @@ const ForgotPassword = () => {
           <FormControl sx={{ minWidth: "100%", marginTop: "20px" }}>
             <InputLabel id="demo-simple-select-helper-label">Role</InputLabel>
             <Select
+              style={{ backgroundColor: "white", borderRadius: "8px" }}
               labelId="demo-simple-select-helper-label"
               id="demo-simple-select-helper"
               value={role}

@@ -16,6 +16,7 @@ import Switch from "@mui/material/Switch";
 import PasswordField from "../../components/passwordField";
 import logo from "../../static/DocLink_Logo_Bg.png";
 import LoadingScreen from "../../components/loadingScreen/LoadingScreen";
+import CustomizedSwitches from "../../components/theme/Theme";
 const Registration = () => {
   const [loading, setLoading] = useState(false);
 
@@ -330,7 +331,16 @@ const Registration = () => {
   };
   return (
     <>
-      <img src={logo} width={100} height={100} alt="Logo" />
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <img src={logo} width={100} height={100} alt="Logo" />
+        <CustomizedSwitches />
+      </div>
       <h1 className="title1">Join DocLink</h1>
       <h1 className="title2">and Stay Connected to Your Health.</h1>
 
@@ -346,7 +356,8 @@ const Registration = () => {
       >
         <div className="decider1" style={{ backgroundColor: "" }}>
           <Button
-            className="button btn btn-primary"
+            className="button btn "
+            id="lr-button"
             variant="contained"
             disabled
           >
@@ -356,7 +367,8 @@ const Registration = () => {
         {"|"}
         <div className="decider2" style={{ backgroundColor: "" }}>
           <Button
-            className="button btn btn-primary"
+            className="button btn "
+            id="lr-button"
             variant="outlined"
             onClick={() => navigate("/login")}
           >
@@ -381,6 +393,7 @@ const Registration = () => {
           >
             <TextField
               fullWidth
+              style={{ backgroundColor: "white", borderRadius: "8px" }}
               label="First Name"
               id="fullWidth"
               name="firstName"
@@ -391,9 +404,13 @@ const Registration = () => {
             )}
             <TextField
               fullWidth
+              style={{
+                backgroundColor: "white",
+                borderRadius: "8px",
+                marginTop: "20px",
+              }}
               label="Last Name"
               id="fullWidth"
-              style={{ marginTop: "20px" }}
               name="lastName"
               onChange={handleChange}
             />
@@ -402,18 +419,26 @@ const Registration = () => {
             )}
             <TextField
               fullWidth
+              style={{
+                backgroundColor: "white",
+                borderRadius: "8px",
+                marginTop: "20px",
+              }}
               label="Email Address"
               id="fullWidth"
-              style={{ marginTop: "20px" }}
               name="email"
               onChange={handleChange}
             />
             {errors.email && <p style={{ color: "red" }}>{errors.email}</p>}
             <TextField
               fullWidth
+              style={{
+                backgroundColor: "white",
+                borderRadius: "8px",
+                marginTop: "20px",
+              }}
               label="Phone Number"
               id="fullWidth"
-              style={{ marginTop: "20px" }}
               name="phone"
               onChange={handleChange}
               type="number"
@@ -421,9 +446,13 @@ const Registration = () => {
             {errors.phone && <p style={{ color: "red" }}>{errors.phone}</p>}
             <TextField
               fullWidth
+              style={{
+                backgroundColor: "white",
+                borderRadius: "8px",
+                marginTop: "20px",
+              }}
               label="Age"
               id="fullWidth"
-              style={{ marginTop: "20px" }}
               name="age"
               onChange={handleChange}
               type="number"
@@ -434,6 +463,7 @@ const Registration = () => {
                 State{" "}
               </InputLabel>
               <Select
+                style={{ backgroundColor: "white", borderRadius: "8px" }}
                 labelId="demo-simple-select-helper-label"
                 id="demo-simple-select-helper"
                 value={formData.state}
@@ -483,6 +513,7 @@ const Registration = () => {
                     District
                   </InputLabel>
                   <Select
+                    style={{ backgroundColor: "white", borderRadius: "8px" }}
                     labelId="demo-simple-select-helper-label"
                     id="demo-simple-select-helper"
                     value={formData.district}
@@ -519,6 +550,7 @@ const Registration = () => {
                     District
                   </InputLabel>
                   <Select
+                    style={{ backgroundColor: "white", borderRadius: "8px" }}
                     labelId="demo-simple-select-helper-label"
                     id="demo-simple-select-helper"
                     value={formData.district}
@@ -571,6 +603,7 @@ const Registration = () => {
                     District
                   </InputLabel>
                   <Select
+                    style={{ backgroundColor: "white", borderRadius: "8px" }}
                     labelId="demo-simple-select-helper-label"
                     id="demo-simple-select-helper"
                     value={formData.district}
@@ -630,6 +663,7 @@ const Registration = () => {
                     District
                   </InputLabel>
                   <Select
+                    style={{ backgroundColor: "white", borderRadius: "8px" }}
                     labelId="demo-simple-select-helper-label"
                     id="demo-simple-select-helper"
                     value={formData.district}
@@ -689,6 +723,7 @@ const Registration = () => {
                     District
                   </InputLabel>
                   <Select
+                    style={{ backgroundColor: "white", borderRadius: "8px" }}
                     labelId="demo-simple-select-helper-label"
                     id="demo-simple-select-helper"
                     value={formData.district}
@@ -740,6 +775,7 @@ const Registration = () => {
                     District
                   </InputLabel>
                   <Select
+                    style={{ backgroundColor: "white", borderRadius: "8px" }}
                     labelId="demo-simple-select-helper-label"
                     id="demo-simple-select-helper"
                     value={formData.district}
@@ -763,6 +799,7 @@ const Registration = () => {
                     District
                   </InputLabel>
                   <Select
+                    style={{ backgroundColor: "white", borderRadius: "8px" }}
                     labelId="demo-simple-select-helper-label"
                     id="demo-simple-select-helper"
                     value={formData.district}
@@ -819,6 +856,7 @@ const Registration = () => {
                     District
                   </InputLabel>
                   <Select
+                    style={{ backgroundColor: "white", borderRadius: "8px" }}
                     labelId="demo-simple-select-helper-label"
                     id="demo-simple-select-helper"
                     value={formData.district}
@@ -862,6 +900,7 @@ const Registration = () => {
                     District
                   </InputLabel>
                   <Select
+                    style={{ backgroundColor: "white", borderRadius: "8px" }}
                     labelId="demo-simple-select-helper-label"
                     id="demo-simple-select-helper"
                     value={formData.district}
@@ -898,6 +937,7 @@ const Registration = () => {
                     District
                   </InputLabel>
                   <Select
+                    style={{ backgroundColor: "white", borderRadius: "8px" }}
                     labelId="demo-simple-select-helper-label"
                     id="demo-simple-select-helper"
                     value={formData.district}
@@ -946,6 +986,7 @@ const Registration = () => {
                     District
                   </InputLabel>
                   <Select
+                    style={{ backgroundColor: "white", borderRadius: "8px" }}
                     labelId="demo-simple-select-helper-label"
                     id="demo-simple-select-helper"
                     value={formData.district}
@@ -1005,6 +1046,7 @@ const Registration = () => {
                     District
                   </InputLabel>
                   <Select
+                    style={{ backgroundColor: "white", borderRadius: "8px" }}
                     labelId="demo-simple-select-helper-label"
                     id="demo-simple-select-helper"
                     value={formData.district}
@@ -1075,6 +1117,7 @@ const Registration = () => {
                     District
                   </InputLabel>
                   <Select
+                    style={{ backgroundColor: "white", borderRadius: "8px" }}
                     labelId="demo-simple-select-helper-label"
                     id="demo-simple-select-helper"
                     value={formData.district}
@@ -1134,6 +1177,7 @@ const Registration = () => {
                     District
                   </InputLabel>
                   <Select
+                    style={{ backgroundColor: "white", borderRadius: "8px" }}
                     labelId="demo-simple-select-helper-label"
                     id="demo-simple-select-helper"
                     value={formData.district}
@@ -1171,6 +1215,7 @@ const Registration = () => {
                     District
                   </InputLabel>
                   <Select
+                    style={{ backgroundColor: "white", borderRadius: "8px" }}
                     labelId="demo-simple-select-helper-label"
                     id="demo-simple-select-helper"
                     value={formData.district}
@@ -1223,6 +1268,7 @@ const Registration = () => {
                     District
                   </InputLabel>
                   <Select
+                    style={{ backgroundColor: "white", borderRadius: "8px" }}
                     labelId="demo-simple-select-helper-label"
                     id="demo-simple-select-helper"
                     value={formData.district}
@@ -1255,6 +1301,7 @@ const Registration = () => {
                     District
                   </InputLabel>
                   <Select
+                    style={{ backgroundColor: "white", borderRadius: "8px" }}
                     labelId="demo-simple-select-helper-label"
                     id="demo-simple-select-helper"
                     value={formData.district}
@@ -1287,6 +1334,7 @@ const Registration = () => {
                     District
                   </InputLabel>
                   <Select
+                    style={{ backgroundColor: "white", borderRadius: "8px" }}
                     labelId="demo-simple-select-helper-label"
                     id="demo-simple-select-helper"
                     value={formData.district}
@@ -1338,6 +1386,7 @@ const Registration = () => {
                     District
                   </InputLabel>
                   <Select
+                    style={{ backgroundColor: "white", borderRadius: "8px" }}
                     labelId="demo-simple-select-helper-label"
                     id="demo-simple-select-helper"
                     value={formData.district}
@@ -1384,6 +1433,7 @@ const Registration = () => {
                     District
                   </InputLabel>
                   <Select
+                    style={{ backgroundColor: "white", borderRadius: "8px" }}
                     labelId="demo-simple-select-helper-label"
                     id="demo-simple-select-helper"
                     value={formData.district}
@@ -1437,6 +1487,7 @@ const Registration = () => {
                     District
                   </InputLabel>
                   <Select
+                    style={{ backgroundColor: "white", borderRadius: "8px" }}
                     labelId="demo-simple-select-helper-label"
                     id="demo-simple-select-helper"
                     value={formData.district}
@@ -1462,6 +1513,7 @@ const Registration = () => {
                     District
                   </InputLabel>
                   <Select
+                    style={{ backgroundColor: "white", borderRadius: "8px" }}
                     labelId="demo-simple-select-helper-label"
                     id="demo-simple-select-helper"
                     value={formData.district}
@@ -1528,6 +1580,7 @@ const Registration = () => {
                     District
                   </InputLabel>
                   <Select
+                    style={{ backgroundColor: "white", borderRadius: "8px" }}
                     labelId="demo-simple-select-helper-label"
                     id="demo-simple-select-helper"
                     value={formData.district}
@@ -1557,6 +1610,7 @@ const Registration = () => {
                     District
                   </InputLabel>
                   <Select
+                    style={{ backgroundColor: "white", borderRadius: "8px" }}
                     labelId="demo-simple-select-helper-label"
                     id="demo-simple-select-helper"
                     value={formData.district}
@@ -1662,6 +1716,7 @@ const Registration = () => {
                     District
                   </InputLabel>
                   <Select
+                    style={{ backgroundColor: "white", borderRadius: "8px" }}
                     labelId="demo-simple-select-helper-label"
                     id="demo-simple-select-helper"
                     value={formData.district}
@@ -1698,6 +1753,7 @@ const Registration = () => {
                     District
                   </InputLabel>
                   <Select
+                    style={{ backgroundColor: "white", borderRadius: "8px" }}
                     labelId="demo-simple-select-helper-label"
                     id="demo-simple-select-helper"
                     value={formData.district}
@@ -1803,6 +1859,7 @@ const Registration = () => {
                     District
                   </InputLabel>
                   <Select
+                    style={{ backgroundColor: "white", borderRadius: "8px" }}
                     labelId="demo-simple-select-helper-label"
                     id="demo-simple-select-helper"
                     value={formData.district}
@@ -1839,6 +1896,7 @@ const Registration = () => {
                     District
                   </InputLabel>
                   <Select
+                    style={{ backgroundColor: "white", borderRadius: "8px" }}
                     labelId="demo-simple-select-helper-label"
                     id="demo-simple-select-helper"
                     value={formData.district}
@@ -1897,6 +1955,7 @@ const Registration = () => {
                     District{" "}
                   </InputLabel>
                   <Select
+                    style={{ backgroundColor: "white", borderRadius: "8px" }}
                     labelId="demo-simple-select-helper-label"
                     id="demo-simple-select-helper"
                     value={formData.district}
@@ -1934,6 +1993,7 @@ const Registration = () => {
                     District{" "}
                   </InputLabel>
                   <Select
+                    style={{ backgroundColor: "white", borderRadius: "8px" }}
                     labelId="demo-simple-select-helper-label"
                     id="demo-simple-select-helper"
                     value={formData.district}
@@ -1987,6 +2047,7 @@ const Registration = () => {
               </>
             )}
             <PasswordField
+              style={{ backgroundColor: "white", borderRadius: "8px" }}
               passwordError={errors.password}
               confirmPasswordError={errors.confirmPassword}
               onPasswordChange={handleChange}
@@ -1997,6 +2058,7 @@ const Registration = () => {
                 Select Role
               </InputLabel>
               <Select
+                style={{ backgroundColor: "white", borderRadius: "8px" }}
                 labelId="demo-simple-select-helper-label"
                 id="demo-simple-select-helper"
                 value={formData.role}
@@ -2016,12 +2078,16 @@ const Registration = () => {
             {formData.role === "doctor" && (
               <>
                 <hr />
-                <h2>Professional Information</h2>
+                <h2 className="text">Professional Information</h2>
                 <TextField
+                  style={{
+                    backgroundColor: "white",
+                    borderRadius: "8px",
+                    marginTop: "20px",
+                  }}
                   fullWidth
                   label="Medical License Number "
                   id="fullWidth"
-                  style={{ marginTop: "20px" }}
                   name="medicalLicenseNumber"
                   onChange={handleChange}
                 />
@@ -2030,6 +2096,7 @@ const Registration = () => {
                     Specialization
                   </InputLabel>
                   <Select
+                    style={{ backgroundColor: "white", borderRadius: "8px" }}
                     labelId="demo-simple-select-helper-label"
                     id="demo-simple-select-helper"
                     value={formData.specialization}
@@ -2113,6 +2180,7 @@ const Registration = () => {
                     Qualification
                   </InputLabel>
                   <Select
+                    style={{ backgroundColor: "white", borderRadius: "8px" }}
                     labelId="demo-simple-select-helper-label"
                     id="demo-simple-select-helper"
                     value={formData.qualification}
@@ -2224,18 +2292,26 @@ const Registration = () => {
                   </FormHelperText>
                 </FormControl>
                 <TextField
+                  style={{
+                    backgroundColor: "white",
+                    borderRadius: "8px",
+                    marginTop: "20px",
+                  }}
                   fullWidth
                   label="Years of Experience"
                   id="fullWidth"
-                  style={{ marginTop: "20px" }}
                   name="yearOfExperience"
                   onChange={handleChange}
                 />
                 <TextField
+                  style={{
+                    backgroundColor: "white",
+                    borderRadius: "8px",
+                    marginTop: "20px",
+                  }}
                   fullWidth
                   label="Hospital/Clinic Affiliation"
                   id="fullWidth"
-                  style={{ marginTop: "20px" }}
                   name="hospitalName"
                   onChange={handleChange}
                 />
@@ -2244,6 +2320,7 @@ const Registration = () => {
                     Registration Authority
                   </InputLabel>
                   <Select
+                    style={{ backgroundColor: "white", borderRadius: "8px" }}
                     labelId="demo-simple-select-helper-label"
                     id="demo-simple-select-helper"
                     value={formData.registrationAuthority}
@@ -2279,80 +2356,124 @@ const Registration = () => {
                   {/* <FormHelperText>With label + helper text</FormHelperText> */}
                 </FormControl>
                 <TextField
+                  style={{
+                    backgroundColor: "white",
+                    borderRadius: "8px",
+                    marginTop: "20px",
+                  }}
                   fullWidth
                   label="Registration Number"
                   id="fullWidth"
-                  style={{ marginTop: "20px" }}
                   name="registrationNumber"
                   onChange={handleChange}
                 />
                 {/* Practice Information */}
                 <hr />
-                <h2>Practice Information</h2>
-                <h3 style={{ marginLeft: "10px" }}>Consultation Fees</h3>
+                <h2 className="text">Practice Information</h2>
+                <h3 style={{ marginLeft: "10px" }} className="text">
+                  Consultation Fees
+                </h3>
                 <FormHelperText>
-                  <InfoOutlinedIcon style={{ color: "#005599" }} />
-                  Consultation Fees for 15 minutes
+                  <InfoOutlinedIcon
+                    style={{ color: "#005599" }}
+                    className="text"
+                  />
+                  <span className="text">Consultation Fees for 15 minutes</span>
                 </FormHelperText>
                 <TextField
+                  style={{
+                    backgroundColor: "white",
+                    borderRadius: "8px",
+                    marginTop: "20px",
+                  }}
                   fullWidth
                   label="Enter consultation charges for in-person"
                   id="fullWidth"
-                  style={{ marginTop: "20px" }}
                   name="consultationFee.inPerson"
                   onChange={handleChange}
                 />
                 <TextField
+                  style={{
+                    backgroundColor: "white",
+                    borderRadius: "8px",
+                    marginTop: "20px",
+                  }}
                   fullWidth
                   label="Enter consultation charges for video"
                   id="fullWidth"
-                  style={{ marginTop: "20px" }}
                   name="consultationFee.video"
                   onChange={handleChange}
                 />
                 <TextField
+                  style={{
+                    backgroundColor: "white",
+                    borderRadius: "8px",
+                    marginTop: "20px",
+                  }}
                   fullWidth
                   label="Enter consultation charges for teleconsultation"
                   id="fullWidth"
-                  style={{ marginTop: "20px" }}
                   name="consultationFee.teleconsultation"
                   onChange={handleChange}
                 />
-                <h3 style={{ marginLeft: "10px" }}>
+                <h3 style={{ marginLeft: "10px" }} className="text">
                   Available Consultation Types
                 </h3>
-                <Checkbox
-                  type="checkbox"
-                  color="success"
-                  onChange={handleChange}
-                  name="availableConsultations.inPerson"
-                  checked={formData.availableConsultations.inPerson}
-                />
-                <label>In-Person Consultation</label>
-                <br />
-                <Checkbox
-                  type="checkbox"
-                  color="success"
-                  onChange={handleChange}
-                  name="availableConsultations.video"
-                  checked={formData.availableConsultations.video}
-                />
-                <label>Video Consultation</label>
-                <br />
-                <Checkbox
-                  type="checkbox"
-                  color="success"
-                  onChange={handleChange}
-                  name="availableConsultations.teleconsultation"
-                  checked={formData.availableConsultations.teleconsultation}
-                />
-                <label>Teleconsultation</label>
-                <h3 style={{ marginLeft: "10px" }}>Availability Schedule</h3>
+                <div
+                  style={{
+                    backgroundColor: "white",
+                    borderRadius: "8px",
+                    marginTop: "20px",
+                  }}
+                >
+                  <Checkbox
+                    style={{ backgroundColor: "white", borderRadius: "8px" }}
+                    type="checkbox"
+                    color="success"
+                    onChange={handleChange}
+                    name="availableConsultations.inPerson"
+                    checked={formData.availableConsultations.inPerson}
+                  />
+                  <label>In-Person Consultation</label>
+                  <br />
+                  <Checkbox
+                    style={{ backgroundColor: "white", borderRadius: "8px" }}
+                    type="checkbox"
+                    color="success"
+                    onChange={handleChange}
+                    name="availableConsultations.video"
+                    checked={formData.availableConsultations.video}
+                  />
+                  <label>Video Consultation</label>
+                  <br />
+                  <Checkbox
+                    style={{ backgroundColor: "white", borderRadius: "8px" }}
+                    type="checkbox"
+                    color="success"
+                    onChange={handleChange}
+                    name="availableConsultations.teleconsultation"
+                    checked={formData.availableConsultations.teleconsultation}
+                  />
+
+                  <label>Teleconsultation</label>
+                </div>
+                <h3 style={{ marginLeft: "10px" }} className="text">
+                  Availability Schedule
+                </h3>
                 <FormHelperText>
                   <InfoOutlinedIcon style={{ color: "#005599" }} />
-                  12:00 PM to 02:00 PM will be break.
+                  <span className="text">
+                    12:00 PM to 02:00 PM will be break.
+                  </span>
                 </FormHelperText>
-                <table border="1" style={{ marginTop: "20px" }}>
+                <table
+                  style={{
+                    backgroundColor: "white",
+                    borderRadius: "8px",
+                    marginTop: "20px",
+                  }}
+                  border="1"
+                >
                   <tr>
                     <th>Day</th>
                     <th>Available</th>
@@ -2540,27 +2661,39 @@ const Registration = () => {
                     </td>
                   </tr>
                 </table>
-                <h3 style={{ marginLeft: "10px", marginTop: "20px" }}>
+                <h3
+                  style={{ marginLeft: "10px", marginTop: "20px" }}
+                  className="text"
+                >
                   Clinic Address (Optional)
                 </h3>
                 <FormHelperText>
                   <InfoOutlinedIcon style={{ color: "#005599" }} />
-                  For doctors offering in-person consultations.
+                  <spna className="text">
+                    {" "}
+                    For doctors offering in-person consultations.
+                  </spna>
                 </FormHelperText>
                 <TextField
+                  style={{
+                    backgroundColor: "white",
+                    borderRadius: "8px",
+                    marginTop: "20px",
+                  }}
                   id="outlined-textarea"
                   label="Clinic Address"
                   placeholder="Enter address here."
                   fullWidth
                   multiline
-                  style={{ marginTop: "20px" }}
                   name="clinicAddress"
                   onChange={handleChange}
                 />
                 {/* Supporting Documents */}
                 <hr />
-                <h2>Supporting Documents</h2>
-                <table>
+                <h2 className="text">Supporting Documents</h2>
+                <table
+                  style={{ backgroundColor: "white", borderRadius: "8px" }}
+                >
                   <tr>
                     <td>
                       <label style={{ marginTop: "10px" }}>
@@ -2609,17 +2742,18 @@ const Registration = () => {
                 </table>
                 <FormHelperText>
                   <InfoOutlinedIcon style={{ color: "#005599" }} />
-                  e.g., passport, national ID
+                  <span className="text">e.g., passport, national ID</span>
                 </FormHelperText>
                 {/* Additional Details */}
                 <hr />
-                <h2>Additional Details</h2>
-                <h3>Languages Spoken</h3>
+                <h2 className="text">Additional Details</h2>
+                <h3 className="text">Languages Spoken</h3>
                 <FormControl sx={{ minWidth: "100%", marginTop: "20px" }}>
                   <InputLabel id="demo-simple-select-helper-label">
                     Languages
                   </InputLabel>
                   <Select
+                    style={{ backgroundColor: "white", borderRadius: "8px" }}
                     labelId="demo-simple-select-helper-label"
                     id="demo-simple-select-helper"
                     value={formData.language}
@@ -2669,6 +2803,7 @@ const Registration = () => {
                           margin: "5px",
                           display: "inline-block",
                         }}
+                        className="text"
                       >
                         {item}
                         <span
@@ -2685,44 +2820,67 @@ const Registration = () => {
                     ))}
                   </FormHelperText>
                 </FormControl>
-                <h3>Short Bio/Description</h3>
+                <h3 className="text">Short Bio/Description</h3>
                 <TextField
+                  style={{
+                    backgroundColor: "white",
+                    borderRadius: "8px",
+                    marginTop: "20px",
+                  }}
                   id="outlined-textarea"
                   label="Description"
                   placeholder="Brief introduction or professional summary."
                   fullWidth
                   multiline
-                  style={{ marginTop: "20px" }}
                   name="shortBio"
                   onChange={handleChange}
                 />
-                <h3 style={{ marginTop: "20px" }}>Profile Links (Optional)</h3>
+                <h3 style={{ marginTop: "20px" }} className="text">
+                  Profile Links (Optional)
+                </h3>
                 <FormHelperText>
                   <InfoOutlinedIcon style={{ color: "#005599" }} />
-                  LinkedIn or personal website links (if available).
+                  <span className="text">
+                    LinkedIn or personal website links (if available).
+                  </span>
                 </FormHelperText>
                 <TextField
+                  style={{
+                    backgroundColor: "white",
+                    borderRadius: "8px",
+                    marginTop: "20px",
+                  }}
                   fullWidth
                   label="LinkedIn address"
                   id="fullWidth"
-                  style={{ marginTop: "20px" }}
                   name="profileLinks.linkedin"
                   onChange={handleChange}
                 />
                 <TextField
+                  style={{
+                    backgroundColor: "white",
+                    borderRadius: "8px",
+                    marginTop: "20px",
+                  }}
                   fullWidth
                   label="Website address"
                   id="fullWidth"
-                  style={{ marginTop: "20px" }}
                   name="profileLinks.website"
                   onChange={handleChange}
                 />
               </>
             )}
-            <table style={{ marginTop: "30px" }}>
+            <table
+              style={{
+                backgroundColor: "white",
+                borderRadius: "8px",
+                marginTop: "20px",
+              }}
+            >
               <tr>
                 <td>
                   <Checkbox
+                    style={{ backgroundColor: "white", borderRadius: "8px" }}
                     name="agreed"
                     checked={formData.agreed}
                     onChange={(e) =>
@@ -2768,6 +2926,7 @@ const Registration = () => {
                   marginTop: "20px",
                   marginBottom: "100px",
                 }}
+                className="text"
               >
                 Already have an account?
                 <a style={{ cursor: "pointer", textDecoration: "underline" }}>

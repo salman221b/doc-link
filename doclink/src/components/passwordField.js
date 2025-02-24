@@ -44,6 +44,7 @@ export default function PasswordField({
             Password
           </InputLabel>
           <OutlinedInput
+            style={{ backgroundColor: "white", borderRadius: "8px" }}
             label="Password"
             // id="fullWidth"
             //   style={{ marginTop: "20px" }}
@@ -78,6 +79,7 @@ export default function PasswordField({
             Confirm Password
           </InputLabel>
           <OutlinedInput
+            style={{ backgroundColor: "white", borderRadius: "8px" }}
             label="Confirm Password"
             // id="fullWidth"
             //   style={{ marginTop: "20px" }}
