@@ -2157,6 +2157,7 @@ const Registration = () => {
                           margin: "5px",
                           display: "inline-block",
                         }}
+                        className="text"
                       >
                         {item}
                         <span
@@ -2273,6 +2274,7 @@ const Registration = () => {
                           margin: "5px",
                           display: "inline-block",
                         }}
+                        className="text"
                       >
                         {item}
                         <span
