@@ -20,7 +20,7 @@ const UpcomingAppointment = () => {
       <h1 className="title2">Just a Click Away.</h1>
       <form>
         <div
-          className="searchArea"
+          className="searchArea "
           style={{
             display: "flex",
             justifyContent: "center",
@@ -30,6 +30,10 @@ const UpcomingAppointment = () => {
           <FormControl sx={{ width: "200px", marginTop: "-20px" }}>
             <InputLabel id="demo-simple-select-helper-label">Mode</InputLabel>
             <Select
+              style={{
+                backgroundColor: "white",
+                borderRadius: "10px",
+              }}
               labelId="demo-simple-select-helper-label"
               id="demo-simple-select-helper"
               // value={formData.specialization}
@@ -48,21 +52,31 @@ const UpcomingAppointment = () => {
             {/* <FormHelperText>With label + helper text</FormHelperText> */}
           </FormControl>
           <TextField
+            style={{
+              backgroundColor: "white",
+              borderRadius: "10px",
+              marginLeft: "20px",
+              marginBottom: "20px",
+            }}
             id="outlined-basic"
             label="Start date"
             variant="outlined"
             type="date"
-            style={{ marginLeft: "20px", marginBottom: "20px" }}
             InputLabelProps={{
               shrink: true, // This removes the default dd-mm-yyyy placeholder
             }}
           />
           <TextField
+            style={{
+              backgroundColor: "white",
+              borderRadius: "10px",
+              marginLeft: "20px",
+              marginBottom: "20px",
+            }}
             id="outlined-basic"
             label="End date"
             variant="outlined"
             type="date"
-            style={{ marginLeft: "20px", marginBottom: "20px" }}
             InputLabelProps={{
               shrink: true, // This removes the default dd-mm-yyyy placeholder
             }}
@@ -91,27 +105,30 @@ const UpcomingAppointment = () => {
           <Col md={6} xs={12} className="mb-3">
             <Card>
               <Card.Body>
-                <Card.Title>
-                  <PersonIcon />{" "}
-                  <span style={{ marginLeft: "20px" }}>Name</span>
-                  <span
-                    style={{
-                      float: "right",
-                      fontSize: "15px",
-                      marginRight: "30px",
-                    }}
-                  >
-                    Specialization
-                  </span>
-                </Card.Title>
-                <Card.Text>
-                  Appointment date & time{" "}
-                  <span style={{ float: "right", marginRight: "30px" }}>
-                    Status
-                  </span>
-                  <p>Mode (Video Call / In-Person)</p>
-                  <p>Prescription / Notes</p>
-                </Card.Text>
+                <div className="text">
+                  <Card.Title>
+                    <PersonIcon />{" "}
+                    <span style={{ marginLeft: "20px" }}>Name</span>
+                    <span
+                      style={{
+                        float: "right",
+                        fontSize: "15px",
+                        marginRight: "30px",
+                      }}
+                    >
+                      Specialization
+                    </span>
+                  </Card.Title>
+                  <Card.Text>
+                    Appointment date & time{" "}
+                    <span style={{ float: "right", marginRight: "30px" }}>
+                      Status
+                    </span>
+                    <p>Mode (Video Call / In-Person)</p>
+                    <p>Prescription / Notes</p>
+                  </Card.Text>
+                </div>
+
                 <Button
                   style={{
                     width: "100%",
@@ -151,27 +168,30 @@ const UpcomingAppointment = () => {
           <Col md={6} xs={12} className="mb-3">
             <Card>
               <Card.Body>
-                <Card.Title>
-                  <PersonIcon />{" "}
-                  <span style={{ marginLeft: "20px" }}>Name</span>
-                  <span
-                    style={{
-                      float: "right",
-                      fontSize: "15px",
-                      marginRight: "30px",
-                    }}
-                  >
-                    Specialization
-                  </span>
-                </Card.Title>
-                <Card.Text>
-                  Appointment date & time{" "}
-                  <span style={{ float: "right", marginRight: "30px" }}>
-                    Status
-                  </span>
-                  <p>Mode (Video Call / In-Person)</p>
-                  <p>Prescription / Notes</p>
-                </Card.Text>
+                <div className="text">
+                  <Card.Title>
+                    <PersonIcon />{" "}
+                    <span style={{ marginLeft: "20px" }}>Name</span>
+                    <span
+                      style={{
+                        float: "right",
+                        fontSize: "15px",
+                        marginRight: "30px",
+                      }}
+                    >
+                      Specialization
+                    </span>
+                  </Card.Title>
+                  <Card.Text>
+                    Appointment date & time{" "}
+                    <span style={{ float: "right", marginRight: "30px" }}>
+                      Status
+                    </span>
+                    <p>Mode (Video Call / In-Person)</p>
+                    <p>Prescription / Notes</p>
+                  </Card.Text>
+                </div>
+
                 <Button
                   style={{
                     width: "100%",
@@ -211,27 +231,30 @@ const UpcomingAppointment = () => {
           <Col md={6} xs={12} className="mb-3">
             <Card>
               <Card.Body>
-                <Card.Title>
-                  <PersonIcon />{" "}
-                  <span style={{ marginLeft: "20px" }}>Name</span>
-                  <span
-                    style={{
-                      float: "right",
-                      fontSize: "15px",
-                      marginRight: "30px",
-                    }}
-                  >
-                    Specialization
-                  </span>
-                </Card.Title>
-                <Card.Text>
-                  Appointment date & time{" "}
-                  <span style={{ float: "right", marginRight: "30px" }}>
-                    Status
-                  </span>
-                  <p>Mode (Video Call / In-Person)</p>
-                  <p>Prescription / Notes</p>
-                </Card.Text>
+                <div className="text">
+                  <Card.Title>
+                    <PersonIcon />{" "}
+                    <span style={{ marginLeft: "20px" }}>Name</span>
+                    <span
+                      style={{
+                        float: "right",
+                        fontSize: "15px",
+                        marginRight: "30px",
+                      }}
+                    >
+                      Specialization
+                    </span>
+                  </Card.Title>
+                  <Card.Text>
+                    Appointment date & time{" "}
+                    <span style={{ float: "right", marginRight: "30px" }}>
+                      Status
+                    </span>
+                    <p>Mode (Video Call / In-Person)</p>
+                    <p>Prescription / Notes</p>
+                  </Card.Text>
+                </div>
+
                 <Button
                   style={{
                     width: "100%",
@@ -271,27 +294,30 @@ const UpcomingAppointment = () => {
           <Col md={6} xs={12} className="mb-3">
             <Card>
               <Card.Body>
-                <Card.Title>
-                  <PersonIcon />{" "}
-                  <span style={{ marginLeft: "20px" }}>Name</span>
-                  <span
-                    style={{
-                      float: "right",
-                      fontSize: "15px",
-                      marginRight: "30px",
-                    }}
-                  >
-                    Specialization
-                  </span>
-                </Card.Title>
-                <Card.Text>
-                  Appointment date & time{" "}
-                  <span style={{ float: "right", marginRight: "30px" }}>
-                    Status
-                  </span>
-                  <p>Mode (Video Call / In-Person)</p>
-                  <p>Prescription / Notes</p>
-                </Card.Text>
+                <div className="text">
+                  <Card.Title>
+                    <PersonIcon />{" "}
+                    <span style={{ marginLeft: "20px" }}>Name</span>
+                    <span
+                      style={{
+                        float: "right",
+                        fontSize: "15px",
+                        marginRight: "30px",
+                      }}
+                    >
+                      Specialization
+                    </span>
+                  </Card.Title>
+                  <Card.Text>
+                    Appointment date & time{" "}
+                    <span style={{ float: "right", marginRight: "30px" }}>
+                      Status
+                    </span>
+                    <p>Mode (Video Call / In-Person)</p>
+                    <p>Prescription / Notes</p>
+                  </Card.Text>
+                </div>
+
                 <Button
                   style={{
                     width: "100%",
@@ -331,27 +357,30 @@ const UpcomingAppointment = () => {
           <Col md={6} xs={12} className="mb-3">
             <Card>
               <Card.Body>
-                <Card.Title>
-                  <PersonIcon />{" "}
-                  <span style={{ marginLeft: "20px" }}>Name</span>
-                  <span
-                    style={{
-                      float: "right",
-                      fontSize: "15px",
-                      marginRight: "30px",
-                    }}
-                  >
-                    Specialization
-                  </span>
-                </Card.Title>
-                <Card.Text>
-                  Appointment date & time{" "}
-                  <span style={{ float: "right", marginRight: "30px" }}>
-                    Status
-                  </span>
-                  <p>Mode (Video Call / In-Person)</p>
-                  <p>Prescription / Notes</p>
-                </Card.Text>
+                <div className="text">
+                  <Card.Title>
+                    <PersonIcon />{" "}
+                    <span style={{ marginLeft: "20px" }}>Name</span>
+                    <span
+                      style={{
+                        float: "right",
+                        fontSize: "15px",
+                        marginRight: "30px",
+                      }}
+                    >
+                      Specialization
+                    </span>
+                  </Card.Title>
+                  <Card.Text>
+                    Appointment date & time{" "}
+                    <span style={{ float: "right", marginRight: "30px" }}>
+                      Status
+                    </span>
+                    <p>Mode (Video Call / In-Person)</p>
+                    <p>Prescription / Notes</p>
+                  </Card.Text>
+                </div>
+
                 <Button
                   style={{
                     width: "100%",

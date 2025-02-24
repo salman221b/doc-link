@@ -36,6 +36,7 @@ const Appointment = () => {
                 Specialization
               </InputLabel>
               <Select
+                style={{ backgroundColor: "white", borderRadius: "10px" }}
                 labelId="demo-simple-select-helper-label"
                 id="demo-simple-select-helper"
                 value={specialization}
@@ -84,116 +85,133 @@ const Appointment = () => {
               {/* <FormHelperText>With label + helper text</FormHelperText> */}
             </FormControl>
             <div
+              className="card"
               style={{
                 marginTop: "20px",
                 marginBottom: "20px",
-                border: "1px solid black",
+                border: "1px solid ",
                 borderRadius: "5px",
                 padding: "20px",
               }}
             >
               <PersonIcon />
-              <span style={{ marginLeft: "20px", fontSize: "1.5rem" }}>
-                Name{" "}
-              </span>
-              <span style={{ marginLeft: "50px" }}>Qualifications</span>
-              <p style={{ fontSize: "0.7rem", marginLeft: "50px" }}>
-                Years of Experience
-              </p>{" "}
-              <button
-                className="btn btn-primary"
-                style={{
-                  float: "right",
-                  backgroundColor: "#F49696",
-                  color: "#82EAAC",
-                }}
-              >
-                <ArrowForwardIcon />
-              </button>
-              <p style={{ fontSize: "1rem", marginLeft: "50px" }}>
-                Hospital/Clinic Affiliation
-              </p>
-              <p style={{ fontSize: "1rem", marginLeft: "50px" }}>
-                Availability:{" "}
-                <span style={{ fontSize: ".8rem", marginRight: "20px" }}>
-                  Monday, Tuesday, Wednesday, Thursday, Friday
+              <div className="text">
+                <span style={{ marginLeft: "20px", fontSize: "1.5rem" }}>
+                  Name{" "}
                 </span>
-              </p>
+                <span style={{ marginLeft: "50px" }}>Qualifications</span>
+                <p style={{ fontSize: "0.7rem", marginLeft: "50px" }}>
+                  Years of Experience
+                </p>{" "}
+                <button
+                  className="btn "
+                  style={{
+                    float: "right",
+                    backgroundColor: "#F49696",
+                    color: "#82EAAC",
+                  }}
+                >
+                  <ArrowForwardIcon />
+                </button>
+                <p style={{ fontSize: "1rem", marginLeft: "50px" }}>
+                  Hospital/Clinic Affiliation
+                </p>
+                <p style={{ fontSize: "1rem", marginLeft: "50px" }}>
+                  Availability:{" "}
+                  <span style={{ fontSize: ".8rem", marginRight: "20px" }}>
+                    Monday, Tuesday, Wednesday, Thursday, Friday
+                  </span>
+                </p>
+              </div>
               {/* ------------------------------------------------------------------------------------------ */}
-              <hr />
+              <hr className="text" />
               <PersonIcon />
-              <span style={{ marginLeft: "20px", fontSize: "1.5rem" }}>
-                Name{" "}
-              </span>
-              <span style={{ marginLeft: "50px" }}>Qualifications</span>
-              <p style={{ fontSize: "0.7rem", marginLeft: "50px" }}>
-                Years of Experience
-              </p>{" "}
-              <button
-                className="btn btn-primary"
-                style={{
-                  float: "right",
-                  backgroundColor: "#F49696",
-                  color: "#82EAAC",
-                }}
-              >
-                <ArrowForwardIcon />
-              </button>
-              <p style={{ fontSize: "1rem", marginLeft: "50px" }}>
-                Hospital/Clinic Affiliation
-              </p>
-              <p style={{ fontSize: "1rem", marginLeft: "50px" }}>
-                Availability:{" "}
-                <span style={{ fontSize: ".8rem", marginRight: "20px" }}>
-                  Monday, Tuesday, Wednesday, Thursday, Friday
+              <div className="text">
+                <span style={{ marginLeft: "20px", fontSize: "1.5rem" }}>
+                  Name{" "}
                 </span>
-              </p>
+                <span style={{ marginLeft: "50px" }}>Qualifications</span>
+                <p style={{ fontSize: "0.7rem", marginLeft: "50px" }}>
+                  Years of Experience
+                </p>{" "}
+                <button
+                  className="btn "
+                  style={{
+                    float: "right",
+                    backgroundColor: "#F49696",
+                    color: "#82EAAC",
+                  }}
+                >
+                  <ArrowForwardIcon />
+                </button>
+                <p style={{ fontSize: "1rem", marginLeft: "50px" }}>
+                  Hospital/Clinic Affiliation
+                </p>
+                <p style={{ fontSize: "1rem", marginLeft: "50px" }}>
+                  Availability:{" "}
+                  <span style={{ fontSize: ".8rem", marginRight: "20px" }}>
+                    Monday, Tuesday, Wednesday, Thursday, Friday
+                  </span>
+                </p>
+              </div>
               {/* ------------------------------------------------------------------------------------------ */}
-              <hr />
+              <hr className="text" />
               <PersonIcon />
-              <span style={{ marginLeft: "20px", fontSize: "1.5rem" }}>
-                Name{" "}
-              </span>
-              <span style={{ marginLeft: "50px" }}>Qualifications</span>
-              <p style={{ fontSize: "0.7rem", marginLeft: "50px" }}>
-                Years of Experience
-              </p>{" "}
-              <button
-                className="btn"
-                style={{
-                  float: "right",
-                  backgroundColor: "#F49696",
-                  color: "#82EAAC",
-                }}
-              >
-                <ArrowForwardIcon />
-              </button>
-              <p style={{ fontSize: "1rem", marginLeft: "50px" }}>
-                Hospital/Clinic Affiliation
-              </p>
-              <p style={{ fontSize: "1rem", marginLeft: "50px" }}>
-                Availability:{" "}
-                <span style={{ fontSize: ".8rem", marginRight: "20px" }}>
-                  Monday, Tuesday, Wednesday, Thursday, Friday
+              <div className="text">
+                <span style={{ marginLeft: "20px", fontSize: "1.5rem" }}>
+                  Name{" "}
                 </span>
-              </p>
+                <span style={{ marginLeft: "50px" }}>Qualifications</span>
+                <p style={{ fontSize: "0.7rem", marginLeft: "50px" }}>
+                  Years of Experience
+                </p>{" "}
+                <button
+                  className="btn "
+                  style={{
+                    float: "right",
+                    backgroundColor: "#F49696",
+                    color: "#82EAAC",
+                  }}
+                >
+                  <ArrowForwardIcon />
+                </button>
+                <p style={{ fontSize: "1rem", marginLeft: "50px" }}>
+                  Hospital/Clinic Affiliation
+                </p>
+                <p style={{ fontSize: "1rem", marginLeft: "50px" }}>
+                  Availability:{" "}
+                  <span style={{ fontSize: ".8rem", marginRight: "20px" }}>
+                    Monday, Tuesday, Wednesday, Thursday, Friday
+                  </span>
+                </p>
+              </div>
             </div>
             <TextField
+              style={{
+                backgroundColor: "white",
+                borderRadius: "10px",
+                marginBottom: "20px",
+                width: "100%",
+              }}
               id="outlined-basic"
               label="Date of Appointment"
               variant="outlined"
               type="date"
-              style={{ width: "100%", marginBottom: "20px" }}
               InputLabelProps={{
                 shrink: true, // This removes the default dd-mm-yyyy placeholder
               }}
             />
             <TextField
+              style={{
+                backgroundColor: "white",
+                borderRadius: "10px",
+                marginBottom: "20px",
+                width: "100%",
+              }}
               id="outlined-basic"
               label="Time of Appointment"
               variant="outlined"
               type="time"
-              style={{ width: "100%", marginBottom: "20px" }}
               InputLabelProps={{
                 shrink: true, // This removes the default dd-mm-yyyy placeholder
               }}
