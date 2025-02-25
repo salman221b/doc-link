@@ -13,7 +13,9 @@ const FilterPatients = () => {
       <div
         className="filter"
         style={{
-          border: "1px solid",
+          border: "1px solid #82EAAC",
+          borderRadius: "10px",
+
           paddingRight: "20px",
           paddingTop: "20px",
           marginBottom: "30px",
@@ -38,6 +40,7 @@ const FilterPatients = () => {
           >
             <InputLabel id="demo-simple-select-helper-label">Age</InputLabel>
             <Select
+              style={{ backgroundColor: "white", borderRadius: "10px" }}
               labelId="demo-simple-select-helper-label"
               id="demo-simple-select-helper"
               // value={formData.specialization}
@@ -67,6 +70,7 @@ const FilterPatients = () => {
           >
             <InputLabel id="demo-simple-select-helper-label">Gender</InputLabel>
             <Select
+              style={{ backgroundColor: "white", borderRadius: "10px" }}
               labelId="demo-simple-select-helper-label"
               id="demo-simple-select-helper"
               // value={formData.specialization}
@@ -96,21 +100,31 @@ const FilterPatients = () => {
           }}
         >
           <TextField
+            style={{
+              marginLeft: "20px",
+              marginBottom: "20px",
+              backgroundColor: "white",
+              borderRadius: "10px",
+            }}
             id="outlined-basic"
             label="Start date"
             variant="outlined"
             type="date"
-            style={{ marginLeft: "20px", marginBottom: "20px" }}
             InputLabelProps={{
               shrink: true, // This removes the default dd-mm-yyyy placeholder
             }}
           />
           <TextField
+            style={{
+              marginLeft: "20px",
+              marginBottom: "20px",
+              backgroundColor: "white",
+              borderRadius: "10px",
+            }}
             id="outlined-basic"
             label="End date"
             variant="outlined"
             type="date"
-            style={{ marginLeft: "20px", marginBottom: "20px" }}
             InputLabelProps={{
               shrink: true, // This removes the default dd-mm-yyyy placeholder
             }}

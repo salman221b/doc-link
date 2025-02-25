@@ -27,7 +27,7 @@ const PatientsList = () => {
       <NavBar />
       <h1 className="title1">Your Practice,</h1>
       <h1 className="title2"> Simplified.</h1>
-      <p style={{ color: "#030E82", fontSize: "1rem", fontStyle: "italic" }}>
+      <p className="text" style={{ fontSize: "1rem", fontStyle: "italic" }}>
         Manage your appointments, patients, and medical records with ease.
       </p>
 
@@ -46,6 +46,7 @@ const PatientsList = () => {
                 Search By
               </InputLabel>
               <Select
+                style={{ backgroundColor: "white", borderRadius: "10px" }}
                 labelId="demo-simple-select-helper-label"
                 id="demo-simple-select-helper"
                 // value={formData.specialization}
@@ -67,7 +68,7 @@ const PatientsList = () => {
                 // justifyContent: "center",
                 // alignItems: "center",
                 borderRadius: "10px",
-                border: "1px solid #030E82",
+                border: "1px solid #82EAAC",
                 padding: "5px",
                 width: "300px",
                 // margin: "0 auto",
@@ -76,6 +77,7 @@ const PatientsList = () => {
               }}
             >
               <input
+                className="text"
                 type="text"
                 placeholder="Enter ID "
                 style={{
@@ -83,7 +85,7 @@ const PatientsList = () => {
                   border: "none",
                   outline: "none",
                   padding: "5px",
-                  color: "#030E82",
+                  // color: "#030E82",
                   fontSize: "15px",
                   fontWeight: "bold",
                   //   marginRight: "10px",
@@ -103,9 +105,10 @@ const PatientsList = () => {
                   float: "right",
                   margin: "2px",
                   cursor: "pointer",
-                  backgroundColor: "rgba(0, 0, 0, 0.3)",
+                  // backgroundColor: "rgba(0, 0, 0, 0.3)",
                   borderRadius: "5px",
                 }}
+                className="input"
               />
             </div>
             <FormControl
@@ -115,6 +118,7 @@ const PatientsList = () => {
                 Sort By
               </InputLabel>
               <Select
+                style={{ backgroundColor: "white", borderRadius: "10px" }}
                 labelId="demo-simple-select-helper-label"
                 id="demo-simple-select-helper"
                 // value={formData.specialization}
@@ -131,7 +135,7 @@ const PatientsList = () => {
             </FormControl>
           </div>
         </form>
-        <hr />
+        <hr className="text" />
         <p
           style={{
             textDecoration: "underline",
@@ -160,13 +164,15 @@ const PatientsList = () => {
               <Card>
                 <Card.Body>
                   <Card.Title>
-                    <PersonIcon />{" "}
-                    <span style={{ marginLeft: "20px" }}>
+                    <PersonIcon className="text" />{" "}
+                    <span className="text" style={{ marginLeft: "20px" }}>
                       Patient Name (Age), Male
                     </span>
-                    <span style={{ float: "right" }}>ID: 123</span>
+                    <span className="text" style={{ float: "right" }}>
+                      ID: 123
+                    </span>
                   </Card.Title>
-                  <Card.Text>
+                  <Card.Text className="text">
                     Contact Information
                     <p>Last Visit</p>
                     <p>Medical Condition (if available)</p>
