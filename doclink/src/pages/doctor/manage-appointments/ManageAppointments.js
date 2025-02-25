@@ -30,7 +30,7 @@ const ManageAppointments = () => {
         <h1 className="title1">Your Practice,</h1>
 
         <h1 className="title2">Simplified.</h1>
-        <p style={{ color: "#030E82", fontSize: "1rem", fontStyle: "italic" }}>
+        <p className="text" style={{ fontSize: "1rem", fontStyle: "italic" }}>
           Manage your appointments, patients, and medical records with ease.
         </p>
       </div>
@@ -49,6 +49,7 @@ const ManageAppointments = () => {
                 Status
               </InputLabel>
               <Select
+                style={{ backgroundColor: "white", borderRadius: "10px" }}
                 labelId="demo-simple-select-helper-label"
                 id="demo-simple-select-helper"
                 // value={formData.specialization}
@@ -65,37 +66,46 @@ const ManageAppointments = () => {
               </Select>
             </FormControl>
             <TextField
+              style={{
+                backgroundColor: "white",
+                borderRadius: "10px",
+                marginLeft: "20px",
+                marginBottom: "20px",
+              }}
               id="outlined-basic"
               label="Start date"
               variant="outlined"
               type="date"
-              style={{ marginLeft: "20px", marginBottom: "20px" }}
               InputLabelProps={{
                 shrink: true, // This removes the default dd-mm-yyyy placeholder
               }}
             />
             <TextField
+              style={{
+                backgroundColor: "white",
+                borderRadius: "10px",
+                marginLeft: "20px",
+                marginBottom: "20px",
+              }}
               id="outlined-basic"
               label="End date"
               variant="outlined"
               type="date"
-              style={{ marginLeft: "20px", marginBottom: "20px" }}
               InputLabelProps={{
                 shrink: true, // This removes the default dd-mm-yyyy placeholder
               }}
             />
             <button
-              className="searchButton"
               type="submit"
               style={{
                 marginLeft: "20px",
                 marginBottom: "20px",
                 backgroundColor: "#82EAAC",
-                color: "#030E82",
                 height: "50px",
                 width: "100px",
                 borderRadius: "10px",
               }}
+              className="text"
             >
               Search
             </button>
@@ -108,13 +118,15 @@ const ManageAppointments = () => {
             // justifyContent: "center",
             // alignItems: "center",
             borderRadius: "10px",
-            border: "1px solid #030E82",
+            border: "1px solid ",
+
             padding: "5px",
             width: "300px",
             margin: "0 auto",
           }}
         >
           <input
+            className="text"
             type="text"
             placeholder="Enter Appointment ID"
             style={{
@@ -122,7 +134,7 @@ const ManageAppointments = () => {
               border: "none",
               outline: "none",
               padding: "5px",
-              color: "#030E82",
+              // color: "#030E82",
               fontSize: "15px",
               fontWeight: "bold",
               //   marginRight: "10px",
@@ -136,13 +148,14 @@ const ManageAppointments = () => {
             }}
           />
           <ArrowForwardIcon
+            className="input"
             style={{
               color: "#82EAAC",
               fontSize: "30px",
               float: "right",
               margin: "2px",
               cursor: "pointer",
-              backgroundColor: "rgba(0, 0, 0, 0.3)",
+              // backgroundColor: "rgba(0, 0, 0, 0.3)",
               borderRadius: "5px",
             }}
           />
@@ -153,6 +166,7 @@ const ManageAppointments = () => {
               <Card>
                 <Card.Body>
                   <div
+                    className="text"
                     style={{ cursor: "pointer" }}
                     onClick={() => setOpen(true)}
                   >
