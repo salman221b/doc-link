@@ -21,7 +21,7 @@ const MedicalRecords = () => {
       <NavBar />
       <h1 className="title1">Your Practice,</h1>
       <h1 className="title2"> Simplified.</h1>
-      <p style={{ color: "#030E82", fontSize: "1rem", fontStyle: "italic" }}>
+      <p className="text" style={{ fontSize: "1rem", fontStyle: "italic" }}>
         Manage your appointments, patients, and medical records with ease.
       </p>
 
@@ -40,6 +40,7 @@ const MedicalRecords = () => {
                 Search By
               </InputLabel>
               <Select
+                style={{ backgroundColor: "white", borderRadius: "10px" }}
                 labelId="demo-simple-select-helper-label"
                 id="demo-simple-select-helper"
                 // value={formData.specialization}
@@ -61,7 +62,7 @@ const MedicalRecords = () => {
                 // justifyContent: "center",
                 // alignItems: "center",
                 borderRadius: "10px",
-                border: "1px solid #030E82",
+                border: "1px solid #82EAAC",
                 padding: "5px",
                 width: "300px",
                 // margin: "0 auto",
@@ -70,6 +71,7 @@ const MedicalRecords = () => {
               }}
             >
               <input
+                className="text"
                 type="text"
                 placeholder="Enter ID "
                 style={{
@@ -77,7 +79,7 @@ const MedicalRecords = () => {
                   border: "none",
                   outline: "none",
                   padding: "5px",
-                  color: "#030E82",
+                  // color: "#030E82",
                   fontSize: "15px",
                   fontWeight: "bold",
                   //   marginRight: "10px",
@@ -91,13 +93,14 @@ const MedicalRecords = () => {
                 }}
               />
               <ArrowForwardIcon
+                className="input"
                 style={{
                   color: "#82EAAC",
                   fontSize: "30px",
                   float: "right",
                   margin: "2px",
                   cursor: "pointer",
-                  backgroundColor: "rgba(0, 0, 0, 0.3)",
+                  // backgroundColor: "rgba(0, 0, 0, 0.3)",
                   borderRadius: "5px",
                 }}
               />
@@ -109,6 +112,7 @@ const MedicalRecords = () => {
                 Sort By
               </InputLabel>
               <Select
+                style={{ backgroundColor: "white", borderRadius: "10px" }}
                 labelId="demo-simple-select-helper-label"
                 id="demo-simple-select-helper"
                 // value={formData.specialization}
@@ -126,7 +130,7 @@ const MedicalRecords = () => {
             </FormControl>
           </div>
         </form>
-        <hr />
+        <hr className="text" />
       </div>
       <Container className="mt-4">
         <Row>
@@ -134,13 +138,117 @@ const MedicalRecords = () => {
             <Card>
               <Card.Body>
                 <Card.Title>
-                  <PersonIcon />{" "}
-                  <span style={{ marginLeft: "20px" }}>
+                  <PersonIcon className="text" />{" "}
+                  <span style={{ marginLeft: "20px" }} className="text">
                     Patient Name (Age), Male
                   </span>
-                  <span style={{ float: "right" }}>ID: 123</span>
+                  <span style={{ float: "right" }} className="text">
+                    ID: 123
+                  </span>
                 </Card.Title>
-                <Card.Text>
+                <Card.Text className="text">
+                  Contact Information
+                  <p>Last Visit</p>
+                  <p>Medical Condition (if available)</p>
+                  <p>Appointment History (upcoming & past visits)</p>
+                </Card.Text>
+                <Button
+                  style={{
+                    width: "100%",
+                    color: "#030E82",
+                    backgroundColor: "#82EAAC",
+                    fontWeight: "bold",
+                  }}
+                  onClick={() => setOpen(true)}
+                >
+                  Medical Record Details
+                  <ArrowForwardIcon style={{ color: "#F49696" }} />
+                </Button>
+              </Card.Body>
+            </Card>
+          </Col>
+
+          <Col md={6} xs={12} className="mb-3">
+            <Card>
+              <Card.Body>
+                <Card.Title>
+                  <PersonIcon className="text" />{" "}
+                  <span style={{ marginLeft: "20px" }} className="text">
+                    Patient Name (Age), Male
+                  </span>
+                  <span style={{ float: "right" }} className="text">
+                    ID: 123
+                  </span>
+                </Card.Title>
+                <Card.Text className="text">
+                  Contact Information
+                  <p>Last Visit</p>
+                  <p>Medical Condition (if available)</p>
+                  <p>Appointment History (upcoming & past visits)</p>
+                </Card.Text>
+                <Button
+                  style={{
+                    width: "100%",
+                    color: "#030E82",
+                    backgroundColor: "#82EAAC",
+                    fontWeight: "bold",
+                  }}
+                  onClick={() => setOpen(true)}
+                >
+                  Medical Record Details
+                  <ArrowForwardIcon style={{ color: "#F49696" }} />
+                </Button>
+              </Card.Body>
+            </Card>
+          </Col>
+
+          <Col md={6} xs={12} className="mb-3">
+            <Card>
+              <Card.Body>
+                <Card.Title>
+                  <PersonIcon className="text" />{" "}
+                  <span style={{ marginLeft: "20px" }} className="text">
+                    Patient Name (Age), Male
+                  </span>
+                  <span style={{ float: "right" }} className="text">
+                    ID: 123
+                  </span>
+                </Card.Title>
+                <Card.Text className="text">
+                  Contact Information
+                  <p>Last Visit</p>
+                  <p>Medical Condition (if available)</p>
+                  <p>Appointment History (upcoming & past visits)</p>
+                </Card.Text>
+                <Button
+                  style={{
+                    width: "100%",
+                    color: "#030E82",
+                    backgroundColor: "#82EAAC",
+                    fontWeight: "bold",
+                  }}
+                  onClick={() => setOpen(true)}
+                >
+                  Medical Record Details
+                  <ArrowForwardIcon style={{ color: "#F49696" }} />
+                </Button>
+              </Card.Body>
+            </Card>
+          </Col>
+
+          <Col md={6} xs={12} className="mb-3">
+            <Card>
+              <Card.Body>
+                <Card.Title>
+                  <PersonIcon className="text" />{" "}
+                  <span style={{ marginLeft: "20px" }} className="text">
+                    Patient Name (Age), Male
+                  </span>
+                  <span style={{ float: "right" }} className="text">
+                    ID: 123
+                  </span>
+                </Card.Title>
+                <Card.Text className="text">
                   Contact Information
                   <p>Last Visit</p>
                   <p>Medical Condition (if available)</p>

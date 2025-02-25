@@ -62,6 +62,3 @@ body{
 #close-icon {
 fill: var(--navbar-icons-color) !important; /* Set icon color */
 }
-.searchById{
-  border-color: var(--text-color-primary);
-}

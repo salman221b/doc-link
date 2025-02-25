@@ -119,6 +119,7 @@ const ManageAppointments = () => {
             // alignItems: "center",
             borderRadius: "10px",
             border: "1px solid ",
+            borderColor: "#82EAAC",
 
             padding: "5px",
             width: "300px",
