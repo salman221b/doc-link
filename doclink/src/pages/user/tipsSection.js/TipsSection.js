@@ -1,5 +1,4 @@
 import React from "react";
-import logo from "../../../static/DocLink_Logo_Bg.png";
 import "./TipsSection.css";
 import diet from "../../../static/diet.png";
 import sugar_salt from "../../../static/sugar_salt.png";

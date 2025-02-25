@@ -5,31 +5,9 @@ const HeroSection = () => {
   return (
     <div>
       <div>
-        <h1
-          style={{
-            color: "#030E82",
-            fontWeight: "bold",
-            fontSize: "60px",
-          }}
-        >
-          Your Practice,
-        </h1>
-        <h1
-          style={{
-            color: "#030E82",
-            fontStyle: "italic",
-            fontSize: "60px",
-            marginTop: "10px",
-          }}
-        >
-          Simplified.
-        </h1>
-        <p
-          style={{
-            color: "#030E82",
-            marginTop: "10px",
-          }}
-        >
+        <h1 className="title1">Your Practice,</h1>
+        <h1 className="title2">Simplified.</h1>
+        <p className="text">
           Manage your appointments, patients, and medical records with ease.
         </p>
         <div className="button-container">
@@ -45,10 +23,10 @@ const HeroSection = () => {
               border: "none",
               borderRadius: "10px",
               cursor: "pointer",
-              color: "#030E82",
               fontWeight: "bold",
               fontSize: "20px",
             }}
+            className="text"
           >
             View Appointments{" "}
           </button>
@@ -60,14 +38,13 @@ const HeroSection = () => {
               width: "200px",
               height: "60px",
               backgroundColor: "#82EAAC",
-              color: "white",
               border: "none",
               borderRadius: "10px",
               cursor: "pointer",
-              color: "#030E82",
               fontWeight: "bold",
               fontSize: "20px",
             }}
+            className="text"
           >
             Check Reports{" "}
           </button>
