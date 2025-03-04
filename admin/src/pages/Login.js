@@ -2,13 +2,17 @@ import React, { useState } from "react";
 import Logo from "../static/Logo_Navbar.png";
 import CustomizedSwitches from "../components/theme/Theme";
 import { Box, Button, TextField } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 const Login = () => {
-  const [error, setError] = useState();
-  const [username, setUsrename] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+
   const handleLogin = () => {
     if (username === "admin" && password === "admin123") {
-      window.location.replace("/dashboard");
+      localStorage.setItem("adminAuth", "true"); // Store auth state
+      navigate("/admin/dashboard");
     } else {
       setError("Invalid username or password");
     }
@@ -19,8 +23,6 @@ const Login = () => {
         style={{
           display: "flex",
           justifyContent: "space-between",
-          // alignItems: "center",
-          // height: "100vh",
           marginTop: "50px",
         }}
       >
@@ -41,7 +43,7 @@ const Login = () => {
             fullWidth
             label="User name"
             id="fullWidth"
-            onChange={(e) => setUsrename(e.target.value)}
+            onChange={(e) => setUsername(e.target.value)}
           />
           <TextField
             style={{

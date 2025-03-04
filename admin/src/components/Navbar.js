@@ -4,8 +4,14 @@ import SearchIcon from "@mui/icons-material/Search";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import CustomizedSwitches from "./theme/Theme";
+import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    localStorage.removeItem("adminAuth");
+    navigate("/admin/login");
+  };
   return (
     <div
       className="navbar"
@@ -32,7 +38,8 @@ const Navbar = () => {
         <SearchIcon className="text" style={{ cursor: "pointer" }} />
       </div>
       <NotificationsNoneIcon className="text" />
-      <AccountCircleIcon className="text" />
+      <AccountCircleIcon className="text" onClick={handleLogout} />
+
       <CustomizedSwitches className="text" />
     </div>
   );
