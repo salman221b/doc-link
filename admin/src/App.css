@@ -62,3 +62,39 @@ body{
 #close-icon {
 fill: var(--navbar-icons-color) !important; /* Set icon color */
 }
+
+
+/* --------------------------------------------------------------------- */
+
+.admin-container {
+  display: flex;
+  height: 90vh;
+}
+
+.sidebar {
+  width: 20%;
+  min-width: 200px;
+  background: #25294F;
+  color: white;
+  padding: 20px;
+}
+
+.content-area {
+  flex-grow: 1;
+  background-color: var(--bg-color);
+  padding: 20px;
+  color: var(--text-color-primary);
+  overflow-y: auto;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .admin-container {
+    flex-direction: column; /* Stack Sidebar on top */
+  }
+  
+  .sidebar {
+    width: 100%;
+    min-width: auto;
+  }
+}

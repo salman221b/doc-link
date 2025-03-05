@@ -4,13 +4,13 @@ import SearchIcon from "@mui/icons-material/Search";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import CustomizedSwitches from "./theme/Theme";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const handleLogout = () => {
     localStorage.removeItem("adminAuth");
-    navigate("/admin/login");
+    // navigate("/admin/login");
   };
   return (
     <div

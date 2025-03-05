@@ -1,123 +1,33 @@
-import { Button } from "@mui/material";
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import "./Sidebar.css";
 
 const Sidebar = () => {
-  return (
-    <div>
-      <div
-        className="card"
-        style={{
-          width: "20%",
-          height: "80vh",
-          backgroundColor: "#2E3150",
-          marginTop: "20px",
-          padding: "20px",
-        }}
-      >
-        <Button
-          variant="outlined"
-          style={{
-            borderColor: "#7D87E0",
-            color: "#7D87E0",
-            fontWeight: "bold",
-            marginTop: "20px",
-          }}
-          // onClick={() => navigate("/dashboard")}
-        >
-          <Link to="/admin/dashboard"> Dashboard</Link>
-        </Button>
-        <Button
-          variant="outlined"
-          style={{
-            borderColor: "#7D87E0",
-            color: "#7D87E0",
-            fontWeight: "bold",
-            marginTop: "20px",
-          }}
-          // onClick={() => navigate("/users")}
-        >
-          <Link to="/admin/dashboard/users">Users</Link>
-        </Button>
-        <Button
-          variant="outlined"
-          style={{
-            borderColor: "#7D87E0",
-            color: "#7D87E0",
-            fontWeight: "bold",
-            marginTop: "20px",
-          }}
-        >
-          Appointments{" "}
-        </Button>
-        <Button
-          variant="outlined"
-          style={{
-            borderColor: "#7D87E0",
-            color: "#7D87E0",
-            fontWeight: "bold",
-            marginTop: "20px",
-          }}
-        >
-          Doctors Management
-        </Button>
-        <Button
-          variant="outlined"
-          style={{
-            borderColor: "#7D87E0",
+  const location = useLocation();
 
-            color: "#7D87E0",
-            fontWeight: "bold",
-            marginTop: "20px",
-          }}
-        >
-          Patients Management
-        </Button>
-        <Button
-          variant="outlined"
-          style={{
-            borderColor: "#7D87E0",
-            color: "#7D87E0",
-            fontWeight: "bold",
-            marginTop: "20px",
-          }}
-        >
-          Medical Records
-        </Button>
-        <Button
-          variant="outlined"
-          style={{
-            borderColor: "#7D87E0",
-            color: "#7D87E0",
-            fontWeight: "bold",
-            marginTop: "20px",
-          }}
-        >
-          Payments & Subscriptions
-        </Button>
-        <Button
-          variant="outlined"
-          style={{
-            borderColor: "#7D87E0",
-            color: "#7D87E0",
-            fontWeight: "bold",
-            marginTop: "20px",
-          }}
-        >
-          Reports & Analytics
-        </Button>
-        <Button
-          variant="outlined"
-          style={{
-            borderColor: "#7D87E0",
-            color: "#7D87E0",
-            fontWeight: "bold",
-            marginTop: "20px",
-          }}
-        >
-          Settings
-        </Button>
-      </div>
+  const menuItems = [
+    { path: "/dashboard", label: "Dashboard" },
+    { path: "/users", label: "Users" },
+    { path: "/doctors", label: "Doctors" },
+    { path: "/appointments", label: "Appointments" },
+    { path: "/payments", label: "Payments" },
+    { path: "/reports", label: "Reports" },
+    { path: "/settings", label: "Settings" },
+  ];
+
+  return (
+    <div className="sidebar">
+      <h2 className="sidebar-title">Admin Panel</h2>
+      <ul className="sidebar-menu ">
+        {menuItems.map((item) => (
+          <li
+            key={item.path}
+            className={location.pathname === item.path ? "active" : ""}
+          >
+            <Link to={item.path}>{item.label}</Link>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 };
