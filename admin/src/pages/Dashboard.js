@@ -1,4 +1,6 @@
 import React from "react";
+import AppointmentChart from "../components/AppointmentChart";
+import RevenueChart from "../components/RevenueChart";
 
 const Dashboard = () => {
   return (
@@ -108,6 +110,45 @@ const Dashboard = () => {
             100650
           </p>
         </div>
+      </div>
+
+      {/* ---------------Chart Section------------------------- */}
+      <AppointmentChart />
+      <RevenueChart />
+
+      {/* --------------------Buttons-------------------------------- */}
+
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          marginTop: "50px",
+        }}
+      >
+        <button
+          style={{
+            backgroundColor: "#7D87E0",
+            border: "none",
+            padding: "10px 20px",
+            color: "white",
+            borderRadius: "5px",
+            marginRight: "20px",
+          }}
+        >
+          Approve Doctors
+        </button>
+        <button
+          style={{
+            backgroundColor: "#7D87E0",
+            border: "none",
+            padding: "10px 20px",
+            color: "white",
+            borderRadius: "5px",
+          }}
+        >
+          Manage Users
+        </button>
       </div>
     </div>
   );

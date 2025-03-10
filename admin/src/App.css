@@ -1,8 +1,13 @@
 /* Default Light Mode */
 :root {
   --bg-color: #F1F9F1;
+  --bg-color-2: #cacfca;
+  --bg-color-3: #cad8ca;
+
   --bg-color-card:#fff;
-  --text-color-primary: #030E82;
+  --text-color-primary: #2a306c;
+  --text-color-primary-2: #030E82;
+  
   --text-color-secondary: #030E82;
   --font-weight-primary: bold;
   --font-weight-secondary: 100;
@@ -14,6 +19,11 @@
 .dark-theme {
   --bg-color: #070b2d;
   --bg-color-card:#010102;
+  --bg-color-2: #1f1f2f;
+  --bg-color-3: #2a2a32;
+
+  --text-color-primary-2: #a3a7a3;
+
   --text-color-primary: #F1F9F1;
   --text-color-secondary: #F1F9F1;
   --navbar-text-color: #F1F9F1;
@@ -62,7 +72,38 @@ body{
 #close-icon {
 fill: var(--navbar-icons-color) !important; /* Set icon color */
 }
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+}
 
+.custom-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: var(--bg-color); /* Dark background */
+  color: var(--text-color-primary); /* White text */
+}
+
+.custom-table th,
+.custom-table td {
+  padding: 12px;
+  border: 1px solid #444;
+  text-align: left;
+}
+
+.custom-table th {
+  background-color: #343a40; /* Darker header */
+  color: #f8f9fa;
+}
+
+.custom-table tr:nth-child(even) {
+  background-color: var(--bg-color-2); /* Dark background */
+  color: var(--text-color-primary-2);
+}
+
+.custom-table tr:hover {
+  background-color: var(--bg-color-3); /* Hover effect */
+}
 
 /* --------------------------------------------------------------------- */
 
@@ -97,4 +138,6 @@ fill: var(--navbar-icons-color) !important; /* Set icon color */
     width: 100%;
     min-width: auto;
   }
+  
+ 
 }
