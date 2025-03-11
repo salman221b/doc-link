@@ -1,10 +1,33 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import AppointmentChart from "../components/AppointmentChart";
 import RevenueChart from "../components/RevenueChart";
 
 const Dashboard = () => {
+  const [infoVisible, setInfoVisible] = React.useState(false);
+  const navigate = useNavigate();
   return (
     <div>
+      <p
+        style={{
+          width: "90%",
+          backgroundColor: "gray",
+          borderRadius: "5px",
+          marginLeft: "20px",
+          marginRight: "20px",
+          paddingLeft: "10px",
+          color: "white",
+        }}
+        hidden={infoVisible}
+      >
+        This site only work in Destop View, Mobile View is not supported.
+        <span
+          style={{ float: "right", marginRight: "20px", cursor: "pointer" }}
+          onClick={() => setInfoVisible(true)}
+        >
+          X
+        </span>
+      </p>
       <h1 className="text">Dashboard</h1>
       <div
         style={{
@@ -135,6 +158,7 @@ const Dashboard = () => {
             borderRadius: "5px",
             marginRight: "20px",
           }}
+          onClick={() => navigate("./doctors")}
         >
           Approve Doctors
         </button>
@@ -146,6 +170,7 @@ const Dashboard = () => {
             color: "white",
             borderRadius: "5px",
           }}
+          onClick={() => navigate("./users")}
         >
           Manage Users
         </button>

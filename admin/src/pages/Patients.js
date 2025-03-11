@@ -6,7 +6,7 @@ import ApproveOutlinedIcon from "@mui/icons-material/BeenhereOutlined";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import React, { useState } from "react";
-const Doctors = () => {
+const Patients = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 7;
 
@@ -228,7 +228,7 @@ const Doctors = () => {
   const paginatedData = tableData.slice(indexOfFirstItem, indexOfLastItem);
   return (
     <div>
-      <h1 className="title">Doctors Management</h1>
+      <h1 className="title">Patients Management</h1>
       <form>
         <div
           className="searchArea "
@@ -450,4 +450,4 @@ const Doctors = () => {
   );
 };
 
-export default Doctors;
+export default Patients;
