@@ -3,10 +3,14 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import ApproveOutlinedIcon from "@mui/icons-material/BeenhereOutlined";
-
-import React from "react";
+import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import React, { useState } from "react";
 
 const Users = () => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 7;
+
   const tableData = [
     {
       id: 1,
@@ -249,6 +253,10 @@ const Users = () => {
       role: "Patient",
     },
   ];
+  const totalPages = Math.ceil(tableData.length / itemsPerPage);
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const paginatedData = tableData.slice(indexOfFirstItem, indexOfLastItem);
   return (
     <div>
       <h1 className="title">All Users</h1>
@@ -412,7 +420,7 @@ const Users = () => {
             </tr>
           </thead>
           <tbody>
-            {tableData.map((item, index) => (
+            {paginatedData.map((item, index) => (
               <tr>
                 <td className="td" key={index}>
                   {item.id}
@@ -461,6 +469,40 @@ const Users = () => {
             ))}
           </tbody>
         </table>
+        {/* Pagination Controls */}
+
+        <div style={{ float: "right", marginTop: "30px", marginRight: "20px" }}>
+          <button
+            style={{
+              border: "none",
+              backgroundColor: "transparent",
+              color: "#7D87E0",
+            }}
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+          >
+            <ArrowBackIosIcon />
+          </button>
+
+          <span>
+            {" "}
+            Page {currentPage} of {totalPages}{" "}
+          </span>
+
+          <button
+            style={{
+              border: "none",
+              backgroundColor: "transparent",
+              color: "#7D87E0",
+            }}
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+            }
+            disabled={currentPage === totalPages}
+          >
+            <ArrowForwardIosIcon />
+          </button>
+        </div>
       </div>
     </div>
   );

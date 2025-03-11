@@ -11,12 +11,12 @@ import {
 } from "recharts";
 
 const data = [
-  { month: "Jan", Revenue: 4000 },
-  { month: "Feb", Revenue: 3000 },
-  { month: "Mar", Revenue: 5000 },
-  { month: "Apr", Revenue: 7000 },
-  { month: "May", Revenue: 6000 },
-  { month: "Jun", Revenue: 8000 },
+  { month: "Jan", Revenue: 190000 },
+  { month: "Feb", Revenue: 200900 },
+  { month: "Mar", Revenue: 508000 },
+  { month: "Apr", Revenue: 798000 },
+  { month: "May", Revenue: 799000 },
+  { month: "Jun", Revenue: 889000 },
 ];
 
 const RevenueChart = () => {
@@ -30,7 +30,7 @@ const RevenueChart = () => {
           <YAxis />
           <Tooltip />
           <Legend />
-          <Bar dataKey="Revenue" fill="#82ca9d" />
+          <Bar dataKey="Revenue" fill="#7D87E0" />
         </BarChart>
       </ResponsiveContainer>
     </>

@@ -32,7 +32,7 @@ const AppointmentChart = () => {
           <YAxis />
           <Tooltip />
           <Legend />
-          <Line type="monotone" dataKey="Appointments" stroke="#8884d8" />
+          <Line type="monotone" dataKey="Appointments" stroke="#7D87E0" />
         </LineChart>
       </ResponsiveContainer>
     </>
