@@ -15,8 +15,8 @@ router.get("/appointment", authMiddleware, async (req, res) => {
 
     // Fetch doctors where specialization array contains the requested specialization
     const doctors = await Doctor.find({
-      specialization: { $in: specialization.split(",") },
-    });
+      specialization: { $in: specialization.split(",") }, // Fix array handling
+    }).select("-password");
 
     console.log("Doctors Fetched from DB:", doctors); // Debugging log
 

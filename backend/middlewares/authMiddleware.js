@@ -36,7 +36,7 @@ const authMiddleware = async (req, res, next) => {
       });
     }
 
-    req.user = user; // Attach user data to request object
+    req.user = user; // Attach user data to request object, but DO NOT send it in response!
     next();
   } catch (error) {
     console.error("Authentication Error:", error);

@@ -37,12 +37,12 @@ const Appointment = () => {
           { headers: { Authorization: `Bearer ${token}`, Role: "patient" } }
         )
         .then((response) => {
-          console.log("Doctors API Response:", response.data); // Check response structure
+          console.log("Doctors API Response:", response.data); // Log response
           if (Array.isArray(response.data)) {
-            setDoctors(response.data); // Set only if response is an array
+            setDoctors(response.data);
           } else {
             console.error("Unexpected response format:", response.data);
-            setDoctors([]); // Set empty array to avoid errors
+            setDoctors([]); // Prevent errors if response is incorrect
           }
         })
         .catch((error) => console.error("Error fetching doctors:", error));
