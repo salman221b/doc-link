@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import NavBar from "../../../components/userNavbar/NavBar";
+import axios from "axios";
 import {
   Box,
   FormControl,
@@ -10,12 +11,43 @@ import {
 } from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import { useNavigate } from "react-router-dom";
 
 const Appointment = () => {
+  const navigate = useNavigate();
+  const token = localStorage.getItem("token");
   const [specialization, setSpecialization] = useState("");
   const [doctors, setDoctors] = useState([]);
   const [selectedDoctor, setSelectedDoctor] = useState("");
+  const isTokenExpired = (token) => {
+    const decoded = JSON.parse(atob(token.split(".")[1]));
+    return decoded.exp * 1000 < Date.now();
+  };
 
+  if (!token || isTokenExpired(token)) {
+    console.error("Token expired. Redirecting to login...");
+    navigate("/login");
+  }
+
+  useEffect(() => {
+    if (specialization) {
+      axios
+        .get(
+          `https://doc-link-backend.onrender.com/appointment?specialization=${specialization}`,
+          { headers: { Authorization: `Bearer ${token}`, Role: "patient" } }
+        )
+        .then((response) => {
+          console.log("Doctors API Response:", response.data); // Check response structure
+          if (Array.isArray(response.data)) {
+            setDoctors(response.data); // Set only if response is an array
+          } else {
+            console.error("Unexpected response format:", response.data);
+            setDoctors([]); // Set empty array to avoid errors
+          }
+        })
+        .catch((error) => console.error("Error fetching doctors:", error));
+    }
+  }, [specialization, token]);
   return (
     <div>
       <NavBar />
@@ -83,108 +115,53 @@ const Appointment = () => {
               </Select>
               {/* <FormHelperText>With label + helper text</FormHelperText> */}
             </FormControl>
-            <div
-              className="card"
-              style={{
-                marginTop: "20px",
-                marginBottom: "20px",
-                border: "1px solid ",
-                borderRadius: "5px",
-                padding: "20px",
-              }}
-            >
-              <PersonIcon />
-              <div className="text">
-                <span style={{ marginLeft: "20px", fontSize: "1.5rem" }}>
-                  Name{" "}
-                </span>
-                <span style={{ marginLeft: "50px" }}>Qualifications</span>
-                <p style={{ fontSize: "0.7rem", marginLeft: "50px" }}>
-                  Years of Experience
-                </p>{" "}
-                <button
-                  className="btn "
-                  style={{
-                    float: "right",
-                    backgroundColor: "#F49696",
-                    color: "#82EAAC",
-                  }}
-                >
-                  <ArrowForwardIcon />
-                </button>
-                <p style={{ fontSize: "1rem", marginLeft: "50px" }}>
-                  Hospital/Clinic Affiliation
-                </p>
-                <p style={{ fontSize: "1rem", marginLeft: "50px" }}>
-                  Availability:{" "}
-                  <span style={{ fontSize: ".8rem", marginRight: "20px" }}>
-                    Monday, Tuesday, Wednesday, Thursday, Friday
+
+            {/* {doctors.map((doctor) => (
+              <div
+                className="card"
+                style={{
+                  marginTop: "20px",
+                  marginBottom: "20px",
+                  border: "1px solid ",
+                  borderRadius: "5px",
+                  padding: "20px",
+                }}
+                  key={doctor._id}
+              >
+                <PersonIcon />
+                <div className="text">
+                  <span style={{ marginLeft: "20px", fontSize: "1.5rem" }}>
+                    {doctor.firstName} {doctor.lastName}
                   </span>
-                </p>
-              </div>
-              {/* ------------------------------------------------------------------------------------------ */}
-              <hr className="text" />
-              <PersonIcon />
-              <div className="text">
-                <span style={{ marginLeft: "20px", fontSize: "1.5rem" }}>
-                  Name{" "}
-                </span>
-                <span style={{ marginLeft: "50px" }}>Qualifications</span>
-                <p style={{ fontSize: "0.7rem", marginLeft: "50px" }}>
-                  Years of Experience
-                </p>{" "}
-                <button
-                  className="btn "
-                  style={{
-                    float: "right",
-                    backgroundColor: "#F49696",
-                    color: "#82EAAC",
-                  }}
-                >
-                  <ArrowForwardIcon />
-                </button>
-                <p style={{ fontSize: "1rem", marginLeft: "50px" }}>
-                  Hospital/Clinic Affiliation
-                </p>
-                <p style={{ fontSize: "1rem", marginLeft: "50px" }}>
-                  Availability:{" "}
-                  <span style={{ fontSize: ".8rem", marginRight: "20px" }}>
-                    Monday, Tuesday, Wednesday, Thursday, Friday
+                  <span style={{ marginLeft: "50px" }}>
+                    {doctor.qualification}
                   </span>
-                </p>
+                  <p style={{ fontSize: "0.7rem", marginLeft: "50px" }}>
+                    {doctor.yearOfExperience}
+                  </p>{" "}
+                  <button
+                    className="btn "
+                    style={{
+                      float: "right",
+                      backgroundColor: "#F49696",
+                      color: "#82EAAC",
+                    }}
+                  >
+                    <ArrowForwardIcon />
+                  </button>
+                  <p style={{ fontSize: "1rem", marginLeft: "50px" }}>
+                    {doctor.hospitalName}
+                  </p>
+                  <p style={{ fontSize: "1rem", marginLeft: "50px" }}>
+                    {doctor.availabilitySchedule}
+                    <span style={{ fontSize: ".8rem", marginRight: "20px" }}>
+                      Monday, Tuesday, Wednesday, Thursday, Friday
+                    </span>
+                  </p>
+                </div>
               </div>
-              {/* ------------------------------------------------------------------------------------------ */}
-              <hr className="text" />
-              <PersonIcon />
-              <div className="text">
-                <span style={{ marginLeft: "20px", fontSize: "1.5rem" }}>
-                  Name{" "}
-                </span>
-                <span style={{ marginLeft: "50px" }}>Qualifications</span>
-                <p style={{ fontSize: "0.7rem", marginLeft: "50px" }}>
-                  Years of Experience
-                </p>{" "}
-                <button
-                  className="btn "
-                  style={{
-                    float: "right",
-                    backgroundColor: "#F49696",
-                    color: "#82EAAC",
-                  }}
-                >
-                  <ArrowForwardIcon />
-                </button>
-                <p style={{ fontSize: "1rem", marginLeft: "50px" }}>
-                  Hospital/Clinic Affiliation
-                </p>
-                <p style={{ fontSize: "1rem", marginLeft: "50px" }}>
-                  Availability:{" "}
-                  <span style={{ fontSize: ".8rem", marginRight: "20px" }}>
-                    Monday, Tuesday, Wednesday, Thursday, Friday
-                  </span>
-                </p>
-              </div>
-            </div>
+            ))} */}
+
             <TextField
               style={{
                 backgroundColor: "white",
