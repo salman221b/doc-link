@@ -5,20 +5,20 @@ const authMiddleware = require("../middlewares/authMiddleware");
 const router = express.Router();
 router.get("/appointment", authMiddleware, async (req, res) => {
   try {
-    console.log("Authenticated User:", req.user); // Log the user details
+    // console.log("Authenticated User:", req.user); // Log the user details
 
     const { specialization } = req.query;
+
+    console.log("Specialization:", specialization);
 
     if (!specialization) {
       return res.status(400).json({ message: "Specialization is required" });
     }
 
-    // Fetch doctors where specialization array contains the requested specialization
     const doctors = await Doctor.find({
-      specialization: { $in: specialization.split(",") }, // Fix array handling
-    }).select("-password");
-
-    console.log("Doctors Fetched from DB:", doctors); // Debugging log
+      specialization: { $in: JSON.parse(specialization) },
+    });
+    console.log("Doctors Fetched from DB:", doctors);
 
     if (!Array.isArray(doctors)) {
       return res.status(500).json({ message: "Unexpected data format" });

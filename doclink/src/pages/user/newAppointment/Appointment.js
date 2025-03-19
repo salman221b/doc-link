@@ -28,22 +28,18 @@ const Appointment = () => {
     console.error("Token expired. Redirecting to login...");
     navigate("/login");
   }
-
   useEffect(() => {
     if (specialization) {
       axios
         .get(
-          `https://doc-link-backend.onrender.com/appointment?specialization=${specialization}`,
+          `https://doc-link-backend.onrender.com/appointment?specialization=${JSON.stringify(
+            specialization
+          )}`,
           { headers: { Authorization: `Bearer ${token}`, Role: "patient" } }
         )
         .then((response) => {
-          console.log("Doctors API Response:", response.data); // Log response
-          if (Array.isArray(response.data)) {
-            setDoctors(response.data);
-          } else {
-            console.error("Unexpected response format:", response.data);
-            setDoctors([]); // Prevent errors if response is incorrect
-          }
+          console.log("Doctors API Response:", response.data);
+          setDoctors(response.data);
         })
         .catch((error) => console.error("Error fetching doctors:", error));
     }
@@ -79,7 +75,7 @@ const Appointment = () => {
                   <em>None</em>
                 </MenuItem>
                 <MenuItem value={"anesthesiology"}>Anesthesiology</MenuItem>
-                <MenuItem value={"cardiology"}>Cardiology</MenuItem>
+                <MenuItem value={"Cardiology"}>Cardiology</MenuItem>
                 <MenuItem value={"dermatology"}>Dermatology</MenuItem>
                 <MenuItem value={"emergency_medicine"}>
                   Emergency Medicine
@@ -88,7 +84,7 @@ const Appointment = () => {
                 <MenuItem value={"gastroenterology"}>Gastroenterology</MenuItem>
                 <MenuItem value={"general_surgery"}>General Surgery</MenuItem>
                 <MenuItem value={"geriatrics"}>Geriatrics</MenuItem>
-                <MenuItem value={"hematology"}>Hematology</MenuItem>
+                <MenuItem value={"Hematology"}>Hematology</MenuItem>
                 <MenuItem value={"infectious_disease"}>
                   Infectious Disease
                 </MenuItem>
@@ -116,7 +112,7 @@ const Appointment = () => {
               {/* <FormHelperText>With label + helper text</FormHelperText> */}
             </FormControl>
 
-            {/* {doctors.map((doctor) => (
+            {doctors.map((doctor) => (
               <div
                 className="card"
                 style={{
@@ -126,7 +122,7 @@ const Appointment = () => {
                   borderRadius: "5px",
                   padding: "20px",
                 }}
-                  key={doctor._id}
+                key={doctor._id}
               >
                 <PersonIcon />
                 <div className="text">
@@ -160,13 +156,14 @@ const Appointment = () => {
                   </p>
                 </div>
               </div>
-            ))} */}
+            ))}
 
             <TextField
               style={{
                 backgroundColor: "white",
                 borderRadius: "10px",
                 marginBottom: "20px",
+                marginTop: "20px",
                 width: "100%",
               }}
               id="outlined-basic"

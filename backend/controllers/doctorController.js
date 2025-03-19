@@ -46,11 +46,15 @@ const registerDoctor = asyncHandler(async (req, res) => {
   // Ensure qualification is stored as an array
   const formattedQualification = Array.isArray(qualification)
     ? qualification
-    : [qualification];
+    : JSON.parse(qualification);
+
   const formattedSpecialization = Array.isArray(specialization)
     ? specialization
-    : [specialization];
-  const formattedLanguage = Array.isArray(language) ? language : [language];
+    : JSON.parse(specialization);
+
+  const formattedLanguage = Array.isArray(language)
+    ? language
+    : JSON.parse(language);
   if (
     !firstName ||
     !lastName ||
