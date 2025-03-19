@@ -32,7 +32,9 @@ const Appointment = () => {
     if (specialization) {
       axios
         .get(
-          `https://doc-link-backend.onrender.com/appointment?specialization=${specialization}`,
+          `https://doc-link-backend.onrender.com/appointment?specialization=${encodeURIComponent(
+            specialization
+          )}`,
           { headers: { Authorization: `Bearer ${token}`, Role: "patient" } }
         )
         .then((response) => {

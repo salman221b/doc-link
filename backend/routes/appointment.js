@@ -9,14 +9,17 @@ router.get("/appointment", authMiddleware, async (req, res) => {
 
     const { specialization } = req.query;
 
-    console.log("Specialization:", specialization);
-
     if (!specialization) {
       return res.status(400).json({ message: "Specialization is required" });
     }
+    if (typeof specialization === "string") {
+      specialization = specialization.replace(/[\[\]"]/g, ""); // Remove brackets and quotes
+    }
+
+    console.log("Fetching doctors for specialization:", specialization);
 
     const doctors = await Doctor.find({
-      specialization: { $in: JSON.parse(specialization) },
+      specialization: { $in: [specialization] },
     });
     console.log("Doctors Fetched from DB:", doctors);
 
