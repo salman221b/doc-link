@@ -7,7 +7,7 @@ router.get("/appointment", authMiddleware, async (req, res) => {
   try {
     // console.log("Authenticated User:", req.user); // Log the user details
 
-    const { specialization } = req.query;
+    let { specialization } = req.query;
 
     if (!specialization) {
       return res.status(400).json({ message: "Specialization is required" });
