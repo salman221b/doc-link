@@ -32,7 +32,7 @@ const Appointment = () => {
     if (specialization) {
       axios
         .get(
-          `https://doc-link-backend.onrender.com/appointment?specialization=${encodeURIComponent(
+          `http://localhost:5000/appointment?specialization=${encodeURIComponent(
             specialization
           )}`,
           { headers: { Authorization: `Bearer ${token}`, Role: "patient" } }
@@ -129,10 +129,11 @@ const Appointment = () => {
                     {doctor.qualification}
                   </span>
                   <p style={{ fontSize: "0.7rem", marginLeft: "50px" }}>
-                    {doctor.yearOfExperience}
-                  </p>{" "}
+                    {doctor.yearOfExperience} years of experience
+                  </p>
+
                   <button
-                    className="btn "
+                    className="btn"
                     style={{
                       float: "right",
                       backgroundColor: "#F49696",
@@ -141,15 +142,29 @@ const Appointment = () => {
                   >
                     <ArrowForwardIcon />
                   </button>
+
                   <p style={{ fontSize: "1rem", marginLeft: "50px" }}>
-                    {doctor.hospitalName}
+                    <strong>Hospital:</strong> {doctor.hospitalName}
                   </p>
+
+                  {/* ✅ Fixed Availability Schedule Display */}
                   <p style={{ fontSize: "1rem", marginLeft: "50px" }}>
-                    {doctor.availabilitySchedule}
-                    <span style={{ fontSize: ".8rem", marginRight: "20px" }}>
-                      Monday, Tuesday, Wednesday, Thursday, Friday
-                    </span>
+                    <strong>Availability:</strong>
                   </p>
+                  <ul style={{ fontSize: ".9rem", marginLeft: "50px" }}>
+                    {Object.entries(doctor.availabilitySchedule).map(
+                      ([day, details]) => (
+                        <li key={day}>
+                          <strong>
+                            {day.charAt(0).toUpperCase() + day.slice(1)}:
+                          </strong>{" "}
+                          {details.available
+                            ? `${details.startTime} - ${details.endTime}`
+                            : "Not Available"}
+                        </li>
+                      )
+                    )}
+                  </ul>
                 </div>
               </div>
             ))}
