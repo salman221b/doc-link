@@ -74,40 +74,36 @@ const Appointment = () => {
                 <MenuItem value="" disabled>
                   <em>None</em>
                 </MenuItem>
-                <MenuItem value={"anesthesiology"}>Anesthesiology</MenuItem>
-                <MenuItem value={"Cardiology"}>Cardiology</MenuItem>
-                <MenuItem value={"dermatology"}>Dermatology</MenuItem>
-                <MenuItem value={"emergency_medicine"}>
+                <MenuItem value="Anesthesiology">Anesthesiology</MenuItem>
+                <MenuItem value="Cardiology">Cardiology</MenuItem>
+                <MenuItem value="Dermatology">Dermatology</MenuItem>
+                <MenuItem value="EmergencyMedicine">
                   Emergency Medicine
                 </MenuItem>
-                <MenuItem value={"endocrinology"}>Endocrinology</MenuItem>
-                <MenuItem value={"gastroenterology"}>Gastroenterology</MenuItem>
-                <MenuItem value={"general_surgery"}>General Surgery</MenuItem>
-                <MenuItem value={"geriatrics"}>Geriatrics</MenuItem>
-                <MenuItem value={"Hematology"}>Hematology</MenuItem>
-                <MenuItem value={"infectious_disease"}>
+                <MenuItem value="Endocrinology">Endocrinology</MenuItem>
+                <MenuItem value="Gastroenterology">Gastroenterology</MenuItem>
+                <MenuItem value="GeneralSurgery">General Surgery</MenuItem>
+                <MenuItem value="Geriatrics">Geriatrics</MenuItem>
+                <MenuItem value="Hematology">Hematology</MenuItem>
+                <MenuItem value="InfectiousDisease">
                   Infectious Disease
                 </MenuItem>
-                <MenuItem value={"internal_medicine"}>
-                  Internal Medicine
-                </MenuItem>
-                <MenuItem value={"nephrology"}>Nephrology</MenuItem>
-                <MenuItem value={"neurology"}>Neurology</MenuItem>
-                <MenuItem value={"obstetrics_gynecology"}>
+                <MenuItem value="InternalMedicine">Internal Medicine</MenuItem>
+                <MenuItem value="Nephrology">Nephrology</MenuItem>
+                <MenuItem value="Neurology">Neurology</MenuItem>
+                <MenuItem value="ObstetricsAndGynecology">
                   Obstetrics and Gynecology
                 </MenuItem>
-                <MenuItem value={"oncology"}>Oncology</MenuItem>
-                <MenuItem value={"ophthalmology"}>Ophthalmology</MenuItem>
-                <MenuItem value={"orthopedics"}>Orthopedics</MenuItem>
-                <MenuItem value={"otolaryngology"}>
-                  Otolaryngology (ENT)
-                </MenuItem>
-                <MenuItem value={"pediatrics"}>Pediatrics</MenuItem>
-                <MenuItem value={"psychiatry"}>Psychiatry</MenuItem>
-                <MenuItem value={"pulmonology"}>Pulmonology</MenuItem>
-                <MenuItem value={"radiology"}>Radiology</MenuItem>
-                <MenuItem value={"rheumatology"}>Rheumatology</MenuItem>
-                <MenuItem value={"urology"}>Urology</MenuItem>
+                <MenuItem value="Oncology">Oncology</MenuItem>
+                <MenuItem value="Ophthalmology">Ophthalmology</MenuItem>
+                <MenuItem value="Orthopedics">Orthopedics</MenuItem>
+                <MenuItem value="Otolaryngology">Otolaryngology (ENT)</MenuItem>
+                <MenuItem value="Pediatrics">Pediatrics</MenuItem>
+                <MenuItem value="Psychiatry">Psychiatry</MenuItem>
+                <MenuItem value="Pulmonology">Pulmonology</MenuItem>
+                <MenuItem value="Radiology">Radiology</MenuItem>
+                <MenuItem value="Rheumatology">Rheumatology</MenuItem>
+                <MenuItem value="Urology">Urology</MenuItem>
               </Select>
               {/* <FormHelperText>With label + helper text</FormHelperText> */}
             </FormControl>
