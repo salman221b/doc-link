@@ -48,7 +48,7 @@ const Appointment = () => {
 
       axios
         .get(
-          `http://localhost:5000/appointment?specialization=${encodeURIComponent(
+          `https://doc-link-backend.onrender.com/appointment?specialization=${encodeURIComponent(
             specialization
           )}`,
           { headers: { Authorization: `Bearer ${token}`, Role: "patient" } }
