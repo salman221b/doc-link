@@ -12,7 +12,6 @@ import {
 import PersonIcon from "@mui/icons-material/Person";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { useNavigate } from "react-router-dom";
-
 const Appointment = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
@@ -24,8 +23,15 @@ const Appointment = () => {
   const [selectedDate, setSelectedDate] = useState("");
   const [doctorAvailability, setDoctorAvailability] = useState({});
   const [error, setError] = useState(false);
-
-  // Function to check if token is expired
+  const [loading, setLoading] = useState(false);
+  const [loadingDots, setLoadingDots] = useState(".");
+  const [availableSlots, setAvailableSlots] = useState([]);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setLoadingDots((prev) => (prev.length < 3 ? prev + "." : "."));
+    }, 500);
+    return () => clearInterval(interval);
+  }, []);
   const isTokenExpired = (token) => {
     if (!token) return true;
     const decoded = JSON.parse(atob(token.split(".")[1]));
@@ -45,6 +51,7 @@ const Appointment = () => {
     if (specialization) {
       setSelectedDoctor(null); // Reset selected doctor when specialization changes
       setNoDoctors(false);
+      setLoading(true);
 
       axios
         .get(
@@ -65,6 +72,9 @@ const Appointment = () => {
         .catch(() => {
           setDoctors([]);
           setNoDoctors(true);
+        })
+        .finally(() => {
+          setLoading(false);
         });
     } else {
       setDoctors([]);
@@ -100,6 +110,39 @@ const Appointment = () => {
   const handleDateChange = (event) => {
     const newDate = event.target.value;
     setSelectedDate(newDate);
+    const dayName = new Date(newDate)
+      .toLocaleDateString("en-US", { weekday: "long" })
+      .toLowerCase();
+
+    console.log("Selected Day:", dayName);
+
+    if (selectedDoctor && doctorAvailability[dayName]?.available) {
+      let startTime = doctorAvailability[dayName].startTime; // e.g., "09:00"
+      let endTime = doctorAvailability[dayName].endTime; // e.g., "17:00"
+
+      if (startTime && endTime) {
+        let slots = [];
+        let [startHour, startMinute] = startTime.split(":").map(Number);
+        let [endHour, endMinute] = endTime.split(":").map(Number);
+
+        let startMinutes = startHour * 60 + startMinute;
+        let endMinutes = endHour * 60 + endMinute;
+
+        for (let i = startMinutes; i < endMinutes; i += 30) {
+          let hours = Math.floor(i / 60);
+          let minutes = i % 60;
+          let formattedTime = `${String(hours).padStart(2, "0")}:${String(
+            minutes
+          ).padStart(2, "0")}`;
+          if (formattedTime !== "13:00" && formattedTime !== "13:30") {
+            slots.push(formattedTime);
+          }
+        }
+
+        console.log("Available Slots:", slots);
+        setAvailableSlots(slots);
+      }
+    }
 
     if (isDateDisabled(newDate)) {
       setError(true);
@@ -107,6 +150,7 @@ const Appointment = () => {
       setError(false);
     }
   };
+
   return (
     <div>
       <NavBar />
@@ -116,7 +160,7 @@ const Appointment = () => {
         style={{
           justifyItems: "center",
           marginTop: "50px",
-          marginBottom: "50px",
+          marginBottom: "180px",
         }}
       >
         <Box sx={{ width: 500, maxWidth: "100%" }}>
@@ -164,7 +208,11 @@ const Appointment = () => {
                 ))}
               </Select>
             </FormControl>
-            {selectedDoctor ? (
+            {loading ? (
+              <p style={{ textAlign: "center" }}>
+                Loading doctors{loadingDots}
+              </p>
+            ) : selectedDoctor ? (
               <div
                 className="selected-doctor"
                 style={{
@@ -286,7 +334,7 @@ const Appointment = () => {
               }}
             />
 
-            <TextField
+            {/* <TextField
               style={{
                 backgroundColor: "white",
                 borderRadius: "10px",
@@ -297,7 +345,33 @@ const Appointment = () => {
               variant="outlined"
               type="time"
               InputLabelProps={{ shrink: true }}
-            />
+            /> */}
+            {availableSlots.length > 0 ? (
+              <div>
+                <p>Available Slots:</p>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+                  {availableSlots.map((slot) => (
+                    <button
+                      key={slot}
+                      className="slot-button"
+                      // onClick={() => setSelectedSlot(slot)}
+                      style={{
+                        padding: "10px 15px",
+                        borderRadius: "5px",
+                        border: "1px solid #007bff",
+                        // backgroundColor: selectedSlot === slot ? "#007bff" : "white",
+                        // color: selectedSlot === slot ? "white" : "#007bff",
+                        cursor: "pointer",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      {slot}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+
             <button
               className="btn btn-primary"
               style={{
