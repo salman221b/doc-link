@@ -25,6 +25,7 @@ const Appointment = () => {
   const token = localStorage.getItem("token");
 
   const [specialization, setSpecialization] = useState("");
+  const [mode, setMode] = useState("");
   const [doctors, setDoctors] = useState([]);
   const [noDoctors, setNoDoctors] = useState(false);
   const [selectedDoctor, setSelectedDoctor] = useState(null);
@@ -187,7 +188,7 @@ const Appointment = () => {
     const data = await response.json();
 
     const options = {
-      key: "YOUR_RAZORPAY_KEY",
+      key: "rzp_test_WgHvwbS8kVmH9H",
       amount: data.amount,
       currency: "INR",
       name: "Telemedicine App",
@@ -218,7 +219,7 @@ const Appointment = () => {
         } else {
           alert("Payment verification failed");
         }
-        setPageLoading(false);
+        // setPageLoading(false);
       },
     };
 
@@ -387,6 +388,28 @@ const Appointment = () => {
               type="date"
               InputLabelProps={{ shrink: true }}
             /> */}
+            <FormControl sx={{ minWidth: "100%", marginTop: "20px" }}>
+              <InputLabel>Mode of Consultation</InputLabel>
+              <Select
+                style={{ backgroundColor: "white", borderRadius: "10px" }}
+                label="Mode of Consultation"
+                name="mode"
+                onChange={(e) => setMode(e.target.value)}
+              >
+                <MenuItem value="" disabled>
+                  <em>None</em>
+                </MenuItem>
+                {[
+                  "Video Consultation",
+                  "Teleconsultation",
+                  "In-Person Consultation",
+                ].map((spec) => (
+                  <MenuItem key={spec} value={spec}>
+                    {spec}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
             <TextField
               label="Date of Appointment"
               type="date"
@@ -485,6 +508,9 @@ const Appointment = () => {
                 <Typography variant="body1">
                   <strong>Doctor:</strong> {selectedDoctor?.firstName}{" "}
                   {selectedDoctor?.lastName}
+                </Typography>
+                <Typography variant="body1">
+                  <strong>Mode:</strong> {mode}
                 </Typography>
                 <Typography variant="body1">
                   <strong>Date:</strong> {selectedDate}

@@ -1,12 +1,10 @@
 const express = require("express");
-
 const router = express.Router();
-
 const Razorpay = require("razorpay");
 
 const razorpay = new Razorpay({
-  key_id: "YOUR_KEY",
-  key_secret: "YOUR_SECRET",
+  key_id: process.env.RAZORPAY_KEY,
+  key_secret: process.env.RAZORPAY_SECRET,
 });
 
 router.post("/create-payment", async (req, res) => {
