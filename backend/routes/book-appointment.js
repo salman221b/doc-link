@@ -25,3 +25,4 @@ router.post("/book-appointment", (req, res) => {
   );
   res.json({ message: "Appointment booked successfully" });
 });
+module.exports = router;
