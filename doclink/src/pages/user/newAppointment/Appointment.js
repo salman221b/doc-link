@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import "./Appointment.css";
 import NavBar from "../../../components/userNavbar/NavBar";
 import axios from "axios";
 import {
@@ -8,10 +9,17 @@ import {
   MenuItem,
   Select,
   TextField,
+  Typography,
+  Button,
+  Modal,
 } from "@mui/material";
+
 import PersonIcon from "@mui/icons-material/Person";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
+
+import LoadingScreen from "../../../components/loadingScreen/LoadingScreen";
 const Appointment = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
@@ -24,8 +32,17 @@ const Appointment = () => {
   const [doctorAvailability, setDoctorAvailability] = useState({});
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [pageLoading, setPageLoading] = useState(false);
   const [loadingDots, setLoadingDots] = useState(".");
   const [availableSlots, setAvailableSlots] = useState([]);
+  const [selectedSlot, setSelectedSlot] = useState(null);
+  const [openModal, setOpenModal] = useState(false);
+
+  const decoded = token ? jwtDecode(token) : null;
+  const userId = decoded?.id; // Extract user ID
+
+  // console.log(userId);
+
   useEffect(() => {
     const interval = setInterval(() => {
       setLoadingDots((prev) => (prev.length < 3 ? prev + "." : "."));
@@ -35,6 +52,7 @@ const Appointment = () => {
   const isTokenExpired = (token) => {
     if (!token) return true;
     const decoded = JSON.parse(atob(token.split(".")[1]));
+
     return decoded.exp * 1000 < Date.now();
   };
 
@@ -150,6 +168,63 @@ const Appointment = () => {
       setError(false);
     }
   };
+  const handleBookNow = () => {
+    setOpenModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setOpenModal(false);
+  };
+
+  const handlePayment = async () => {
+    setPageLoading(true);
+
+    // Step 1: Call backend to create a payment order
+    const response = await fetch(
+      "https://doc-link-backend.onrender.com/create-payment",
+      { method: "POST" }
+    );
+    const data = await response.json();
+
+    const options = {
+      key: "YOUR_RAZORPAY_KEY",
+      amount: data.amount,
+      currency: "INR",
+      name: "Telemedicine App",
+      order_id: data.order_id,
+      handler: async function (response) {
+        // Step 2: Verify payment on backend
+        const verify = await fetch(
+          "https://doc-link-backend.onrender.com/verify-payment",
+          {
+            method: "POST",
+            body: JSON.stringify(response),
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+
+        const verifyResponse = await verify.json();
+        if (verifyResponse.success) {
+          // Step 3: Save Appointment
+          await fetch(
+            "https://doc-link-backend.onrender.com/book-appointment",
+            {
+              method: "POST",
+              // body: JSON.stringify({ appointmentDetails }),
+              headers: { "Content-Type": "application/json" },
+            }
+          );
+          alert("Appointment booked successfully!");
+        } else {
+          alert("Payment verification failed");
+        }
+        setPageLoading(false);
+      },
+    };
+
+    const rzp = new window.Razorpay(options);
+    rzp.open();
+  };
 
   return (
     <div>
@@ -160,7 +235,7 @@ const Appointment = () => {
         style={{
           justifyItems: "center",
           marginTop: "50px",
-          marginBottom: "180px",
+          marginBottom: "250px",
         }}
       >
         <Box sx={{ width: 500, maxWidth: "100%" }}>
@@ -209,7 +284,7 @@ const Appointment = () => {
               </Select>
             </FormControl>
             {loading ? (
-              <p style={{ textAlign: "center" }}>
+              <p style={{ textAlign: "center" }} className="text">
                 Loading doctors{loadingDots}
               </p>
             ) : selectedDoctor ? (
@@ -348,22 +423,23 @@ const Appointment = () => {
             /> */}
             {availableSlots.length > 0 ? (
               <div>
-                <p>Available Slots:</p>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+                <p className="text">Available Slots:</p>
+                <div
+                  style={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    gap: "10px",
+                    marginBottom: "20px",
+                  }}
+                >
                   {availableSlots.map((slot) => (
                     <button
+                      type="button"
                       key={slot}
-                      className="slot-button"
-                      // onClick={() => setSelectedSlot(slot)}
-                      style={{
-                        padding: "10px 15px",
-                        borderRadius: "5px",
-                        border: "1px solid #007bff",
-                        // backgroundColor: selectedSlot === slot ? "#007bff" : "white",
-                        // color: selectedSlot === slot ? "white" : "#007bff",
-                        cursor: "pointer",
-                        fontWeight: "bold",
-                      }}
+                      className={`slot-button ${
+                        selectedSlot === slot ? "selected" : ""
+                      }`}
+                      onClick={() => setSelectedSlot(slot)}
                     >
                       {slot}
                     </button>
@@ -374,13 +450,75 @@ const Appointment = () => {
 
             <button
               className="btn btn-primary"
+              type="button"
               style={{
                 width: "100%",
                 fontWeight: "bold",
               }}
+              onClick={handleBookNow}
+              disabled={!selectedSlot}
             >
               Book Now
             </button>
+            {/* Modal */}
+            <Modal open={openModal} onClose={handleCloseModal}>
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: "50%",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)",
+                  width: 400,
+                  bgcolor: "white",
+                  boxShadow: 24,
+                  p: 3,
+                  borderRadius: "10px",
+                }}
+              >
+                <Typography variant="h6" gutterBottom>
+                  Confirm Your Appointment
+                </Typography>
+
+                <Typography variant="body1">
+                  <strong>Specialization:</strong> {specialization}
+                </Typography>
+                <Typography variant="body1">
+                  <strong>Doctor:</strong> {selectedDoctor?.firstName}{" "}
+                  {selectedDoctor?.lastName}
+                </Typography>
+                <Typography variant="body1">
+                  <strong>Date:</strong> {selectedDate}
+                </Typography>
+                <Typography variant="body1">
+                  <strong>Time:</strong> {selectedSlot}
+                </Typography>
+
+                <Box
+                  sx={{
+                    mt: 2,
+                    display: "flex",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <Button
+                    variant="outlined"
+                    color="error"
+                    onClick={handleCloseModal}
+                    type="button"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="success"
+                    type="submit"
+                    onClick={handlePayment}
+                  >
+                    Book Anyway
+                  </Button>
+                </Box>
+              </Box>
+            </Modal>
           </form>
         </Box>
       </div>
