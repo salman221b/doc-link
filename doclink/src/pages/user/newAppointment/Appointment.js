@@ -180,51 +180,89 @@ const Appointment = () => {
   const handlePayment = async () => {
     setPageLoading(true);
 
-    // Step 1: Call backend to create a payment order
-    const response = await fetch(
-      "https://doc-link-backend.onrender.com/create-payment",
-      { method: "POST" }
-    );
-    const data = await response.json();
+    try {
+      // Step 1: Call backend to create a payment order
+      const response = await fetch(
+        "https://doc-link-backend.onrender.com/create-payment",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
 
-    const options = {
-      key: "rzp_test_WgHvwbS8kVmH9H",
-      amount: data.amount,
-      currency: "INR",
-      name: "Telemedicine App",
-      order_id: data.order_id,
-      handler: async function (response) {
-        // Step 2: Verify payment on backend
-        const verify = await fetch(
-          "https://doc-link-backend.onrender.com/verify-payment",
-          {
-            method: "POST",
-            body: JSON.stringify(response),
-            headers: { "Content-Type": "application/json" },
-          }
-        );
+      const data = await response.json();
+      if (!data.order_id) {
+        alert("Failed to create payment order");
+        setPageLoading(false);
+        return;
+      }
 
-        const verifyResponse = await verify.json();
-        if (verifyResponse.success) {
-          // Step 3: Save Appointment
-          await fetch(
-            "https://doc-link-backend.onrender.com/book-appointment",
+      const options = {
+        key: process.env.RAZORPAY_KEY_TEST,
+        amount: data.amount,
+        currency: "INR",
+        name: "Telemedicine App",
+        order_id: data.order_id,
+        handler: async function (response) {
+          // Step 2: Verify payment on backend
+          const verify = await fetch(
+            "https://doc-link-backend.onrender.com/verify-payment",
             {
               method: "POST",
-              // body: JSON.stringify({ appointmentDetails }),
+              body: JSON.stringify(response),
               headers: { "Content-Type": "application/json" },
             }
           );
-          alert("Appointment booked successfully!");
-        } else {
-          alert("Payment verification failed");
-        }
-        // setPageLoading(false);
-      },
-    };
 
-    const rzp = new window.Razorpay(options);
-    rzp.open();
+          const verifyResponse = await verify.json();
+          if (verifyResponse.success) {
+            // Step 3: Save Appointment
+            await fetch(
+              "https://doc-link-backend.onrender.com/book-appointment",
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  userId,
+                  doctor: selectedDoctor._id,
+                  specialization,
+                  selectedDate,
+                  selectedSlot,
+                  mode,
+                  payment_mode: verifyResponse.payment_mode,
+                  payment_status: verifyResponse.payment_status,
+                }),
+              }
+            );
+
+            alert("Appointment booked successfully!");
+          } else {
+            alert("Payment verification failed");
+          }
+          setPageLoading(false);
+        },
+        prefill: {
+          name: "Test User",
+          email: "test@example.com",
+          contact: "9999999999",
+        },
+        theme: { color: "#3399cc" },
+      };
+
+      // Ensure Razorpay script is loaded before opening
+      if (!window.Razorpay) {
+        alert("Razorpay SDK failed to load. Refresh the page.");
+        setPageLoading(false);
+        return;
+      }
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+    } catch (error) {
+      console.error("Payment Error:", error);
+      alert("Payment failed. Try again.");
+      setPageLoading(false);
+    }
   };
 
   return (
