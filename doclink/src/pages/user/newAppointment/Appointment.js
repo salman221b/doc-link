@@ -176,6 +176,8 @@ const Appointment = () => {
   const handleBookNow = () => {
     setOpenModal(true);
     console.log(userEmail, userPhone, userName);
+    console.log(jwtDecode(token));
+    console.log(decoded);
   };
 
   const handleCloseModal = () => {
