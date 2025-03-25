@@ -187,6 +187,7 @@ const Appointment = () => {
         "https://doc-link-backend.onrender.com/create-payment",
         {
           method: "POST",
+          body: JSON.stringify({ amount }),
           headers: { "Content-Type": "application/json" },
         }
       );

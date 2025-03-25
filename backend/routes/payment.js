@@ -9,8 +9,9 @@ const razorpay = new Razorpay({
 });
 
 router.post("/create-payment", async (req, res) => {
+  const { amount } = req.body;
   const payment = await razorpay.orders.create({
-    // amount: 500, // Amount in paise (₹500)
+    amount,
     currency: "INR",
     payment_capture: 1,
   });
