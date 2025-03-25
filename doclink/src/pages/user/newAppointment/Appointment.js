@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import "./Appointment.css";
 import NavBar from "../../../components/userNavbar/NavBar";
 import axios from "axios";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import {
   Box,
   FormControl,
@@ -19,7 +21,6 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 
-import LoadingScreen from "../../../components/loadingScreen/LoadingScreen";
 const Appointment = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
@@ -33,7 +34,6 @@ const Appointment = () => {
   const [doctorAvailability, setDoctorAvailability] = useState({});
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [pageLoading, setPageLoading] = useState(false);
   const [loadingDots, setLoadingDots] = useState(".");
   const [availableSlots, setAvailableSlots] = useState([]);
   const [selectedSlot, setSelectedSlot] = useState(null);
@@ -42,6 +42,9 @@ const Appointment = () => {
 
   const decoded = token ? jwtDecode(token) : null;
   const userId = decoded?.id; // Extract user ID
+  const userName = decoded?.firstName + " " + decoded?.lastName;
+  const userEmail = decoded?.email;
+  const userPhone = decoded?.phone;
 
   // console.log(userId);
 
@@ -179,8 +182,6 @@ const Appointment = () => {
   };
 
   const handlePayment = async () => {
-    setPageLoading(true);
-
     try {
       // Step 1: Call backend to create a payment order
       const response = await fetch(
@@ -195,7 +196,6 @@ const Appointment = () => {
       const data = await response.json();
       if (!data.order_id) {
         alert("Failed to create payment order");
-        setPageLoading(false);
         return;
       }
 
@@ -233,20 +233,37 @@ const Appointment = () => {
                   mode,
                   payment_mode: verifyResponse.payment_mode,
                   payment_status: verifyResponse.payment_status,
+                  amount,
                 }),
               }
             );
+            if (response.ok) {
+              const result = await response.json();
+              toast.success(
+                result.message || "Appointment booked successfully!",
+                { autoClose: 3000 }
+              );
 
-            alert("Appointment booked successfully!");
-          } else {
-            alert("Payment verification failed");
+              setTimeout(() => {
+                navigate("/upcoming-appointments"); // Redirect after 3 seconds
+              }, 3000);
+            } else {
+              toast.error("Failed to book appointment. Please try again.", {
+                autoClose: 3000,
+              });
+            }
           }
-          setPageLoading(false);
         },
         prefill: {
-          name: "Test User",
-          email: "test@example.com",
-          contact: "9999999999",
+          name: userName,
+          email: userEmail,
+          contact: userPhone,
+        },
+        modal: {
+          escape: false,
+          ondismiss: function () {
+            alert("Payment Failed! Try again.");
+          },
         },
         theme: { color: "#3399cc" },
       };
@@ -254,7 +271,6 @@ const Appointment = () => {
       // Ensure Razorpay script is loaded before opening
       if (!window.Razorpay) {
         alert("Razorpay SDK failed to load. Refresh the page.");
-        setPageLoading(false);
         return;
       }
 
@@ -263,7 +279,6 @@ const Appointment = () => {
     } catch (error) {
       console.error("Payment Error:", error);
       alert("Payment failed. Try again.");
-      setPageLoading(false);
     }
   };
 
