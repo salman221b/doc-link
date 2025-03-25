@@ -436,11 +436,13 @@ const Appointment = () => {
                 onChange={(e) => {
                   setMode(e.target.value);
                   if (e.target.value === "Video Consultation") {
-                    setAmount(selectedDoctor.consultationFee.video);
+                    setAmount(selectedDoctor?.consultationFee?.video || 0);
                   } else if (e.target.value === "Teleconsultation") {
-                    setAmount(selectedDoctor.consultationFee.teleconsultation);
+                    setAmount(
+                      selectedDoctor?.consultationFee?.teleconsultation || 0
+                    );
                   } else if (e.target.value === "In-Person Consultation") {
-                    setAmount(selectedDoctor.consultationFee.inPerson);
+                    setAmount(selectedDoctor?.consultationFee?.inPerson || 0);
                   }
                 }}
               >
