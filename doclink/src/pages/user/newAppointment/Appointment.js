@@ -39,6 +39,8 @@ const Appointment = () => {
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [openModal, setOpenModal] = useState(false);
   const [amount, setAmount] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isNavigating, setIsNavigating] = useState(false);
 
   const decoded = token ? jwtDecode(token) : null;
   const userId = decoded?.id; // Extract user ID
@@ -175,9 +177,6 @@ const Appointment = () => {
   };
   const handleBookNow = () => {
     setOpenModal(true);
-    console.log(userEmail, userPhone, userName);
-    console.log(jwtDecode(token));
-    console.log(decoded);
   };
 
   const handleCloseModal = () => {
@@ -186,6 +185,7 @@ const Appointment = () => {
 
   const handlePayment = async () => {
     try {
+      setIsLoading(true);
       // Step 1: Call backend to create a payment order
       const response = await fetch(
         "https://doc-link-backend.onrender.com/create-payment",
@@ -199,6 +199,8 @@ const Appointment = () => {
       const data = await response.json();
       if (!data.order_id) {
         toast.error("Failed to create payment order", { autoClose: 3000 });
+        setIsLoading(false);
+
         return;
       }
 
@@ -222,6 +224,7 @@ const Appointment = () => {
 
             const verifyResponse = await verify.json();
             if (verifyResponse.success) {
+              setIsNavigating(true);
               // Step 3: Save Appointment
               const bookResponse = await fetch(
                 "https://doc-link-backend.onrender.com/book-appointment",
@@ -255,6 +258,8 @@ const Appointment = () => {
 
                 setTimeout(() => {
                   navigate("/upcoming-appointment");
+                  handleCloseModal();
+                  setIsNavigating(false);
                 }, 3000);
               } else {
                 toast.error(
@@ -294,6 +299,8 @@ const Appointment = () => {
         toast.error("Razorpay SDK failed to load. Refresh the page.", {
           autoClose: 3000,
         });
+        setIsLoading(false);
+
         return;
       }
 
@@ -302,6 +309,8 @@ const Appointment = () => {
     } catch (error) {
       console.error("Payment Error:", error);
       toast.error("Payment failed. Try again.", { autoClose: 3000 });
+    } finally {
+      setIsLoading(false); // Stop loading after process
     }
   };
 
@@ -634,8 +643,13 @@ const Appointment = () => {
                     color="success"
                     type="submit"
                     onClick={handlePayment}
+                    disabled={isLoading || isNavigating}
                   >
-                    Book Anyway
+                    {isLoading
+                      ? "Processing Payment..."
+                      : isNavigating
+                      ? "Redirecting..."
+                      : "Book Anyway"}
                   </Button>
                 </Box>
               </Box>
