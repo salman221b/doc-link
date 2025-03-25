@@ -38,6 +38,7 @@ const Appointment = () => {
   const [availableSlots, setAvailableSlots] = useState([]);
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [openModal, setOpenModal] = useState(false);
+  const [amount, setAmount] = useState(0);
 
   const decoded = token ? jwtDecode(token) : null;
   const userId = decoded?.id; // Extract user ID
@@ -199,7 +200,7 @@ const Appointment = () => {
 
       const options = {
         key: process.env.RAZORPAY_KEY_TEST,
-        amount: data.amount,
+        amount: amount,
         currency: "INR",
         name: "Telemedicine App",
         order_id: data.order_id,
@@ -432,7 +433,16 @@ const Appointment = () => {
                 style={{ backgroundColor: "white", borderRadius: "10px" }}
                 label="Mode of Consultation"
                 name="mode"
-                onChange={(e) => setMode(e.target.value)}
+                onChange={(e) => {
+                  setMode(e.target.value);
+                  if (e.target.value === "Video Consultation") {
+                    setAmount(selectedDoctor.consultationFee.video);
+                  } else if (e.target.value === "Teleconsultation") {
+                    setAmount(selectedDoctor.consultationFee.teleconsultation);
+                  } else if (e.target.value === "In-Person Consultation") {
+                    setAmount(selectedDoctor.consultationFee.inPerson);
+                  }
+                }}
               >
                 <MenuItem value="" disabled>
                   <em>None</em>
@@ -447,6 +457,12 @@ const Appointment = () => {
                   </MenuItem>
                 ))}
               </Select>
+              <helperText
+                className="text"
+                style={{ textAlign: "right", marginTop: "10px" }}
+              >
+                Amount:<span style={{ fontWeight: "bold" }}> {amount}/-</span>
+              </helperText>
             </FormControl>
             <TextField
               label="Date of Appointment"
