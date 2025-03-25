@@ -24,6 +24,8 @@ import ManageAppointments from "./pages/doctor/manage-appointments/ManageAppoint
 import PatientsList from "./pages/doctor/patients-list/PatientsList";
 import CustomizedSwitches from "./components/theme/Theme";
 import { ThemeProvider } from "./context/ThemeContext";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 const App = () => {
   const [user, setUser] = useState(null);
 
@@ -37,6 +39,8 @@ const App = () => {
 
   return (
     <>
+      {" "}
+      <ToastContainer />
       <ThemeProvider>
         <div className="container">
           <Routes>

@@ -42,7 +42,7 @@ const Appointment = () => {
 
   const decoded = token ? jwtDecode(token) : null;
   const userId = decoded?.id; // Extract user ID
-  const userName = decoded?.firstName + " " + decoded?.lastName;
+  const userName = decoded?.name;
   const userEmail = decoded?.email;
   const userPhone = decoded?.phone;
 
@@ -175,6 +175,7 @@ const Appointment = () => {
   };
   const handleBookNow = () => {
     setOpenModal(true);
+    console.log(userEmail, userPhone, userName);
   };
 
   const handleCloseModal = () => {
@@ -195,7 +196,7 @@ const Appointment = () => {
 
       const data = await response.json();
       if (!data.order_id) {
-        alert("Failed to create payment order");
+        toast.error("Failed to create payment order", { autoClose: 3000 });
         return;
       }
 
@@ -206,52 +207,70 @@ const Appointment = () => {
         name: "Telemedicine App",
         order_id: data.order_id,
         handler: async function (response) {
-          // Step 2: Verify payment on backend
-          const verify = await fetch(
-            "https://doc-link-backend.onrender.com/verify-payment",
-            {
-              method: "POST",
-              body: JSON.stringify(response),
-              headers: { "Content-Type": "application/json" },
-            }
-          );
-
-          const verifyResponse = await verify.json();
-          if (verifyResponse.success) {
-            // Step 3: Save Appointment
-            await fetch(
-              "https://doc-link-backend.onrender.com/book-appointment",
+          try {
+            // Step 2: Verify payment on backend
+            const verify = await fetch(
+              "https://doc-link-backend.onrender.com/verify-payment",
               {
                 method: "POST",
+                body: JSON.stringify(response),
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  userId,
-                  doctor: selectedDoctor._id,
-                  specialization,
-                  selectedDate,
-                  selectedSlot,
-                  mode,
-                  payment_mode: verifyResponse.payment_mode,
-                  payment_status: verifyResponse.payment_status,
-                  amount,
-                }),
               }
             );
-            if (response.ok) {
-              const result = await response.json();
-              toast.success(
-                result.message || "Appointment booked successfully!",
-                { autoClose: 3000 }
+
+            const verifyResponse = await verify.json();
+            if (verifyResponse.success) {
+              // Step 3: Save Appointment
+              const bookResponse = await fetch(
+                "https://doc-link-backend.onrender.com/book-appointment",
+                {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    userId,
+                    doctor: selectedDoctor._id,
+                    specialization,
+                    selectedDate,
+                    selectedSlot,
+                    mode,
+                    payment_mode: verifyResponse.payment_mode,
+                    payment_status: verifyResponse.payment_status,
+                    amount,
+                  }),
+                }
               );
 
-              setTimeout(() => {
-                navigate("/upcoming-appointments"); // Redirect after 3 seconds
-              }, 3000);
+              const bookResult = await bookResponse.json();
+
+              if (bookResponse.ok) {
+                toast.success(
+                  bookResult.message || "Appointment booked successfully!",
+                  {
+                    position: "top-right",
+                    autoClose: 3000,
+                  }
+                );
+
+                setTimeout(() => {
+                  navigate("/upcoming-appointment");
+                }, 3000);
+              } else {
+                toast.error(
+                  bookResult.message || "Failed to book appointment.",
+                  {
+                    position: "top-right",
+                    autoClose: 3000,
+                  }
+                );
+              }
             } else {
-              toast.error("Failed to book appointment. Please try again.", {
-                autoClose: 3000,
-              });
+              toast.error("Payment verification failed", { autoClose: 3000 });
             }
+          } catch (error) {
+            console.error("Error booking appointment:", error);
+            toast.error("Something went wrong. Please try again.", {
+              autoClose: 3000,
+            });
           }
         },
         prefill: {
@@ -262,7 +281,7 @@ const Appointment = () => {
         modal: {
           escape: false,
           ondismiss: function () {
-            alert("Payment Failed! Try again.");
+            toast.error("Payment Failed! Try again.", { autoClose: 3000 });
           },
         },
         theme: { color: "#3399cc" },
@@ -270,7 +289,9 @@ const Appointment = () => {
 
       // Ensure Razorpay script is loaded before opening
       if (!window.Razorpay) {
-        alert("Razorpay SDK failed to load. Refresh the page.");
+        toast.error("Razorpay SDK failed to load. Refresh the page.", {
+          autoClose: 3000,
+        });
         return;
       }
 
@@ -278,7 +299,7 @@ const Appointment = () => {
       rzp.open();
     } catch (error) {
       console.error("Payment Error:", error);
-      alert("Payment failed. Try again.");
+      toast.error("Payment failed. Try again.", { autoClose: 3000 });
     }
   };
 
