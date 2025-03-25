@@ -201,7 +201,7 @@ const Appointment = () => {
 
       const options = {
         key: process.env.RAZORPAY_KEY_TEST,
-        amount: amount * 100,
+        amount: data.amount,
         currency: "INR",
         name: "Telemedicine App",
         order_id: data.order_id,
