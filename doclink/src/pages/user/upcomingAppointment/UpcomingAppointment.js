@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-
+import NoData from "../../../static/no_data.png";
 import NavBar from "../../../components/userNavbar/NavBar";
 import {
   FormControl,
@@ -72,7 +72,7 @@ const UpcomingAppointment = () => {
       <h1 className="title2">Just a Click Away.</h1>
       <h2
         className="text"
-        style={{ textAlign: "center", marginBottom: "20px" }}
+        style={{ textAlign: "center", marginBottom: "30px", marginTop: "30px" }}
       >
         Upcoming Appointments
       </h2>
@@ -158,7 +158,23 @@ const UpcomingAppointment = () => {
         </div>
       </form>
       {appointments.length === 0 ? (
-        <p>No upcoming appointments</p>
+        <>
+          <img
+            src={NoData}
+            alt="No Data"
+            style={{ width: "300px", display: "block", margin: "auto" }}
+          />
+          <p
+            className="text"
+            style={{
+              textAlign: "center",
+              marginBottom: "80px",
+              marginTop: "20px",
+            }}
+          >
+            Oops, No upcoming appointments !
+          </p>
+        </>
       ) : (
         <Container className="mt-4">
           <Row>
