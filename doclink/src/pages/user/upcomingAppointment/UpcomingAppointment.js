@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import NoData from "../../../static/no_data.png";
-import NavBar from "../../../components/userNavbar/NavBar";
+import { useNavigate } from "react-router-dom";
 import {
   FormControl,
   InputLabel,
@@ -9,34 +8,41 @@ import {
   Select,
   TextField,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
-
+import { Card, Button, Container, Row, Col } from "react-bootstrap";
 import PersonIcon from "@mui/icons-material/Person";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import { Card, Button, Container, Row, Col } from "react-bootstrap";
+
+import NavBar from "../../../components/userNavbar/NavBar";
 import ScrollToTop from "../../../components/scrollToTop/ScrollToTop";
+import NoData from "../../../static/no_data.png";
 
 const UpcomingAppointment = () => {
   const navigate = useNavigate();
-
   const token = localStorage.getItem("token");
+
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Check if the token is expired
   const isTokenExpired = (token) => {
     if (!token) return true;
-    const decoded = JSON.parse(atob(token.split(".")[1]));
-
-    return decoded.exp * 1000 < Date.now();
+    try {
+      const decoded = JSON.parse(atob(token.split(".")[1]));
+      return decoded.exp * 1000 < Date.now();
+    } catch (error) {
+      return true; // Invalid token format
+    }
   };
 
-  // Redirect if token is invalid
+  // Redirect to login if token is invalid
   useEffect(() => {
     if (!token || isTokenExpired(token)) {
-      console.error("Token expired. Redirecting to login...");
+      toast.error("Session expired. Please log in again.");
       navigate("/login");
     }
   }, [token, navigate]);
+
+  // Fetch upcoming appointments
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
@@ -44,12 +50,18 @@ const UpcomingAppointment = () => {
           "https://doc-link-backend.onrender.com/appointments",
           {
             method: "GET",
-            headers: { Authorization: `Bearer ${token}` },
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+              Role: "patient",
+            },
           }
         );
 
         if (!response.ok) {
-          throw new Error("Failed to fetch appointments");
+          throw new Error(
+            `Failed to fetch appointments. Status: ${response.status}`
+          );
         }
 
         const data = await response.json();
@@ -62,23 +74,31 @@ const UpcomingAppointment = () => {
     };
 
     fetchAppointments();
-  }, []);
+  }, [token]); // Ensure API is refetched only when token changes
 
+  // Show loading spinner while fetching data
   if (loading) return <p>Loading...</p>;
+  const formatReadableDate = (timestamp) => {
+    return new Date(timestamp).toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+    });
+  };
   return (
     <div>
       <NavBar />
       <h1 className="title1">Your Health,</h1>
       <h1 className="title2">Just a Click Away.</h1>
-      <h2
-        className="text"
-        style={{ textAlign: "center", marginBottom: "30px", marginTop: "30px" }}
-      >
+
+      <h2 className="text" style={{ textAlign: "center", margin: "30px 0" }}>
         Upcoming Appointments
       </h2>
+
+      {/* Search Area */}
       <form>
         <div
-          className="searchArea "
+          className="searchArea"
           style={{
             display: "flex",
             justifyContent: "center",
@@ -86,29 +106,18 @@ const UpcomingAppointment = () => {
           }}
         >
           <FormControl sx={{ width: "200px", marginTop: "-20px" }}>
-            <InputLabel id="demo-simple-select-helper-label">Mode</InputLabel>
+            <InputLabel>Mode</InputLabel>
             <Select
-              style={{
-                backgroundColor: "white",
-                borderRadius: "10px",
-              }}
-              labelId="demo-simple-select-helper-label"
-              id="demo-simple-select-helper"
-              // value={formData.specialization}
+              style={{ backgroundColor: "white", borderRadius: "10px" }}
               label="Mode"
               name="mode"
-              // onChange={handleChange}
             >
-              <MenuItem value={"in-person"} selected>
-                In-person
-              </MenuItem>
-              <MenuItem value={"video-consultation"}>
-                Video consultation
-              </MenuItem>
-              <MenuItem value={"tele-consultation"}>Tele consultation</MenuItem>
+              <MenuItem value="in-person">In-person</MenuItem>
+              <MenuItem value="video-consultation">Video consultation</MenuItem>
+              <MenuItem value="tele-consultation">Tele consultation</MenuItem>
             </Select>
-            {/* <FormHelperText>With label + helper text</FormHelperText> */}
           </FormControl>
+
           <TextField
             style={{
               backgroundColor: "white",
@@ -116,14 +125,12 @@ const UpcomingAppointment = () => {
               marginLeft: "20px",
               marginBottom: "20px",
             }}
-            id="outlined-basic"
             label="Start date"
             variant="outlined"
             type="date"
-            InputLabelProps={{
-              shrink: true, // This removes the default dd-mm-yyyy placeholder
-            }}
+            InputLabelProps={{ shrink: true }}
           />
+
           <TextField
             style={{
               backgroundColor: "white",
@@ -131,14 +138,12 @@ const UpcomingAppointment = () => {
               marginLeft: "20px",
               marginBottom: "20px",
             }}
-            id="outlined-basic"
             label="End date"
             variant="outlined"
             type="date"
-            InputLabelProps={{
-              shrink: true, // This removes the default dd-mm-yyyy placeholder
-            }}
+            InputLabelProps={{ shrink: true }}
           />
+
           <button
             className="searchButton"
             type="submit"
@@ -157,34 +162,29 @@ const UpcomingAppointment = () => {
           </button>
         </div>
       </form>
+
+      {/* No Appointments Case */}
       {appointments.length === 0 ? (
-        <>
+        <div style={{ textAlign: "center", marginBottom: "80px" }}>
           <img
             src={NoData}
             alt="No Data"
             style={{ width: "300px", display: "block", margin: "auto" }}
           />
-          <p
-            className="text"
-            style={{
-              textAlign: "center",
-              marginBottom: "80px",
-              marginTop: "20px",
-            }}
-          >
-            Oops, No upcoming appointments !
+          <p className="text" style={{ marginTop: "20px" }}>
+            Oops, No upcoming appointments!
           </p>
-        </>
+        </div>
       ) : (
         <Container className="mt-4">
           <Row>
             {appointments.map((appointment) => (
-              <Col md={6} xs={12} className="mb-3">
-                <Card key={appointment._id}>
+              <Col md={6} xs={12} key={appointment._id} className="mb-3">
+                <Card>
                   <Card.Body>
                     <div className="text">
                       <Card.Title>
-                        <PersonIcon />{" "}
+                        <PersonIcon />
                         <span style={{ marginLeft: "20px" }}>
                           {appointment.doctorId.firstName}{" "}
                           {appointment.doctorId.lastName}
@@ -199,8 +199,10 @@ const UpcomingAppointment = () => {
                           {appointment.specialization}
                         </span>
                       </Card.Title>
+
                       <Card.Text>
-                        {appointment.scheduledDate}. {appointment.scheduledTime}
+                        {formatReadableDate(appointment.scheduledDate)} •{" "}
+                        {appointment.scheduledTime}
                         <span style={{ float: "right", marginRight: "30px" }}>
                           {appointment.status}
                         </span>
@@ -220,27 +222,33 @@ const UpcomingAppointment = () => {
                       Join
                       <ArrowForwardIcon style={{ color: "#F49696" }} />
                     </Button>
-                    <Button
+
+                    <div
                       style={{
-                        width: "49%",
+                        display: "flex",
+                        justifyContent: "space-between",
                         marginTop: "10px",
-                        backgroundColor: "#030E82",
-                        fontWeight: "bold",
                       }}
                     >
-                      Reschedule
-                    </Button>
-                    <Button
-                      style={{
-                        width: "49%",
-                        marginTop: "10px",
-                        backgroundColor: "#F49696",
-                        fontWeight: "bold",
-                        float: "right",
-                      }}
-                    >
-                      Cancel
-                    </Button>
+                      <Button
+                        style={{
+                          width: "48%",
+                          backgroundColor: "#030E82",
+                          fontWeight: "bold",
+                        }}
+                      >
+                        Reschedule
+                      </Button>
+                      <Button
+                        style={{
+                          width: "48%",
+                          backgroundColor: "#F49696",
+                          fontWeight: "bold",
+                        }}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
                   </Card.Body>
                 </Card>
               </Col>
@@ -248,6 +256,7 @@ const UpcomingAppointment = () => {
           </Row>
         </Container>
       )}
+
       <ScrollToTop />
     </div>
   );
