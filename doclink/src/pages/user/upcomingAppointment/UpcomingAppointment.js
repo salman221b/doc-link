@@ -8,6 +8,8 @@ import {
   Select,
   TextField,
 } from "@mui/material";
+import { CircularProgress } from "@mui/material";
+
 import { Card, Button, Container, Row, Col } from "react-bootstrap";
 import PersonIcon from "@mui/icons-material/Person";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
@@ -77,7 +79,29 @@ const UpcomingAppointment = () => {
   }, [token]); // Ensure API is refetched only when token changes
 
   // Show loading spinner while fetching data
-  if (loading) return <p>Loading...</p>;
+  if (loading) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+          flexDirection: "column",
+          color: "#82EAAC", // Light Green Text
+        }}
+      >
+        <CircularProgress
+          size={80}
+          thickness={1}
+          sx={{
+            color: "#F49696", // Light Red Spinner
+          }}
+        />
+        <h2 style={{ marginTop: "20px", color: "#82EAAC" }}>Loading...</h2>
+      </div>
+    );
+  }
   const formatReadableDate = (timestamp) => {
     return new Date(timestamp).toLocaleDateString("en-GB", {
       day: "2-digit",
