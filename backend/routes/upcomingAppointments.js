@@ -22,5 +22,15 @@ router.get("/appointments", authMiddleware, async (req, res) => {
     res.status(500).json({ message: "Failed to fetch appointments" });
   }
 });
+router.delete("/appointments/:id", authMiddleware, async (req, res) => {
+  try {
+    const appointmentId = req.params.id;
+    await Appointment.findByIdAndDelete(appointmentId);
+    res.json({ message: "Appointment deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to delete appointment" });
+  }
+});
 
 module.exports = router;

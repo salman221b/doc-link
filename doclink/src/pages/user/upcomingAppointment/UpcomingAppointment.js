@@ -109,6 +109,34 @@ const UpcomingAppointment = () => {
       year: "numeric",
     });
   };
+  const handleCancelAppointment = async (appointmentId) => {
+    try {
+      const response = await fetch(
+        `https://doc-link-backend.onrender.com/appointments/${appointmentId}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+            Role: "patient",
+          },
+        }
+      );
+      if (response.ok) {
+        toast.success("Appointment cancelled successfully!");
+        setAppointments((prevAppointments) =>
+          prevAppointments.filter(
+            (appointment) => appointment._id !== appointmentId
+          )
+        );
+      } else {
+        toast.error("Failed to cancel appointment.");
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
   return (
     <div style={{ marginBottom: "130px" }}>
       <NavBar />
@@ -201,6 +229,7 @@ const UpcomingAppointment = () => {
                           backgroundColor: "#F49696",
                           fontWeight: "bold",
                         }}
+                        onClick={handleCancelAppointment}
                       >
                         Cancel
                       </Button>
