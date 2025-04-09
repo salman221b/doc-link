@@ -93,7 +93,7 @@ const UpcomingAppointment = () => {
       >
         <CircularProgress
           size={80}
-          thickness={1}
+          thickness={3}
           sx={{
             color: "#F49696", // Light Red Spinner
           }}
@@ -110,7 +110,7 @@ const UpcomingAppointment = () => {
     });
   };
   return (
-    <div>
+    <div style={{ marginBottom: "130px" }}>
       <NavBar />
       <h1 className="title1">Your Health,</h1>
       <h1 className="title2">Just a Click Away.</h1>
@@ -118,74 +118,6 @@ const UpcomingAppointment = () => {
       <h2 className="text" style={{ textAlign: "center", margin: "30px 0" }}>
         Upcoming Appointments
       </h2>
-
-      {/* Search Area */}
-      <form>
-        <div
-          className="searchArea"
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <FormControl sx={{ width: "200px", marginTop: "-20px" }}>
-            <InputLabel>Mode</InputLabel>
-            <Select
-              style={{ backgroundColor: "white", borderRadius: "10px" }}
-              label="Mode"
-              name="mode"
-            >
-              <MenuItem value="in-person">In-person</MenuItem>
-              <MenuItem value="video-consultation">Video consultation</MenuItem>
-              <MenuItem value="tele-consultation">Tele consultation</MenuItem>
-            </Select>
-          </FormControl>
-
-          <TextField
-            style={{
-              backgroundColor: "white",
-              borderRadius: "10px",
-              marginLeft: "20px",
-              marginBottom: "20px",
-            }}
-            label="Start date"
-            variant="outlined"
-            type="date"
-            InputLabelProps={{ shrink: true }}
-          />
-
-          <TextField
-            style={{
-              backgroundColor: "white",
-              borderRadius: "10px",
-              marginLeft: "20px",
-              marginBottom: "20px",
-            }}
-            label="End date"
-            variant="outlined"
-            type="date"
-            InputLabelProps={{ shrink: true }}
-          />
-
-          <button
-            className="searchButton"
-            type="submit"
-            style={{
-              marginLeft: "20px",
-              marginBottom: "20px",
-              backgroundColor: "#82EAAC",
-              color: "#030E82",
-              height: "50px",
-              width: "100px",
-              borderRadius: "10px",
-            }}
-          >
-            Search
-            <ArrowForwardIcon />
-          </button>
-        </div>
-      </form>
 
       {/* No Appointments Case */}
       {appointments.length === 0 ? (
@@ -228,7 +160,7 @@ const UpcomingAppointment = () => {
                         {formatReadableDate(appointment.scheduledDate)} •{" "}
                         {appointment.scheduledTime}
                         <span style={{ float: "right", marginRight: "30px" }}>
-                          {appointment.status}
+                          Status: {appointment.status}
                         </span>
                         <p>{appointment.mode}</p>
                         <p>Prescription / Notes</p>
