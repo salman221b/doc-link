@@ -181,26 +181,26 @@ const UpcomingAppointment = () => {
       toast.success("Appointment rescheduled successfully");
       handleCloseModal();
       // Optionally re-fetch appointments
-      //     const response = await fetch(
-      //       "https://doc-link-backend.onrender.com/appointments",
-      //       {
-      //         method: "GET",
-      //         headers: {
-      //           "Content-Type": "application/json",
-      //           Authorization: `Bearer ${token}`,
-      //           Role: "patient",
-      //         },
-      //       }
-      //     );
+      const response = await fetch(
+        "https://doc-link-backend.onrender.com/appointments",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+            Role: "patient",
+          },
+        }
+      );
 
-      //     if (!response.ok) {
-      //       throw new Error(
-      //         `Failed to fetch appointments. Status: ${response.status}`
-      //       );
-      //     }
+      if (!response.ok) {
+        throw new Error(
+          `Failed to fetch appointments. Status: ${response.status}`
+        );
+      }
 
-      //     const data = await response.json();
-      //     setAppointments(data);
+      const data = await response.json();
+      setAppointments(data);
     } catch (err) {
       toast.error(err.message);
     }

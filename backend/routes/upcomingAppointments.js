@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Appointment = require("../models/appointmentsModel");
 const authMiddleware = require("../middlewares/authMiddleware");
+const Doctor = require("../models/doctorsModel");
 
 router.get("/appointments", authMiddleware, async (req, res) => {
   try {
@@ -39,6 +40,18 @@ router.put("/appointments/:id", authMiddleware, async (req, res) => {
     console.log(updatedData);
     await Appointment.findByIdAndUpdate(appointmentId, updatedData);
     res.json({ message: "Appointment updated successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to update appointment" });
+  }
+});
+router.get("doctorAvailability/:doctorId", async (req, res) => {
+  try {
+    const doctorId = req.params.doctorId;
+
+    const doctor = await Doctor.find({ doctorId });
+
+    res.json(doctor);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Failed to update appointment" });
