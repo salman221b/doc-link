@@ -32,5 +32,16 @@ router.delete("/appointments/:id", authMiddleware, async (req, res) => {
     res.status(500).json({ message: "Failed to delete appointment" });
   }
 });
+router.put("/appointments/:id", authMiddleware, async (req, res) => {
+  try {
+    const appointmentId = req.params.id;
+    const updatedData = req.body;
+    await Appointment.findByIdAndUpdate(appointmentId, updatedData);
+    res.json({ message: "Appointment updated successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to update appointment" });
+  }
+});
 
 module.exports = router;

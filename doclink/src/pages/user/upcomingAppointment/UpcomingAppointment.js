@@ -9,7 +9,7 @@ import {
   TextField,
 } from "@mui/material";
 import { CircularProgress } from "@mui/material";
-
+import Swal from "sweetalert2";
 import { Card, Button, Container, Row, Col } from "react-bootstrap";
 import PersonIcon from "@mui/icons-material/Person";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
@@ -17,6 +17,7 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import NavBar from "../../../components/userNavbar/NavBar";
 import ScrollToTop from "../../../components/scrollToTop/ScrollToTop";
 import NoData from "../../../static/no_data.png";
+import RescheduleModal from "./RescheduleModal";
 
 const UpcomingAppointment = () => {
   const navigate = useNavigate();
@@ -24,7 +25,8 @@ const UpcomingAppointment = () => {
 
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const [showModal, setShowModal] = useState(false);
+  const [selectedAppointment, setSelectedAppointment] = useState(null);
   // Check if the token is expired
   const isTokenExpired = (token) => {
     if (!token) return true;
@@ -110,6 +112,17 @@ const UpcomingAppointment = () => {
     });
   };
   const handleCancelAppointment = async (appointmentId) => {
+    const result = await Swal.fire({
+      title: "Cancel appointment?",
+      text: "Are you sure you want to cancel this appointment?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, cancel it!",
+    });
+
+    if (!result.isConfirmed) return;
     try {
       const response = await fetch(
         `https://doc-link-backend.onrender.com/appointments/${appointmentId}`,
@@ -134,6 +147,42 @@ const UpcomingAppointment = () => {
       }
     } catch (error) {
       toast.error(error.message);
+    }
+  };
+
+  const handleOpenModal = (appointment) => {
+    setSelectedAppointment(appointment);
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setSelectedAppointment(null);
+  };
+
+  const handleReschedule = async (appointmentId, updatedData) => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const res = await fetch(
+        `https://doc-link-backend.onrender.com/appointments/${appointmentId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(updatedData),
+        }
+      );
+
+      if (!res.ok) throw new Error("Failed to reschedule");
+
+      toast.success("Appointment rescheduled successfully");
+      handleCloseModal();
+      // Optionally re-fetch appointments
+    } catch (err) {
+      toast.error(err.message);
     }
   };
 
@@ -220,6 +269,7 @@ const UpcomingAppointment = () => {
                           backgroundColor: "#030E82",
                           fontWeight: "bold",
                         }}
+                        onClick={() => handleOpenModal(appointment)}
                       >
                         Reschedule
                       </Button>
@@ -229,7 +279,7 @@ const UpcomingAppointment = () => {
                           backgroundColor: "#F49696",
                           fontWeight: "bold",
                         }}
-                        onClick={handleCancelAppointment}
+                        onClick={() => handleCancelAppointment(appointment._id)}
                       >
                         Cancel
                       </Button>
@@ -241,6 +291,12 @@ const UpcomingAppointment = () => {
           </Row>
         </Container>
       )}
+      <RescheduleModal
+        show={showModal}
+        handleClose={handleCloseModal}
+        appointment={selectedAppointment}
+        onReschedule={handleReschedule}
+      />
 
       <ScrollToTop />
     </div>
