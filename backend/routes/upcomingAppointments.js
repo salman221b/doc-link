@@ -36,6 +36,7 @@ router.put("/appointments/:id", async (req, res) => {
   try {
     const appointmentId = req.params.id;
     const updatedData = req.body;
+    console.log(updatedData);
     await Appointment.findByIdAndUpdate(appointmentId, updatedData);
     res.json({ message: "Appointment updated successfully" });
   } catch (error) {
