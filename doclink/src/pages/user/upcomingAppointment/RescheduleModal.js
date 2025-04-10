@@ -33,7 +33,6 @@ const RescheduleModal = ({ show, handleClose, appointment, onReschedule }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     onReschedule(appointment._id, formData);
-    console.log("Rescheduled appointment:", formData);
   };
 
   return (
