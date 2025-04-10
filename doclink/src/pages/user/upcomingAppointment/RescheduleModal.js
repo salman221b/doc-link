@@ -7,6 +7,11 @@ const RescheduleModal = ({ show, handleClose, appointment, onReschedule }) => {
     scheduledDate: "",
     scheduledTime: "",
   });
+  const today = new Date().toISOString().split("T")[0];
+  const maxDate = new Date();
+  maxDate.setDate(maxDate.getDate() + 14); // Allow selection up to 2 weeks ahead
+  const maxDateFormatted = maxDate.toISOString().split("T")[0];
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     if (appointment) {
@@ -28,6 +33,7 @@ const RescheduleModal = ({ show, handleClose, appointment, onReschedule }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     onReschedule(appointment._id, formData);
+    console.log("Rescheduled appointment:", formData);
   };
 
   return (
@@ -45,6 +51,10 @@ const RescheduleModal = ({ show, handleClose, appointment, onReschedule }) => {
               value={formData.scheduledDate}
               onChange={handleChange}
               required
+              min={today}
+              max={maxDateFormatted}
+              error={error}
+              helperText={error ? "Doctor is not available on this day." : ""}
             />
           </Form.Group>
           <Form.Group className="mt-3">
