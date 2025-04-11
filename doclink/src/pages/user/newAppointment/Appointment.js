@@ -583,7 +583,7 @@ const Appointment = () => {
                 fontWeight: "bold",
               }}
               onClick={handleBookNow}
-              disabled={!selectedSlot || !selectedDate || amount === 0}
+              disabled={!selectedSlot || !selectedDate || amount === 0 || error}
             >
               Book Now
             </button>
