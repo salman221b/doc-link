@@ -14,7 +14,7 @@ router.get("/appointments", authMiddleware, async (req, res) => {
       patientId: userId,
       scheduledDate: { $gte: startOfToday },
     })
-      .populate("doctorId", "firstName lastName")
+      .populate("doctorId", "firstName lastName availabilitySchedule")
       .sort({ scheduledDate: 1 });
 
     res.json(appointments);

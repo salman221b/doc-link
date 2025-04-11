@@ -14,17 +14,19 @@ const RescheduleModal = ({ show, handleClose, appointment, onReschedule }) => {
       setFormData({
         scheduledDate: appointment.scheduledDate?.slice(0, 10),
         scheduledTime: appointment.scheduledTime || "",
+        doctorId: appointment.doctorId,
       });
     }
+    console.log(formData);
   }, [appointment]);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
+  // const handleChange = (e) => {
+  //   const { name, value } = e.target;
+  //   setFormData((prev) => ({
+  //     ...prev,
+  //     [name]: value,
+  //   }));
+  // };
   const handleDateChange = (event) => {
     const newDate = event.target.value;
     setSelectedDate(newDate);
