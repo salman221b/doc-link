@@ -1,7 +1,7 @@
 // reminderSend/reminderSend.js
 const cron = require("node-cron");
 const nodemailer = require("nodemailer");
-const Appointment = require("../models/Appointment"); // go up a folder
+const Appointment = require("../models/appointmentsModel"); // go up a folder
 
 const startReminderJob = () => {
   const transporter = nodemailer.createTransport({
