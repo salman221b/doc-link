@@ -45,17 +45,5 @@ router.put("/appointments/:id", authMiddleware, async (req, res) => {
     res.status(500).json({ message: "Failed to update appointment" });
   }
 });
-router.get("doctorAvailability/:doctorId", async (req, res) => {
-  try {
-    const doctorId = req.params.doctorId;
-
-    const doctor = await Doctor.find({ doctorId });
-
-    res.json(doctor);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Failed to update appointment" });
-  }
-});
 
 module.exports = router;

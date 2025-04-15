@@ -6,6 +6,11 @@ const appointmentSchema = new mongoose.Schema({
   specialization: String,
   scheduledDate: Date,
   scheduledTime: String,
+  reminderSent: {
+    type: Boolean,
+    default: false,
+  },
+
   status: { type: String, default: "Pending" },
   mode: String,
   paymentMode: String,

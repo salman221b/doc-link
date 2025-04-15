@@ -10,8 +10,9 @@ import PersonIcon from "@mui/icons-material/Person";
 import "./NavBar.css";
 import CustomizedSwitches from "../theme/Theme";
 import { ThemeContext } from "../../context/ThemeContext";
+import { IconButton, Badge } from "@mui/material";
 
-const NavBar = () => {
+const NavBar = ({ hasNotification }) => {
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -69,7 +70,11 @@ const NavBar = () => {
             Payment History
           </NavLink>
         </nav>
-        <NotificationsOutlinedIcon className="notification-icon" />
+        <IconButton>
+          <Badge color="error" variant="dot" invisible={!hasNotification}>
+            <NotificationsOutlinedIcon className="notification-icon" />
+          </Badge>
+        </IconButton>
         <div className="account-icon" onClick={toggleDropdown}>
           <AccountCircleOutlinedIcon />
         </div>

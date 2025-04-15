@@ -27,6 +27,8 @@ const UpcomingAppointment = () => {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
+  const [timers, setTimers] = useState({});
+
   // Check if the token is expired
   const isTokenExpired = (token) => {
     if (!token) return true;
@@ -79,6 +81,71 @@ const UpcomingAppointment = () => {
 
     fetchAppointments();
   }, [token]); // Ensure API is refetched only when token changes
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const updatedTimers = {};
+      appointments.forEach((appointment) => {
+        updatedTimers[appointment._id] = getTimeLeft(
+          appointment.scheduledDate,
+          appointment.scheduledTime
+        );
+      });
+      setTimers(updatedTimers);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [appointments]);
+  useEffect(() => {
+    const checkNotifications = () => {
+      const now = new Date();
+
+      const notifications = appointments.filter((appointment) => {
+        const dateOnly = new Date(appointment.scheduledDate)
+          .toISOString()
+          .split("T")[0];
+        const appointmentTime = new Date(
+          `${dateOnly}T${appointment.scheduledTime}:00`
+        );
+        const timeDiff = (appointmentTime - now) / 60000; // in minutes
+
+        return timeDiff <= 15 && timeDiff > 14; // exactly between 14-15 mins left
+      });
+
+      if (notifications.length > 0) {
+        toast.info(
+          `You have an appointment in 15 minutes with Dr. ${notifications[0].doctorId.firstName}`,
+          {
+            position: toast.POSITION.TOP_RIGHT,
+            autoClose: 8000,
+          }
+        );
+      }
+    };
+
+    const interval = setInterval(checkNotifications, 60000); // check every 1 minute
+    return () => clearInterval(interval);
+  }, [appointments]);
+  const [hasUpcomingNotification, setHasUpcomingNotification] = useState(false);
+
+  useEffect(() => {
+    const checkNotify = () => {
+      const now = new Date();
+      const notify = appointments.some((appointment) => {
+        const dateOnly = new Date(appointment.scheduledDate)
+          .toISOString()
+          .split("T")[0];
+        const appointmentTime = new Date(
+          `${dateOnly}T${appointment.scheduledTime}:00`
+        );
+        const timeDiff = (appointmentTime - now) / 60000;
+        return timeDiff <= 15 && timeDiff > 0;
+      });
+      setHasUpcomingNotification(notify);
+    };
+
+    const interval = setInterval(checkNotify, 60000);
+    return () => clearInterval(interval);
+  }, [appointments]);
 
   // Show loading spinner while fetching data
   if (loading) {
@@ -206,9 +273,31 @@ const UpcomingAppointment = () => {
     }
   };
 
+  const getTimeLeft = (scheduledDate, scheduledTime) => {
+    const dateOnly = new Date(scheduledDate).toISOString().split("T")[0]; // Extract date part in yyyy-mm-dd
+    const appointmentDateTime = new Date(`${dateOnly}T${scheduledTime}:00`); // Build ISO datetime
+
+    const now = new Date();
+    const diff = appointmentDateTime.getTime() - now.getTime();
+
+    if (diff <= 0) return null;
+
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+    return `${hours}h ${minutes}m ${seconds}s`;
+  };
+  const isJoinTime = (scheduledDate, scheduledTime) => {
+    const dateOnly = new Date(scheduledDate).toISOString().split("T")[0];
+    const appointmentDateTime = new Date(`${dateOnly}T${scheduledTime}:00`);
+    const now = new Date();
+    return now >= appointmentDateTime;
+  };
+
   return (
     <div style={{ marginBottom: "130px" }}>
-      <NavBar />
+      <NavBar hasNotification={hasUpcomingNotification} />
       <h1 className="title1">Your Health,</h1>
       <h1 className="title2">Just a Click Away.</h1>
 
@@ -262,6 +351,18 @@ const UpcomingAppointment = () => {
                         <p>{appointment.mode}</p>
                         <p>Prescription / Notes</p>
                       </Card.Text>
+                      {getTimeLeft(
+                        appointment.scheduledDate,
+                        appointment.scheduledTime
+                      ) && (
+                        <p style={{ color: "green", fontWeight: "bold" }}>
+                          Starts in:{" "}
+                          {getTimeLeft(
+                            appointment.scheduledDate,
+                            appointment.scheduledTime
+                          )}
+                        </p>
+                      )}
                     </div>
 
                     <Button
@@ -271,6 +372,13 @@ const UpcomingAppointment = () => {
                         backgroundColor: "#82EAAC",
                         fontWeight: "bold",
                       }}
+                      hidden={appointment.mode === "In-Person Consultation"}
+                      disabled={
+                        !isJoinTime(
+                          appointment.scheduledDate,
+                          appointment.scheduledTime
+                        )
+                      }
                     >
                       Join
                       <ArrowForwardIcon style={{ color: "#F49696" }} />

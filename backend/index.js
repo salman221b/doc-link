@@ -3,7 +3,7 @@ const express = require("express");
 const dotenv = require("dotenv");
 const connectDB = require("./libs/db");
 const bodyParser = require("body-parser");
-
+const startReminderJob = require("./reminderSent/reminderSend");
 const cors = require("cors");
 const authMiddleware = require("./middlewares/authMiddleware");
 dotenv.config();
@@ -32,4 +32,5 @@ app.use("/", require("./routes/upcomingAppointments"));
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
+  startReminderJob();
 });
