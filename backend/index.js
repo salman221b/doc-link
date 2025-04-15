@@ -29,6 +29,7 @@ app.use("/", require("./routes/appointment"));
 app.use("/", require("./routes/payment"));
 app.use("/", require("./routes/book-appointment"));
 app.use("/", require("./routes/upcomingAppointments"));
+app.use("/", require("./routes/reminders"));
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

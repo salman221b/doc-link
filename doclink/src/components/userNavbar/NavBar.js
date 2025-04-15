@@ -10,7 +10,14 @@ import PersonIcon from "@mui/icons-material/Person";
 import "./NavBar.css";
 import CustomizedSwitches from "../theme/Theme";
 import { ThemeContext } from "../../context/ThemeContext";
-import { IconButton, Badge } from "@mui/material";
+import {
+  IconButton,
+  Badge,
+  Popover,
+  Typography,
+  List,
+  ListItem,
+} from "@mui/material";
 
 const NavBar = ({ hasNotification }) => {
   const navigate = useNavigate();
@@ -18,6 +25,8 @@ const NavBar = ({ hasNotification }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [openTheme, setOpenTheme] = useState(false);
   const { darkMode, setDarkMode } = useContext(ThemeContext);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [reminders, setReminders] = useState([]);
   // Toggle dropdown visibility
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
@@ -40,7 +49,31 @@ const NavBar = ({ hasNotification }) => {
     navigate("/login");
     window.location.reload();
   };
+  const handleClick = async (event) => {
+    setAnchorEl(event.currentTarget);
 
+    // 👉 Fetch appointment reminders from backend
+    try {
+      const res = await fetch(
+        "https://doc-link-backend.onrender.com/reminders",
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      const data = await res.json();
+      setReminders(data);
+    } catch (err) {
+      console.error("Error fetching reminders:", err);
+    }
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const open = Boolean(anchorEl);
   return (
     <div className="main-container">
       <header className="header">
@@ -72,9 +105,43 @@ const NavBar = ({ hasNotification }) => {
         </nav>
         <IconButton>
           <Badge color="error" variant="dot" invisible={!hasNotification}>
-            <NotificationsOutlinedIcon className="notification-icon" />
+            <NotificationsOutlinedIcon
+              className="notification-icon"
+              onClick={handleClick}
+            />
           </Badge>
         </IconButton>
+        <Popover
+          open={open}
+          anchorEl={anchorEl}
+          onClose={handleClose}
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "right",
+          }}
+          transformOrigin={{
+            vertical: "top",
+            horizontal: "right",
+          }}
+        >
+          <div style={{ padding: "10px", minWidth: "250px" }}>
+            <Typography variant="h6" gutterBottom>
+              Reminders
+            </Typography>
+            <List dense>
+              {reminders.length === 0 ? (
+                <ListItem>No new reminders</ListItem>
+              ) : (
+                reminders.map((reminder, index) => (
+                  <ListItem key={index}>
+                    Appointment with Dr. {reminder.doctorName} at{" "}
+                    {reminder.time}
+                  </ListItem>
+                ))
+              )}
+            </List>
+          </div>
+        </Popover>
         <div className="account-icon" onClick={toggleDropdown}>
           <AccountCircleOutlinedIcon />
         </div>
