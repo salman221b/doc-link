@@ -1,3 +1,7 @@
+const express = require("express");
+const router = express.Router();
+const { authenticateToken } = require("../middlewares/authMiddleware");
+const Appointment = require("../models/appointmentsModel");
 app.get("/reminders", authenticateToken, async (req, res) => {
   const userId = req.user.id;
   const now = new Date();
@@ -15,3 +19,5 @@ app.get("/reminders", authenticateToken, async (req, res) => {
 
   res.json(reminders);
 });
+
+module.exports = router;
