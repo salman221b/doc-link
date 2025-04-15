@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const { authenticateToken } = require("../middlewares/authMiddleware");
+const authMiddleware = require("../middlewares/authMiddleware");
 const Appointment = require("../models/appointmentsModel");
-router.get("/reminders", authenticateToken, async (req, res) => {
+router.get("/reminders", authMiddleware, async (req, res) => {
   const userId = req.user.id;
   const now = new Date();
   const upcoming = new Date(now.getTime() + 15 * 60 * 1000);
