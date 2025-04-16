@@ -116,7 +116,7 @@ const UpcomingAppointment = () => {
         toast.info(
           `You have an appointment in 15 minutes with Dr. ${notifications[0].doctorId.firstName}`,
           {
-            position: toast.POSITION.TOP_RIGHT,
+            position: "top-right",
             autoClose: 8000,
           }
         );

@@ -22,7 +22,9 @@ const startReminderJob = () => {
         $gte: now,
         $lte: fifteenMinutesLater,
       },
-    }).populate("patientId");
+    })
+      .populate("patientId")
+      .populate("doctorId");
 
     for (const appointment of appointments) {
       const mailOptions = {

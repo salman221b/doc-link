@@ -61,11 +61,19 @@ const NavBar = ({ hasNotification }) => {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         }
-      );
-      const data = await res.json();
-      setReminders(data);
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          if (Array.isArray(data)) {
+            setReminders(data);
+          } else {
+            setReminders([]); // fallback
+            console.error("Reminders should be an array:", data);
+          }
+        });
     } catch (err) {
       console.error("Error fetching reminders:", err);
+      setReminders([]);
     }
   };
 

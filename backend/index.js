@@ -6,6 +6,7 @@ const bodyParser = require("body-parser");
 const startReminderJob = require("./reminderSent/reminderSend");
 const cors = require("cors");
 const authMiddleware = require("./middlewares/authMiddleware");
+require("./reminderSent/reminderSend");
 dotenv.config();
 
 const PORT = process.env.PORT || 8000;
