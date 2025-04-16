@@ -448,6 +448,7 @@ const MedicalRecords = () => {
         </Row>
       </Container>
       <UploadButton />
+      <ScrollToTop />
     </div>
   );
 };
