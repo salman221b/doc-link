@@ -33,12 +33,10 @@ router.post("/medical-records", upload.single("file"), async (req, res) => {
     });
 
     await newRecord.save();
-    res
-      .status(201)
-      .json({
-        message: "Medical record uploaded successfully",
-        data: newRecord,
-      });
+    res.status(201).json({
+      message: "Medical record uploaded successfully",
+      data: newRecord,
+    });
   } catch (error) {
     console.error("Upload error:", error);
     res.status(500).json({ message: "Server error" });
