@@ -2,22 +2,58 @@ import React, { useState } from "react";
 import { Fab } from "@mui/material";
 import { CloudUpload } from "@mui/icons-material";
 import { Modal, Button, Form } from "react-bootstrap";
+import { jwtDecode } from "jwt-decode";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function UploadButton() {
   const [show, setShow] = useState(false);
+  const token = localStorage.getItem("token");
+
+  const decoded = token ? jwtDecode(token) : null;
+
+  const patientId = decoded?.id; // Extract user ID
+
   const [medicalRecords, setMedicalRecords] = useState({
     file: {},
     fileName: "",
     category: "",
     remarks: "",
+    patientId: patientId,
   });
   const handleClose = () => {
     setShow(false);
   };
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    console.log(medicalRecords);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append("file", medicalRecords.file);
+    formData.append("fileName", medicalRecords.fileName);
+    formData.append("category", medicalRecords.category);
+    formData.append("remarks", medicalRecords.remarks);
+    formData.append("patientId", patientId);
+
+    try {
+      const res = await fetch(
+        "https://doc-link-backend.onrender.com/medical-records",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      const data = await res.json();
+      if (res.ok) {
+        toast.success(data.message);
+        setShow(false);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (err) {
+      console.error("Error uploading:", err);
+    }
   };
+
   return (
     <div
       style={{
@@ -45,7 +81,10 @@ export default function UploadButton() {
                 name="file"
                 required
                 onChange={(e) =>
-                  setMedicalRecords({ ...medicalRecords, file: e.target.value })
+                  setMedicalRecords((prev) => ({
+                    ...prev,
+                    file: e.target.files[0], // Get the file object
+                  }))
                 }
               />
             </Form.Group>

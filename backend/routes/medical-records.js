@@ -1,10 +1,48 @@
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
+const cloudinary = require("../config/cloudinaryConfig");
 const express = require("express");
 const router = express.Router();
+const multer = require("multer");
+
 const MedicalRecords = require("../models/medicalRecordsModel");
-router.post("/medical-records", async (req, res) => {
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: async (req, file) => {
+    return {
+      folder: "medical_records",
+      public_id: `${Date.now()}-${file.originalname}`,
+      allowed_formats: ["jpg", "png", "pdf", "jpeg"],
+    };
+  },
+});
+const upload = multer({ storage });
+router.post("/medical-records", upload.single("file"), async (req, res) => {
   try {
+    const { fileName, category, remarks, patientId } = req.body;
+
+    if (!req.file) {
+      return res.status(400).json({ message: "File is required" });
+    }
+
+    const newRecord = new MedicalRecords({
+      patientId,
+      file: req.file.path, // Cloudinary URL
+      fileName,
+      category,
+      remarks,
+    });
+
+    await newRecord.save();
+    res
+      .status(201)
+      .json({
+        message: "Medical record uploaded successfully",
+        data: newRecord,
+      });
   } catch (error) {
+    console.error("Upload error:", error);
     res.status(500).json({ message: "Server error" });
   }
 });
+
 module.exports = router;
