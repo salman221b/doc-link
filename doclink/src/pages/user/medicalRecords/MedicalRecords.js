@@ -3,15 +3,25 @@ import NavBar from "../../../components/userNavbar/NavBar";
 import { TextField } from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import { Card, Button, Container, Row, Col } from "react-bootstrap";
+import {
+  Card,
+  Button,
+  Container,
+  Row,
+  Col,
+  Table,
+  Spinner,
+} from "react-bootstrap";
 import ScrollToTop from "../../../components/scrollToTop/ScrollToTop";
 import UploadButton from "../../../components/uploadButton/UploadButton";
 import { useNavigate } from "react-router-dom";
+import NoData from "../../../static/no_data.png";
 
 const MedicalRecords = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
-  const [medicalRecords, setMedicalRecords] = useState([]);
+  const [records, setRecords] = useState([]);
+  const [loading, setLoading] = useState(true);
   const isTokenExpired = (token) => {
     if (!token) return true;
     const decoded = JSON.parse(atob(token.split(".")[1]));
@@ -38,9 +48,25 @@ const MedicalRecords = () => {
     })
       .then((res) => res.json())
       .then((data) => {
-        setMedicalRecords(data);
+        setRecords(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Failed to fetch records", err);
+        setLoading(false);
       });
-  });
+  }, []);
+
+  function downloadFile(url) {
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = ""; // let browser use default filename
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  if (loading) return <Spinner animation="border" variant="primary" />;
   return (
     <div>
       <NavBar />
@@ -103,102 +129,81 @@ const MedicalRecords = () => {
           </button>
         </div>
       </form>
+      <h2 className="text" style={{ textAlign: "center", margin: "30px 0" }}>
+        Medical Records
+      </h2>
 
-      <Container className="mt-4">
-        <Row>
-          <Col md={6} xs={12} className="mb-3">
-            <Card>
-              <Card.Body>
-                <div className="text">
-                  <Card.Title>
-                    <PersonIcon />{" "}
-                    <span style={{ marginLeft: "20px" }}>Name</span>
-                    <span
-                      style={{
-                        float: "right",
-                        fontSize: "15px",
-                        marginRight: "30px",
-                      }}
+      {records.length === 0 ? (
+        <div style={{ textAlign: "center", marginBottom: "80px" }}>
+          <img
+            src={NoData}
+            alt="No Data"
+            style={{ width: "300px", display: "block", margin: "auto" }}
+          />
+          <p className="text" style={{ marginTop: "20px" }}>
+            Oops, No Records Found!
+          </p>
+        </div>
+      ) : (
+        records.map((rec) => (
+          <Container className="mt-4">
+            <Row>
+              <Col md={6} xs={12} className="mb-3">
+                <Card key={rec._id}>
+                  <Card.Body>
+                    <div className="text">
+                      <Card.Title>
+                        {rec.file.endsWith(".pdf") ? (
+                          <embed
+                            src={rec.file}
+                            width="100%"
+                            height="100px"
+                            type="application/pdf"
+                          />
+                        ) : (
+                          <img
+                            src={rec.file}
+                            alt={rec.fileName}
+                            style={{
+                              width: "100%",
+                              height: "100px",
+                              objectFit: "cover",
+                            }}
+                          />
+                        )}
+                      </Card.Title>
+                      <Card.Text>
+                        {rec.fileName}
+                        <br />
+
+                        {rec.category}
+                        <br />
+                        {rec.remarks}
+                        <br />
+                        {new Date(rec.createdAt).toLocaleDateString()}
+                      </Card.Text>
+                    </div>
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      onClick={() => window.open(rec.file, "_blank")}
                     >
-                      Specialization
-                    </span>
-                  </Card.Title>
-                  <Card.Text>
-                    Consultaion Date & Time
-                    <br />
-                    <TextField
-                      style={{ backgroundColor: "white", borderRadius: "10px" }}
-                      fullWidth
-                      id="outlined-multiline-static"
-                      label="Diagnosis / Summary"
-                      multiline
-                      rows={4}
-                      defaultValue=""
-                    />
-                    <table style={{ width: "100%", marginTop: "10px" }}>
-                      <tr>
-                        <td>Prescription</td>
-                        <td
-                          style={{
-                            textDecoration: "underline",
-                            color: "blue",
-                            cursor: "pointer",
-                          }}
-                        >
-                          view
-                        </td>
-                        <td
-                          style={{
-                            textDecoration: "underline",
-                            color: "blue",
-                            cursor: "pointer",
-                          }}
-                        >
-                          Download
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>Lab Reports</td>
-                        <td
-                          style={{
-                            textDecoration: "underline",
-                            color: "blue",
-                            cursor: "pointer",
-                          }}
-                        >
-                          view
-                        </td>
-                        <td
-                          style={{
-                            textDecoration: "underline",
-                            color: "blue",
-                            cursor: "pointer",
-                          }}
-                        >
-                          Download
-                        </td>
-                      </tr>
-                    </table>
-                    <p style={{ marginTop: "10px" }}> Next Follow-up Date</p>
-                  </Card.Text>
-                </div>
-
-                <Button
-                  style={{
-                    width: "100%",
-                    color: "#030E82",
-                    backgroundColor: "#82EAAC",
-                    fontWeight: "bold",
-                  }}
-                >
-                  View Full Details
-                  <ArrowForwardIcon style={{ color: "#F49696" }} />
-                </Button>
-              </Card.Body>
-            </Card>
-          </Col>
-        </Row>
-      </Container>
+                      View
+                    </Button>{" "}
+                    <Button
+                      variant="success"
+                      size="sm"
+                      onClick={() => downloadFile(rec.file)}
+                    >
+                      Download
+                    </Button>
+                  </Card.Body>
+                </Card>
+              </Col>
+            </Row>
+          </Container>
+        ))
+      )}
       <UploadButton />
       <ScrollToTop />
     </div>

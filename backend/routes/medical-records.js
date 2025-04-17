@@ -42,5 +42,12 @@ router.post("/medical-records", upload.single("file"), async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
-
+router.get("/medical-records", async (req, res) => {
+  try {
+    const records = await MedicalRecords.find().sort({ createdAt: -1 });
+    res.json(records);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching records" });
+  }
+});
 module.exports = router;
