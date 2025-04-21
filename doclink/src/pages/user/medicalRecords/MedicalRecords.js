@@ -1,22 +1,14 @@
 import React, { useEffect, useState } from "react";
 import NavBar from "../../../components/userNavbar/NavBar";
 import { TextField } from "@mui/material";
-import PersonIcon from "@mui/icons-material/Person";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import {
-  Card,
-  Button,
-  Container,
-  Row,
-  Col,
-  Table,
-  Spinner,
-} from "react-bootstrap";
+import { Card, Button, Container, Row, Col, Table } from "react-bootstrap";
+import { CircularProgress } from "@mui/material";
 import ScrollToTop from "../../../components/scrollToTop/ScrollToTop";
 import UploadButton from "../../../components/uploadButton/UploadButton";
 import { useNavigate } from "react-router-dom";
 import NoData from "../../../static/no_data.png";
-
+import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 const MedicalRecords = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
@@ -28,7 +20,6 @@ const MedicalRecords = () => {
 
     return decoded.exp * 1000 < Date.now();
   };
-
   // Redirect if token is invalid
   useEffect(() => {
     if (!token || isTokenExpired(token)) {
@@ -56,17 +47,66 @@ const MedicalRecords = () => {
         setLoading(false);
       });
   }, []);
-
   function downloadFile(url) {
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = ""; // let browser use default filename
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/octet-stream",
+      },
+    })
+      .then((response) => response.blob())
+      .then((blob) => {
+        const blobUrl = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = blobUrl;
+        // Extract filename from the URL
+        const filename = url.substring(url.lastIndexOf("/") + 1);
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        // Cleanup blob
+        window.URL.revokeObjectURL(blobUrl);
+      })
+      .catch((err) => console.error("Download failed:", err));
   }
-
-  if (loading) return <Spinner animation="border" variant="primary" />;
+  function formattedDate(isoDate) {
+    const date = new Date(isoDate);
+    return date
+      .toLocaleString("en-GB", {
+        // timeZone: "Asia/Kolkata", // Optional: use for IST
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      })
+      .replace(",", "");
+  }
+  if (loading) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+          flexDirection: "column",
+          color: "#82EAAC", // Light Green Text
+        }}
+      >
+        <CircularProgress
+          size={80}
+          thickness={3}
+          sx={{
+            color: "#F49696", // Light Red Spinner
+          }}
+        />
+        <h2 style={{ marginTop: "20px", color: "#82EAAC" }}>Loading...</h2>
+      </div>
+    );
+  }
   return (
     <div>
       <NavBar />
@@ -145,21 +185,29 @@ const MedicalRecords = () => {
           </p>
         </div>
       ) : (
-        records.map((rec) => (
-          <Container className="mt-4">
-            <Row>
+        <Container className="mt-4">
+          <Row>
+            {records.map((rec) => (
               <Col md={6} xs={12} className="mb-3">
                 <Card key={rec._id}>
                   <Card.Body>
                     <div className="text">
                       <Card.Title>
                         {rec.file.endsWith(".pdf") ? (
-                          <embed
-                            src={rec.file}
-                            width="100%"
-                            height="100px"
-                            type="application/pdf"
-                          />
+                          <div
+                            style={{
+                              width: "100%",
+                              height: "100px",
+                              display: "flex",
+                              justifyContent: "center",
+                              alignItems: "center",
+                              backgroundColor: "#fdecea",
+                              borderRadius: "8px",
+                              color: "#d32f2f",
+                            }}
+                          >
+                            <PictureAsPdfIcon fontSize="large" />
+                          </div>
                         ) : (
                           <img
                             src={rec.file}
@@ -173,14 +221,24 @@ const MedicalRecords = () => {
                         )}
                       </Card.Title>
                       <Card.Text>
-                        {rec.fileName}
-                        <br />
-
-                        {rec.category}
-                        <br />
-                        {rec.remarks}
-                        <br />
-                        {new Date(rec.createdAt).toLocaleDateString()}
+                        <Table>
+                          <tr>
+                            <td>Name:</td>
+                            <td>{rec.fileName}</td>
+                          </tr>
+                          <tr>
+                            <td>Category:</td>
+                            <td>{rec.category}</td>
+                          </tr>
+                          <tr>
+                            <td>Remarks:</td>
+                            <td> {rec.remarks ? rec.remarks : "-"}</td>
+                          </tr>
+                          <tr>
+                            <td>Created At:</td>
+                            <td> {formattedDate(rec.createdAt)}</td>
+                          </tr>
+                        </Table>
                       </Card.Text>
                     </div>
                     <Button
@@ -200,9 +258,9 @@ const MedicalRecords = () => {
                   </Card.Body>
                 </Card>
               </Col>
-            </Row>
-          </Container>
-        ))
+            ))}
+          </Row>
+        </Container>
       )}
       <UploadButton />
       <ScrollToTop />
