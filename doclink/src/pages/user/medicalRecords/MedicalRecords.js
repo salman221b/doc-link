@@ -6,7 +6,7 @@ import { Card, Button, Container, Row, Col, Table } from "react-bootstrap";
 import { CircularProgress } from "@mui/material";
 import ScrollToTop from "../../../components/scrollToTop/ScrollToTop";
 import UploadButton from "../../../components/uploadButton/UploadButton";
-import { useNavigate } from "react-router-dom";
+import { data, useNavigate } from "react-router-dom";
 import NoData from "../../../static/no_data.png";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import { toast } from "react-toastify";
@@ -19,6 +19,9 @@ const MedicalRecords = () => {
   const token = localStorage.getItem("token");
   const [records, setRecords] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [error, setError] = useState("");
   const isTokenExpired = (token) => {
     if (!token) return true;
     const decoded = JSON.parse(atob(token.split(".")[1]));
@@ -113,7 +116,38 @@ const MedicalRecords = () => {
       toast.error("Failed to delete file");
     }
   };
+  const handleSearch = async (e) => {
+    e.preventDefault();
+    console.log(startDate, endDate);
+    if (!startDate || !endDate) {
+      setError("Select both Start and End dates please.");
+    } else if (startDate > endDate) {
+      setError("Start date should be lesser than end date.");
+    } else {
+      setError("");
+      try {
+        const response = await fetch(
+          `https://doc-link-backend.onrender.com/search-medical-records`,
+          {
+            method: "GET",
 
+            body: {
+              startDate,
+              endDate,
+            },
+          }
+        ).then((data) => setRecords(data));
+        if (response.ok) {
+          toast.success("Files fetched successfully!");
+        } else {
+          throw new Error("Failed to delete file");
+        }
+      } catch (error) {
+        console.error("Delete error:", error);
+        toast.error("Failed to delete file");
+      }
+    }
+  };
   function formattedDate(isoDate) {
     const date = new Date(isoDate);
     return date
@@ -156,7 +190,7 @@ const MedicalRecords = () => {
       <NavBar />
       <h1 className="title1">Your Health,</h1>
       <h1 className="title2">Just a Click Away.</h1>
-      <form>
+      <form onSubmit={handleSearch}>
         <div
           className="searchArea"
           style={{
@@ -170,6 +204,8 @@ const MedicalRecords = () => {
             label="Start date"
             variant="outlined"
             type="date"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
             style={{
               marginLeft: "20px",
               marginBottom: "20px",
@@ -185,6 +221,8 @@ const MedicalRecords = () => {
             label="End date"
             variant="outlined"
             type="date"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
             style={{
               marginLeft: "20px",
               marginBottom: "20px",
@@ -195,6 +233,7 @@ const MedicalRecords = () => {
               shrink: true, // This removes the default dd-mm-yyyy placeholder
             }}
           />
+
           <button
             className="searchButton"
             type="submit"
@@ -212,6 +251,9 @@ const MedicalRecords = () => {
             <ArrowForwardIcon />
           </button>
         </div>
+        {error && (
+          <div style={{ textAlign: "center", color: "red" }}>{error}</div>
+        )}
       </form>
       <h2 className="text" style={{ textAlign: "center", margin: "30px 0" }}>
         Medical Records
@@ -232,7 +274,7 @@ const MedicalRecords = () => {
         <Container className="mt-4">
           <Row>
             {records.map((rec) => (
-              <Col md={6} xs={12} className="mb-3">
+              <Col md={6} xs={12} className="mb-5">
                 <Card key={rec._id}>
                   <Card.Body>
                     <div className="text">
@@ -257,6 +299,7 @@ const MedicalRecords = () => {
                             width="100%"
                             height="100px"
                             type="application/pdf"
+                            onClick={() => window.open(rec.file, "_blank")}
                           />
                         ) : (
                           <img
@@ -267,6 +310,7 @@ const MedicalRecords = () => {
                               height: "100px",
                               objectFit: "cover",
                             }}
+                            onClick={() => window.open(rec.file, "_blank")}
                           />
                         )}
                       </Card.Title>

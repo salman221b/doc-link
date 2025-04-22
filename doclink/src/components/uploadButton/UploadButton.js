@@ -13,7 +13,7 @@ export default function UploadButton() {
   const decoded = token ? jwtDecode(token) : null;
 
   const patientId = decoded?.id; // Extract user ID
-
+  const [isDisabled, setIsDisabled] = useState(false);
   const [medicalRecords, setMedicalRecords] = useState({
     file: {},
     fileName: "",
@@ -26,6 +26,7 @@ export default function UploadButton() {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsDisabled(true);
     const formData = new FormData();
     formData.append("file", medicalRecords.file);
     formData.append("fileName", medicalRecords.fileName);
@@ -44,9 +45,12 @@ export default function UploadButton() {
 
       const data = await res.json();
       if (res.ok) {
-        window.location.reload();
         toast.success(data.message);
         setShow(false);
+        setIsDisabled(false);
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
       } else {
         toast.error(data.message);
       }
@@ -147,7 +151,13 @@ export default function UploadButton() {
             </Form.Group>
 
             <div style={{ textAlign: "center" }}>
-              <Button className="mt-4" type="submit" variant="success" block>
+              <Button
+                className="mt-4"
+                type="submit"
+                variant="success"
+                block
+                disabled={isDisabled}
+              >
                 Add Medical Record
               </Button>
             </div>
