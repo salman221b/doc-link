@@ -44,6 +44,7 @@ export default function UploadButton() {
 
       const data = await res.json();
       if (res.ok) {
+        window.location.reload();
         toast.success(data.message);
         setShow(false);
       } else {
