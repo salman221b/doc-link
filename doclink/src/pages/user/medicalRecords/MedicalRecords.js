@@ -112,10 +112,8 @@ const MedicalRecords = () => {
       console.error("Delete error:", error);
       toast.error("Failed to delete file");
     }
-        }
-
-    
   };
+
   function formattedDate(isoDate) {
     const date = new Date(isoDate);
     return date
