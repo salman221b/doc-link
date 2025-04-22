@@ -9,6 +9,11 @@ import UploadButton from "../../../components/uploadButton/UploadButton";
 import { useNavigate } from "react-router-dom";
 import NoData from "../../../static/no_data.png";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
+import { toast } from "react-toastify";
+
+import "react-toastify/dist/ReactToastify.css";
+import Swal from "sweetalert2";
+
 const MedicalRecords = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
@@ -70,6 +75,47 @@ const MedicalRecords = () => {
       })
       .catch((err) => console.error("Download failed:", err));
   }
+  const deleteFile = async (id) => {
+    const result = await Swal.fire({
+      title: "Remove medical record?",
+      text: "Are you sure you want to remove this record?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!",
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      const response = await fetch(
+        `https://doc-link-backend.onrender.com/medical-records/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+            Role: "patient",
+          },
+        }
+      );
+      if (response.ok) {
+        toast.success("File deleted successfully!");
+        setRecords((prevRecords) =>
+          prevRecords.filter((record) => record._id !== id)
+        );
+      } else {
+        throw new Error("Failed to delete file");
+      }
+    } catch (error) {
+      console.error("Delete error:", error);
+      toast.error("Failed to delete file");
+    }
+        }
+
+    
+  };
   function formattedDate(isoDate) {
     const date = new Date(isoDate);
     return date
@@ -194,20 +240,26 @@ const MedicalRecords = () => {
                     <div className="text">
                       <Card.Title>
                         {rec.file.endsWith(".pdf") ? (
-                          <div
-                            style={{
-                              width: "100%",
-                              height: "100px",
-                              display: "flex",
-                              justifyContent: "center",
-                              alignItems: "center",
-                              backgroundColor: "#fdecea",
-                              borderRadius: "8px",
-                              color: "#d32f2f",
-                            }}
-                          >
-                            <PictureAsPdfIcon fontSize="large" />
-                          </div>
+                          // <div
+                          //   style={{
+                          //     width: "100%",
+                          //     height: "100px",
+                          //     display: "flex",
+                          //     justifyContent: "center",
+                          //     alignItems: "center",
+                          //     backgroundColor: "#fdecea",
+                          //     borderRadius: "8px",
+                          //     color: "#d32f2f",
+                          //   }}
+                          // >
+                          //   <PictureAsPdfIcon fontSize="large" />
+                          // </div>
+                          <embed
+                            src={rec.file}
+                            width="100%"
+                            height="100px"
+                            type="application/pdf"
+                          />
                         ) : (
                           <img
                             src={rec.file}
@@ -254,6 +306,14 @@ const MedicalRecords = () => {
                       onClick={() => downloadFile(rec.file)}
                     >
                       Download
+                    </Button>
+                    <Button
+                      variant="danger"
+                      size="sm"
+                      onClick={() => deleteFile(rec._id)}
+                      style={{ marginRight: "10px", float: "right" }}
+                    >
+                      Delete
                     </Button>
                   </Card.Body>
                 </Card>

@@ -50,4 +50,15 @@ router.get("/medical-records", async (req, res) => {
     res.status(500).json({ message: "Error fetching records" });
   }
 });
+router.delete("/medical-records/:id", async (req, res) => {
+  try {
+    const record = await MedicalRecords.findByIdAndDelete(req.params.id);
+    if (!record) {
+      return res.status(404).json({ message: "Record not found" });
+    }
+    res.json({ message: "Record deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error deleting record" });
+  }
+});
 module.exports = router;
