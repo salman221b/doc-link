@@ -119,35 +119,53 @@ const MedicalRecords = () => {
   const handleSearch = async (e) => {
     e.preventDefault();
     console.log(startDate, endDate);
+
     if (!startDate || !endDate) {
       setError("Select both Start and End dates please.");
-    } else if (startDate > endDate) {
-      setError("Start date should be lesser than end date.");
-    } else {
-      setError("");
-      try {
-        const response = await fetch(
-          `https://doc-link-backend.onrender.com/search-medical-records`,
-          {
-            method: "GET",
+      return;
+    }
 
-            body: {
-              startDate,
-              endDate,
-            },
-          }
-        ).then((data) => setRecords(data));
-        if (response.ok) {
-          toast.success("Files fetched successfully!");
-        } else {
-          throw new Error("Failed to delete file");
-        }
-      } catch (error) {
-        console.error("Delete error:", error);
-        toast.error("Failed to delete file");
+    if (startDate > endDate) {
+      setError("Start date should be lesser than end date.");
+      return;
+    }
+
+    setError("");
+
+    try {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        console.error("Token not found. Redirecting to login...");
+        navigate("/login");
+        return;
       }
+
+      const response = await fetch(
+        `https://doc-link-backend.onrender.com/search-medical-records?startDate=${startDate}&endDate=${endDate}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Role: "patient",
+          },
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setRecords(data);
+        toast.success("Files fetched successfully!");
+      } else {
+        toast.error(data?.message || "Failed to fetch records");
+      }
+    } catch (error) {
+      console.error("Fetch error:", error);
+      toast.error("Something went wrong while fetching records.");
     }
   };
+
   function formattedDate(isoDate) {
     const date = new Date(isoDate);
     return date
@@ -291,6 +309,7 @@ const MedicalRecords = () => {
                           //     borderRadius: "8px",
                           //     color: "#d32f2f",
                           //   }}
+                          //   onClick={() => window.open(rec.file, "_blank")}
                           // >
                           //   <PictureAsPdfIcon fontSize="large" />
                           // </div>

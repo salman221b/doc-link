@@ -3,7 +3,7 @@ const cloudinary = require("../config/cloudinaryConfig");
 const express = require("express");
 const router = express.Router();
 const multer = require("multer");
-
+const authMiddleware = require("../middlewares/authMiddleware");
 const MedicalRecords = require("../models/medicalRecordsModel");
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
@@ -42,9 +42,11 @@ router.post("/medical-records", upload.single("file"), async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
-router.get("/medical-records", async (req, res) => {
+router.get("/medical-records", authMiddleware, async (req, res) => {
   try {
-    const records = await MedicalRecords.find().sort({ createdAt: -1 });
+    const records = await MedicalRecords.find({ patientId: req.user.id }).sort({
+      createdAt: -1,
+    });
     res.json(records);
   } catch (error) {
     res.status(500).json({ message: "Error fetching records" });
@@ -61,4 +63,28 @@ router.delete("/medical-records/:id", async (req, res) => {
     res.status(500).json({ message: "Error deleting record" });
   }
 });
+router.get("/search-medical-records", authMiddleware, async (req, res) => {
+  const userId = req.user.id;
+  const { startDate, endDate } = req.query;
+
+  if (!startDate || !endDate) {
+    return res.status(400).json({ message: "Start and End dates required." });
+  }
+
+  try {
+    const records = await MedicalRecords.find({
+      patientId: userId, // assuming token middleware adds this
+      createdAt: {
+        $gte: new Date(startDate),
+        $lte: new Date(endDate),
+      },
+    }).sort({ createdAt: -1 });
+
+    res.status(200).json(records);
+  } catch (error) {
+    console.error("Search error:", error);
+    res.status(500).json({ message: "Failed to fetch records." });
+  }
+});
+
 module.exports = router;
