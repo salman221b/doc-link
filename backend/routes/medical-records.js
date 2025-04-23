@@ -76,7 +76,9 @@ router.get("/search-medical-records", authMiddleware, async (req, res) => {
       patientId: userId, // assuming token middleware adds this
       createdAt: {
         $gte: new Date(startDate),
-        $lte: new Date(endDate),
+        $lt: new Date(
+          new Date(endDate).setDate(new Date(endDate).getDate() + 1)
+        ),
       },
     }).sort({ createdAt: -1 });
 
