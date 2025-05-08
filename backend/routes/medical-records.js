@@ -85,7 +85,7 @@ router.get("/search-medical-records", authMiddleware, async (req, res) => {
     res.status(200).json(records);
   } catch (error) {
     console.error("Search error:", error);
-    res.status(500).json({ message: "Failed to fetch records." });
+    res.status(500).json({ message: "Failed to fetch records!" });
   }
 });
 
