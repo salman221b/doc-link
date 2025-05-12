@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
@@ -11,7 +11,8 @@ import NavBar from "../../../components/userNavbar/NavBar";
 import ScrollToTop from "../../../components/scrollToTop/ScrollToTop";
 import NoData from "../../../static/no_data.png";
 import RescheduleModal from "./RescheduleModal";
-
+import { useVideoCall } from "../../../components/videoCall/useVideoCall";
+import VideoCallModal from "../../../components/videoCall/videoCallModal";
 const UpcomingAppointment = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
@@ -21,7 +22,17 @@ const UpcomingAppointment = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [timers, setTimers] = useState({});
-
+  const [showVideoCall, setShowVideoCall] = useState(false);
+  const [currentAppointment, setCurrentAppointment] = useState(null);
+  const [isCallActive, setIsCallActive] = useState(false);
+  const {
+    localVideo,
+    remoteVideo,
+    startCall,
+    incomingCall,
+    answerCall,
+    rejectCall,
+  } = useVideoCall();
   // Check if the token is expired
   const isTokenExpired = (token) => {
     if (!token) return true;
@@ -140,6 +151,26 @@ const UpcomingAppointment = () => {
     return () => clearInterval(interval);
   }, [appointments]);
 
+  // Handle join button click
+  const handleJoinCall = (appointment) => {
+    setCurrentAppointment(appointment);
+    setShowVideoCall(true);
+    startCall(appointment.doctorId._id); // Assuming doctorId has _id field
+  };
+
+  // Handle incoming call notification
+  useEffect(() => {
+    if (incomingCall) {
+      setShowVideoCall(true);
+    }
+  }, [incomingCall]);
+
+  // Handle call end
+  const handleEndCall = () => {
+    setShowVideoCall(false);
+    setIsCallActive(false);
+    // Any cleanup if needed
+  };
   // Show loading spinner while fetching data
   if (loading) {
     return (
@@ -372,6 +403,7 @@ const UpcomingAppointment = () => {
                           appointment.scheduledTime
                         )
                       }
+                      onClick={() => handleJoinCall(appointment)}
                     >
                       Join
                       <ArrowForwardIcon style={{ color: "#F49696" }} />
@@ -417,6 +449,28 @@ const UpcomingAppointment = () => {
         handleClose={handleCloseModal}
         appointment={selectedAppointment}
         onReschedule={handleReschedule}
+      />
+      <VideoCallModal
+        show={showVideoCall}
+        onHide={handleEndCall}
+        localVideo={localVideo}
+        remoteVideo={remoteVideo}
+        incomingCall={incomingCall}
+        answerCall={() => {
+          answerCall();
+          setIsCallActive(true);
+        }}
+        rejectCall={() => {
+          rejectCall();
+          setShowVideoCall(false);
+        }}
+        endCall={handleEndCall}
+        isCallActive={isCallActive}
+        callerName={
+          currentAppointment
+            ? `Dr. ${currentAppointment.doctorId.firstName} ${currentAppointment.doctorId.lastName}`
+            : "Doctor"
+        }
       />
 
       <ScrollToTop />
