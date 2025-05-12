@@ -47,8 +47,20 @@ app.use("/", require("./routes/reminders"));
 app.use("/", require("./routes/medical-records"));
 
 // Socket.IO setup
+const onlineUsers = {};
+
 io.on("connection", (socket) => {
   console.log("User connected:", socket.id);
+
+  // Register user when they connect
+  socket.on("register", (userId, userType) => {
+    onlineUsers[userId] = {
+      socketId: socket.id,
+      userType,
+      lastSeen: new Date(),
+    };
+    console.log(`User registered: ${userId} (${userType})`);
+  });
 
   socket.on("call-user", (data) => {
     io.to(data.to).emit("incoming-call", {
@@ -74,12 +86,21 @@ io.on("connection", (socket) => {
       candidate: data.candidate,
     });
   });
-
   socket.on("disconnect", () => {
+    // Remove user from online list
+    for (const userId in onlineUsers) {
+      if (onlineUsers[userId].socketId === socket.id) {
+        delete onlineUsers[userId];
+        break;
+      }
+    }
     console.log("User disconnected:", socket.id);
   });
 });
-
+// Add a helper to check if user is online
+io.of("/").adapter.on("getOnlineUsers", (callback) => {
+  callback(onlineUsers);
+});
 // Start server
 server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

@@ -19,6 +19,7 @@ import ScrollToTop from "../../../components/scrollToTop/ScrollToTop";
 import PersonIcon from "@mui/icons-material/Person";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import CloseIcon from "@mui/icons-material/Close";
+import DoctorVideoCallHandler from "../../../components/videoCall/DoctorVideoCallHandler";
 
 const ManageAppointments = () => {
   const [open, setOpen] = useState(false); // State to track modal visibility
@@ -315,6 +316,8 @@ const ManageAppointments = () => {
             </div>
           </DialogActions>
         </Dialog>
+
+        <DoctorVideoCallHandler />
         <ScrollToTop />
       </div>
     </div>

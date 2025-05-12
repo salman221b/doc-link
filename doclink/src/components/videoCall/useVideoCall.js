@@ -1,8 +1,20 @@
 // useVideoCall.js
 import { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
+import { jwtDecode } from "jwt-decode";
+import { toast } from "react-toastify";
 
-const socket = io("https://doc-link-backend.onrender.com/");
+import "react-toastify/dist/ReactToastify.css";
+
+const token = localStorage.getItem("token");
+const decoded = token ? jwtDecode(token) : null;
+const userId = decoded?.id;
+const socket = io("https://doc-link-backend.onrender.com/", {
+  auth: {
+    token: localStorage.getItem("token"), // Send auth token
+    userId: userId, // Send user ID
+  },
+});
 
 export const useVideoCall = () => {
   const localVideo = useRef(null);
@@ -42,6 +54,19 @@ export const useVideoCall = () => {
     setCallStatus("calling");
 
     try {
+      // First check if the doctor is available
+      const isAvailable = await new Promise((resolve) => {
+        socket.emit("check-user-available", toUserId, (response) => {
+          resolve(response.available);
+        });
+      });
+
+      if (!isAvailable) {
+        toast.error("Doctor is not available for video call");
+        setCallStatus("idle");
+        return false;
+      }
+
       peerConnection.current = createPeerConnection(toUserId);
 
       const stream = await navigator.mediaDevices.getUserMedia({
@@ -56,10 +81,29 @@ export const useVideoCall = () => {
       const offer = await peerConnection.current.createOffer();
       await peerConnection.current.setLocalDescription(offer);
 
-      socket.emit("call-user", { to: toUserId, from: socket.id, offer });
+      socket.emit("call-user", {
+        to: toUserId,
+        from: socket.id,
+        offer,
+        callerInfo: {
+          name: "Patient", // Or get from user data
+          id: localStorage.getItem("userId"),
+        },
+      });
+      const timeout = setTimeout(() => {
+        if (callStatus === "calling") {
+          setCallStatus("idle");
+          // Emit event that can be listened to in component
+          socket.emit("call-timeout", { to: toUserId });
+        }
+      }, 30000);
+
+      return () => clearTimeout(timeout);
     } catch (error) {
       console.error("Error starting call:", error);
+      toast.error("Failed to start call");
       setCallStatus("idle");
+      throw error;
     }
   };
 
@@ -130,6 +174,7 @@ export const useVideoCall = () => {
   };
 
   return {
+    socket,
     localVideo,
     remoteVideo,
     startCall,
@@ -137,5 +182,6 @@ export const useVideoCall = () => {
     answerCall,
     rejectCall,
     callStatus,
+    setCallStatus,
   };
 };

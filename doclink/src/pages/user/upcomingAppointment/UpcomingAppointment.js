@@ -26,13 +26,27 @@ const UpcomingAppointment = () => {
   const [currentAppointment, setCurrentAppointment] = useState(null);
   const [isCallActive, setIsCallActive] = useState(false);
   const {
+    socket,
     localVideo,
     remoteVideo,
     startCall,
     incomingCall,
     answerCall,
     rejectCall,
+    callStatus,
+    setCallStatus,
   } = useVideoCall();
+  useEffect(() => {
+    // Handle call timeout
+    socket.on("call-timeout", () => {
+      toast.error("Doctor didn't answer the call");
+      setShowVideoCall(false);
+    });
+
+    return () => {
+      socket.off("call-timeout");
+    };
+  }, []);
   // Check if the token is expired
   const isTokenExpired = (token) => {
     if (!token) return true;
@@ -152,10 +166,41 @@ const UpcomingAppointment = () => {
   }, [appointments]);
 
   // Handle join button click
-  const handleJoinCall = (appointment) => {
-    setCurrentAppointment(appointment);
-    setShowVideoCall(true);
-    startCall(appointment.doctorId._id); // Assuming doctorId has _id field
+  const handleJoinCall = async (appointment) => {
+    try {
+      setCurrentAppointment(appointment);
+      setShowVideoCall(true);
+      setCallStatus("calling"); // Set status immediately
+
+      const callStarted = await startCall(appointment.doctorId);
+
+      if (!callStarted) {
+        setShowVideoCall(false);
+        setCallStatus("idle");
+        return;
+      }
+
+      // Set timeout for unanswered call
+      const timeout = setTimeout(() => {
+        if (callStatus === "calling") {
+          toast.error("Doctor didn't answer the call");
+          setCallStatus("idle");
+          setShowVideoCall(false);
+        }
+      }, 30000);
+
+      return () => clearTimeout(timeout);
+    } catch (error) {
+      console.error("Error joining call:", error);
+      toast.error("Failed to start the call");
+      setShowVideoCall(false);
+      setCallStatus("idle");
+    }
+  };
+  const checkDoctorOnline = async (doctorId) => {
+    // Implement this based on your backend
+    // Could be a simple API call or socket.io check
+    return true; // Temporary implementation
   };
 
   // Handle incoming call notification
