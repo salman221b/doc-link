@@ -292,7 +292,12 @@ const UpcomingAppointment = () => {
     const roomId = appointment._id;
 
     socket.emit("call-user", {
-      toUserId: appointment.doctorId,
+      toUserId: appointment.doctorId._id,
+      fromUserId: appointment.patientId,
+      roomId,
+    });
+    console.log("Calling doctor with:", {
+      toUserId: appointment.doctorId._id,
       fromUserId: appointment.patientId,
       roomId,
     });

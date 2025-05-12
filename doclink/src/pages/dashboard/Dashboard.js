@@ -47,7 +47,6 @@ const Dashboard = () => {
         }
 
         setUser(data); // Set user data
-        socket.emit("register", { userId: data._id }); // ✅ Emit after user is fetched
       } catch (error) {
         console.error("Error:", error);
         localStorage.clear();
@@ -59,6 +58,12 @@ const Dashboard = () => {
 
     fetchUser();
   }, [navigate]);
+  useEffect(() => {
+    if (user?._id) {
+      console.log("Registering socket with userId:", user._id);
+      socket.emit("register", { userId: user._id });
+    }
+  }, [user]);
 
   if (loading) return <LoadingScreen />;
   if (!user) return null;

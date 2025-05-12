@@ -21,7 +21,7 @@ const CallRoomInner = ({ role, userName }) => {
         "https://doc-link-backend.onrender.com/api/video/get-token",
         {
           user_id: userName,
-          room_id: roomId,
+          room_id: "6821b98236d4cfc1981f3b17",
           role,
         }
       );
