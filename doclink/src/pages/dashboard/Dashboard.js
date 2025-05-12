@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import DoctorDashboard from "../doctor/Dashboard";
 import PatientDashboard from "../user/Dashboard";
 import LoadingScreen from "../../components/loadingScreen/LoadingScreen";
-
+import socket from "../../components/socket/socket";
 const Dashboard = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
@@ -58,6 +58,9 @@ const Dashboard = () => {
 
     fetchUser();
   }, [navigate]);
+  useEffect(() => {
+    socket.emit("register", { userId: user._id });
+  }, []);
 
   if (loading) return <LoadingScreen />;
   if (!user) return null;

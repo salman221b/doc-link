@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import NavBar from "../../../components/doctorNavbar/NavBar";
 import {
   FormControl,
@@ -19,10 +19,20 @@ import ScrollToTop from "../../../components/scrollToTop/ScrollToTop";
 import PersonIcon from "@mui/icons-material/Person";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import CloseIcon from "@mui/icons-material/Close";
-import DoctorVideoCallHandler from "../../../components/videoCall/DoctorVideoCallHandler";
+import { useNavigate } from "react-router-dom";
+import socket from "../../../components/socket/socket";
 
 const ManageAppointments = () => {
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false); // State to track modal visibility
+  useEffect(() => {
+    socket.on("incoming-call", ({ roomId, fromUserId }) => {
+      const accept = window.confirm("Incoming call from a patient. Join?");
+      if (accept) {
+        navigate(`/call/${roomId}`);
+      }
+    });
+  }, []);
 
   return (
     <div>
@@ -316,8 +326,6 @@ const ManageAppointments = () => {
             </div>
           </DialogActions>
         </Dialog>
-
-        <DoctorVideoCallHandler />
         <ScrollToTop />
       </div>
     </div>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
@@ -11,8 +11,7 @@ import NavBar from "../../../components/userNavbar/NavBar";
 import ScrollToTop from "../../../components/scrollToTop/ScrollToTop";
 import NoData from "../../../static/no_data.png";
 import RescheduleModal from "./RescheduleModal";
-import { useVideoCall } from "../../../components/videoCall/useVideoCall";
-import VideoCallModal from "../../../components/videoCall/videoCallModal";
+import socket from "../../../components/socket/socket";
 const UpcomingAppointment = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
@@ -22,31 +21,7 @@ const UpcomingAppointment = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [timers, setTimers] = useState({});
-  const [showVideoCall, setShowVideoCall] = useState(false);
-  const [currentAppointment, setCurrentAppointment] = useState(null);
-  const [isCallActive, setIsCallActive] = useState(false);
-  const {
-    socket,
-    localVideo,
-    remoteVideo,
-    startCall,
-    incomingCall,
-    answerCall,
-    rejectCall,
-    callStatus,
-    setCallStatus,
-  } = useVideoCall();
-  useEffect(() => {
-    // Handle call timeout
-    socket.on("call-timeout", () => {
-      toast.error("Doctor didn't answer the call");
-      setShowVideoCall(false);
-    });
 
-    return () => {
-      socket.off("call-timeout");
-    };
-  }, []);
   // Check if the token is expired
   const isTokenExpired = (token) => {
     if (!token) return true;
@@ -165,57 +140,6 @@ const UpcomingAppointment = () => {
     return () => clearInterval(interval);
   }, [appointments]);
 
-  // Handle join button click
-  const handleJoinCall = async (appointment) => {
-    try {
-      setCurrentAppointment(appointment);
-      setShowVideoCall(true);
-      setCallStatus("calling"); // Set status immediately
-
-      const callStarted = await startCall(appointment.doctorId);
-
-      if (!callStarted) {
-        setShowVideoCall(false);
-        setCallStatus("idle");
-        return;
-      }
-
-      // Set timeout for unanswered call
-      const timeout = setTimeout(() => {
-        if (callStatus === "calling") {
-          toast.error("Doctor didn't answer the call");
-          setCallStatus("idle");
-          setShowVideoCall(false);
-        }
-      }, 30000);
-
-      return () => clearTimeout(timeout);
-    } catch (error) {
-      console.error("Error joining call:", error);
-      toast.error("Failed to start the call");
-      setShowVideoCall(false);
-      setCallStatus("idle");
-    }
-  };
-  const checkDoctorOnline = async (doctorId) => {
-    // Implement this based on your backend
-    // Could be a simple API call or socket.io check
-    return true; // Temporary implementation
-  };
-
-  // Handle incoming call notification
-  useEffect(() => {
-    if (incomingCall) {
-      setShowVideoCall(true);
-    }
-  }, [incomingCall]);
-
-  // Handle call end
-  const handleEndCall = () => {
-    setShowVideoCall(false);
-    setIsCallActive(false);
-    // Any cleanup if needed
-  };
   // Show loading spinner while fetching data
   if (loading) {
     return (
@@ -363,7 +287,19 @@ const UpcomingAppointment = () => {
     const now = new Date();
     return now >= appointmentDateTime;
   };
+  const handleJoin = (appointmentId) => {
+    const handleJoinCall = (appointment) => {
+      const roomId = appointment._id;
 
+      socket.emit("call-user", {
+        toUserId: appointment.doctorId,
+        fromUserId: appointment.patientId,
+        roomId,
+      });
+
+      navigate(`/call/${roomId}`);
+    };
+  };
   return (
     <div style={{ marginBottom: "130px" }}>
       <NavBar hasNotification={hasUpcomingNotification} />
@@ -448,7 +384,7 @@ const UpcomingAppointment = () => {
                           appointment.scheduledTime
                         )
                       }
-                      onClick={() => handleJoinCall(appointment)}
+                      onClick={() => handleJoin(appointment)}
                     >
                       Join
                       <ArrowForwardIcon style={{ color: "#F49696" }} />
@@ -494,28 +430,6 @@ const UpcomingAppointment = () => {
         handleClose={handleCloseModal}
         appointment={selectedAppointment}
         onReschedule={handleReschedule}
-      />
-      <VideoCallModal
-        show={showVideoCall}
-        onHide={handleEndCall}
-        localVideo={localVideo}
-        remoteVideo={remoteVideo}
-        incomingCall={incomingCall}
-        answerCall={() => {
-          answerCall();
-          setIsCallActive(true);
-        }}
-        rejectCall={() => {
-          rejectCall();
-          setShowVideoCall(false);
-        }}
-        endCall={handleEndCall}
-        isCallActive={isCallActive}
-        callerName={
-          currentAppointment
-            ? `Dr. ${currentAppointment.doctorId.firstName} ${currentAppointment.doctorId.lastName}`
-            : "Doctor"
-        }
       />
 
       <ScrollToTop />

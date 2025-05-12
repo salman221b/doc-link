@@ -5,32 +5,30 @@ const connectDB = require("./libs/db");
 const bodyParser = require("body-parser");
 const startReminderJob = require("./reminderSent/reminderSend");
 const cors = require("cors");
-const authMiddleware = require("./middlewares/authMiddleware");
-const http = require("http");
+const jwt = require("jsonwebtoken");
+const http = require("http"); // ✅ For socket.io
 const { Server } = require("socket.io");
 
-require("./reminderSent/reminderSend");
 dotenv.config();
 
-const PORT = process.env.PORT || 8000;
 const app = express();
-const server = http.createServer(app);
+const server = http.createServer(app); // ✅ Create HTTP server
 const io = new Server(server, {
   cors: {
-    origin: "*",
+    origin: "*", // or specify your frontend origin
+    methods: ["GET", "POST"],
   },
 });
 
-// Middleware
+const PORT = process.env.PORT || 8000;
+
 app.use(bodyParser.json());
 app.use(express.json());
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 
-// Connect to DB
 connectDB();
 
-// Routes
 app.use("/", require("./routes/patientRoute"));
 app.use("/", require("./routes/doctorRoute"));
 app.use("/", require("./routes/verifyOtp"));
@@ -46,62 +44,59 @@ app.use("/", require("./routes/upcomingAppointments"));
 app.use("/", require("./routes/reminders"));
 app.use("/", require("./routes/medical-records"));
 
-// Socket.IO setup
-const onlineUsers = {};
+// ✅ 100ms token route
+app.post("/api/video/get-token", (req, res) => {
+  const { user_id, room_id, role } = req.body;
+
+  const payload = {
+    access_key: process.env.HMS_ACCESS_KEY,
+    room_id,
+    user_id,
+    role,
+    type: "app",
+    version: 2,
+  };
+
+  const token = jwt.sign(payload, process.env.HMS_SECRET, {
+    algorithm: "HS256",
+    expiresIn: "24h",
+  });
+
+  res.json({ token });
+});
+
+// ✅ Socket.IO call signaling
+let onlineUsers = {};
 
 io.on("connection", (socket) => {
-  console.log("User connected:", socket.id);
+  console.log("Socket connected:", socket.id);
 
-  // Register user when they connect
-  socket.on("register", (userId, userType) => {
-    onlineUsers[userId] = {
-      socketId: socket.id,
-      userType,
-      lastSeen: new Date(),
-    };
-    console.log(`User registered: ${userId} (${userType})`);
+  socket.on("register", ({ userId }) => {
+    onlineUsers[userId] = socket.id;
+    console.log("Registered:", userId);
   });
 
-  socket.on("call-user", (data) => {
-    io.to(data.to).emit("incoming-call", {
-      from: data.from,
-      offer: data.offer,
-    });
+  socket.on("call-user", ({ toUserId, fromUserId, roomId }) => {
+    const toSocketId = onlineUsers[toUserId];
+    if (toSocketId) {
+      io.to(toSocketId).emit("incoming-call", {
+        roomId,
+        fromUserId,
+      });
+    }
   });
 
-  socket.on("answer-call", (data) => {
-    io.to(data.to).emit("call-answered", {
-      from: data.from,
-      answer: data.answer,
-    });
-  });
-
-  socket.on("reject-call", (data) => {
-    io.to(data.to).emit("call-rejected", { from: data.from });
-  });
-
-  socket.on("send-ice-candidate", (data) => {
-    io.to(data.to).emit("ice-candidate", {
-      from: data.from,
-      candidate: data.candidate,
-    });
-  });
   socket.on("disconnect", () => {
-    // Remove user from online list
-    for (const userId in onlineUsers) {
-      if (onlineUsers[userId].socketId === socket.id) {
+    for (const [userId, socketId] of Object.entries(onlineUsers)) {
+      if (socket.id === socketId) {
         delete onlineUsers[userId];
         break;
       }
     }
-    console.log("User disconnected:", socket.id);
+    console.log("Socket disconnected:", socket.id);
   });
 });
-// Add a helper to check if user is online
-io.of("/").adapter.on("getOnlineUsers", (callback) => {
-  callback(onlineUsers);
-});
-// Start server
+
 server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
   startReminderJob();
