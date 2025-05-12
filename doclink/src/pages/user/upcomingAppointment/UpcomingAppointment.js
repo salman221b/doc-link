@@ -287,19 +287,24 @@ const UpcomingAppointment = () => {
     const now = new Date();
     return now >= appointmentDateTime;
   };
-  const handleJoin = (appointmentId) => {
-    const handleJoinCall = (appointment) => {
-      const roomId = appointment._id;
 
-      socket.emit("call-user", {
-        toUserId: appointment.doctorId,
-        fromUserId: appointment.patientId,
-        roomId,
-      });
+  const handleJoinCall = (appointment) => {
+    const roomId = appointment._id;
 
-      navigate(`/call/${roomId}`);
-    };
+    socket.emit("call-user", {
+      toUserId: appointment.doctorId,
+      fromUserId: appointment.patientId,
+      roomId,
+    });
+
+    navigate(`/call/${roomId}`, {
+      state: {
+        role: "patient",
+        userName: appointment.patientId.firstName,
+      },
+    });
   };
+
   return (
     <div style={{ marginBottom: "130px" }}>
       <NavBar hasNotification={hasUpcomingNotification} />
@@ -384,7 +389,7 @@ const UpcomingAppointment = () => {
                           appointment.scheduledTime
                         )
                       }
-                      onClick={() => handleJoin(appointment)}
+                      onClick={() => handleJoinCall(appointment)}
                     >
                       Join
                       <ArrowForwardIcon style={{ color: "#F49696" }} />

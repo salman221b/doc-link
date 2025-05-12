@@ -8,6 +8,7 @@ import {
 import { useEffect } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 const CallRoomInner = ({ role, userName }) => {
   const hmsActions = useHMSActions();
@@ -43,7 +44,9 @@ const CallRoomInner = ({ role, userName }) => {
   return <h2>You’re in the room! Implement video tiles here.</h2>;
 };
 
-const CallRoom = ({ role, userName }) => {
+const CallRoom = () => {
+  const location = useLocation();
+  const { role, userName } = location.state || {};
   return (
     <HMSRoomProvider>
       <CallRoomInner role={role} userName={userName} />

@@ -26,12 +26,20 @@ const ManageAppointments = () => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false); // State to track modal visibility
   useEffect(() => {
-    socket.on("incoming-call", ({ roomId, fromUserId }) => {
-      const accept = window.confirm("Incoming call from a patient. Join?");
-      if (accept) {
-        navigate(`/call/${roomId}`);
+    socket.on("incoming-call", ({ fromUserId, roomId }) => {
+      if (window.confirm("Incoming call. Join?")) {
+        navigate(`/call/${roomId}`, {
+          state: {
+            role: "doctor",
+            userName: "Dr, Strange",
+          },
+        });
       }
     });
+
+    return () => {
+      socket.off("incoming-call");
+    };
   }, []);
 
   return (
