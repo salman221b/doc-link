@@ -51,7 +51,7 @@ app.post("/api/video/get-token", (req, res) => {
 
   const payload = {
     access_key: process.env.HMS_ACCESS_KEY,
-    room_id,
+    roomId: room_id,
     user_id,
     role,
     type: "app",

@@ -26,6 +26,7 @@ const CallRoomInner = ({ role, userName }) => {
         }
       );
       console.log(userName, role);
+      console.log("data:", data);
 
       await hmsActions.join({
         userName,
