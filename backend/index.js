@@ -44,17 +44,17 @@ app.use("/", require("./routes/book-appointment"));
 app.use("/", require("./routes/upcomingAppointments"));
 app.use("/", require("./routes/reminders"));
 app.use("/", require("./routes/medical-records"));
-
-// Token API for LiveKit
 app.post("/get-livekit-token", (req, res) => {
   const { identity, roomName } = req.body;
+
+  if (!identity || !roomName) {
+    return res.status(400).json({ message: "Missing identity or roomName" });
+  }
 
   const at = new AccessToken(
     process.env.LIVEKIT_API_KEY,
     process.env.LIVEKIT_SECRET,
-    {
-      identity,
-    }
+    { identity }
   );
 
   at.addGrant({ roomJoin: true, room: roomName });
