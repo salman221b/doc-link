@@ -47,7 +47,6 @@ app.use("/", require("./routes/medical-records"));
 // ✅ 100ms token route
 app.post("/api/video/get-token", (req, res) => {
   const { user_id, room_id, role } = req.body;
-  console.log(user_id, room_id, role);
 
   const payload = {
     access_key: process.env.HMS_ACCESS_KEY,
@@ -57,7 +56,7 @@ app.post("/api/video/get-token", (req, res) => {
     type: "app",
     version: 2,
   };
-
+  console.log(payload);
   const token = jwt.sign(payload, process.env.HMS_SECRET, {
     algorithm: "HS256",
     expiresIn: "24h",
