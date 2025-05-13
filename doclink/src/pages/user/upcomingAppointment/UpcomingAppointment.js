@@ -289,14 +289,14 @@ const UpcomingAppointment = () => {
   };
 
   const handleJoinCall = (appointment) => {
-    const roomId = appointment._id;
+    const roomId = "6821b98236d4cfc1981f3b17";
 
     socket.emit("call-user", {
       toUserId: appointment.doctorId._id,
       fromUserId: appointment.patientId,
       roomId,
     });
-    console.log("Calling doctor with:", {
+    console.log("Calling doctor with:", appointment.patientId, {
       toUserId: appointment.doctorId._id,
       fromUserId: appointment.patientId,
       roomId,
@@ -305,7 +305,7 @@ const UpcomingAppointment = () => {
     navigate(`/call/${roomId}`, {
       state: {
         role: "patient",
-        userName: appointment.patientId.firstName,
+        userName: appointment.patientId,
       },
     });
   };
