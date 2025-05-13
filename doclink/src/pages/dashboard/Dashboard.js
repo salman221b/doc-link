@@ -60,7 +60,6 @@ const Dashboard = () => {
   }, [navigate]);
   useEffect(() => {
     if (user?._id) {
-      console.log("Registering socket with userId:", user._id);
       socket.emit("register", { userId: user._id });
     }
   }, [user]);

@@ -21,26 +21,32 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import CloseIcon from "@mui/icons-material/Close";
 import { useNavigate } from "react-router-dom";
 import socket from "../../../components/socket/socket";
+import { jwtDecode } from "jwt-decode";
 
 const ManageAppointments = () => {
+  const token = localStorage.getItem("token");
+  const decoded = token ? jwtDecode(token) : null;
+
+  const doctorId = decoded?.id; // Extract user ID
   const navigate = useNavigate();
   const [open, setOpen] = useState(false); // State to track modal visibility
-  useEffect(() => {
-    socket.on("incoming-call", ({ fromUserId, roomId }) => {
-      if (window.confirm("Incoming call. Join?")) {
-        navigate(`/call/${roomId}`, {
-          state: {
-            role: "doctor",
-            userName: "Dr, Strange",
-          },
-        });
-      }
-    });
+  // useEffect(() => {
+  //   socket.on("incoming-call", ({ fromUserId, room }) => {
+  //     const accept = window.confirm(
+  //       `Incoming call from ${fromUserId}. Accept?`
+  //     );
 
-    return () => {
-      socket.off("incoming-call");
-    };
-  }, []);
+  //     if (accept) {
+  //       navigate(`/call/${room}`, {
+  //         state: {
+  //           identity: doctorId,
+  //         },
+  //       });
+  //     }
+  //   });
+
+  //   return () => socket.off("incoming-call");
+  // }, []);
 
   return (
     <div>

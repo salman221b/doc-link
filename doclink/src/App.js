@@ -73,10 +73,7 @@ const App = () => {
               path="medical-records-doctor"
               element={<MedicalRecordsDoctor />}
             />
-            <Route
-              path="/call/:roomId"
-              element={<CallRoom role="patient" userName="Patient" />}
-            />
+            <Route path="/call/:room" element={<CallRoom />} />
 
             <Route path="/unauthorized" element={<NotFoundPage />} />
 

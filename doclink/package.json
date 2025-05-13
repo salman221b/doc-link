@@ -6,6 +6,7 @@
     "@100mslive/react-sdk": "^0.10.33",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
+    "@livekit/components-react": "^2.9.3",
     "@mui/icons-material": "^6.2.1",
     "@mui/material": "^6.2.1",
     "@mui/styled-engine-sc": "^6.2.1",

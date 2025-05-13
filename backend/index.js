@@ -8,6 +8,7 @@ const cors = require("cors");
 const jwt = require("jsonwebtoken");
 const http = require("http"); // ✅ For socket.io
 const { Server } = require("socket.io");
+const { AccessToken } = require("livekit-server-sdk");
 
 dotenv.config();
 
@@ -44,56 +45,49 @@ app.use("/", require("./routes/upcomingAppointments"));
 app.use("/", require("./routes/reminders"));
 app.use("/", require("./routes/medical-records"));
 
-// ✅ 100ms token route
-app.post("/api/video/get-token", (req, res) => {
-  const { user_id, room_id, role } = req.body;
+// Token API for LiveKit
+app.post("/get-livekit-token", (req, res) => {
+  const { identity, roomName } = req.body;
 
-  const payload = {
-    access_key: process.env.HMS_ACCESS_KEY,
-    roomId: room_id,
-    user_id,
-    role,
-    type: "app",
-    version: 2,
-  };
-  console.log(payload);
-  const token = jwt.sign(payload, process.env.HMS_SECRET, {
-    algorithm: "HS256",
-    expiresIn: "24h",
-  });
+  const at = new AccessToken(
+    process.env.LIVEKIT_API_KEY,
+    process.env.LIVEKIT_SECRET,
+    {
+      identity,
+    }
+  );
 
+  at.addGrant({ roomJoin: true, room: roomName });
+
+  const token = at.toJwt();
   res.json({ token });
 });
-
-// ✅ Socket.IO call signaling
-let onlineUsers = {};
+const onlineUsers = {};
 
 io.on("connection", (socket) => {
   console.log("Socket connected:", socket.id);
 
   socket.on("register", ({ userId }) => {
     onlineUsers[userId] = socket.id;
-    console.log("Registered:", userId);
   });
 
-  socket.on("call-user", ({ toUserId, fromUserId, roomId }) => {
-    const toSocketId = onlineUsers[toUserId];
-    if (toSocketId) {
-      io.to(toSocketId).emit("incoming-call", {
-        roomId,
+  socket.on("call-user", ({ toUserId, fromUserId, room }) => {
+    const toSocket = onlineUsers[toUserId];
+    if (toSocket) {
+      io.to(toSocket).emit("incoming-call", {
         fromUserId,
+        room,
       });
     }
   });
 
   socket.on("disconnect", () => {
-    for (const [userId, socketId] of Object.entries(onlineUsers)) {
-      if (socket.id === socketId) {
-        delete onlineUsers[userId];
+    for (const [uid, sid] of Object.entries(onlineUsers)) {
+      if (sid === socket.id) {
+        delete onlineUsers[uid];
         break;
       }
     }
-    console.log("Socket disconnected:", socket.id);
   });
 });
 
