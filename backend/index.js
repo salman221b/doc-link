@@ -71,12 +71,12 @@ io.on("connection", (socket) => {
     onlineUsers[userId] = socket.id;
   });
 
-  socket.on("call-user", ({ toUserId, fromUserId, room }) => {
+  socket.on("call-user", ({ toUserId, fromUserId, roomName }) => {
     const toSocket = onlineUsers[toUserId];
     if (toSocket) {
       io.to(toSocket).emit("incoming-call", {
         fromUserId,
-        room,
+        roomName,
       });
     }
   });

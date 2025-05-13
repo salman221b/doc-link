@@ -12,9 +12,9 @@ const DoctorPopup = ({ doctorId }) => {
       socket.emit("register", { userId: doctorId });
     }
 
-    socket.on("incoming-call", ({ roomId, fromUserId }) => {
-      console.log("Incoming call from:", fromUserId);
-      setIncomingCall({ roomId, fromUserId });
+    socket.on("incoming-call", ({ roomName, fromUserId }) => {
+      console.log("Incoming call from:", fromUserId, "Room:", roomName);
+      setIncomingCall({ roomName, fromUserId });
     });
 
     // Cleanup on unmount
@@ -25,7 +25,7 @@ const DoctorPopup = ({ doctorId }) => {
 
   const handleAccept = () => {
     if (incomingCall) {
-      navigate(`/call/${incomingCall.roomId}`, {
+      navigate(`/call/${incomingCall.roomName}`, {
         state: {
           role: "doctor",
           userName: doctorId,
