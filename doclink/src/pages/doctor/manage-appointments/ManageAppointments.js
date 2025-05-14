@@ -30,24 +30,6 @@ const ManageAppointments = () => {
   const doctorId = decoded?.id; // Extract user ID
   const navigate = useNavigate();
   const [open, setOpen] = useState(false); // State to track modal visibility
-  // useEffect(() => {
-  //   socket.on("incoming-call", ({ fromUserId, room }) => {
-  //     const accept = window.confirm(
-  //       `Incoming call from ${fromUserId}. Accept?`
-  //     );
-
-  //     if (accept) {
-  //       navigate(`/call/${room}`, {
-  //         state: {
-  //           identity: doctorId,
-  //         },
-  //       });
-  //     }
-  //   });
-
-  //   return () => socket.off("incoming-call");
-  // }, []);
-
   return (
     <div>
       <NavBar />
