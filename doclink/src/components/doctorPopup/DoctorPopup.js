@@ -23,19 +23,11 @@ const DoctorPopup = ({ doctorId }) => {
     };
   }, [doctorId]);
 
-  const handleJoinCall = (appointment) => {
-    const roomName = `room-${appointment.patientId}-${appointment.doctorId._id}`;
-
-    socket.emit("call-user", {
-      toUserId: appointment.doctorId._id,
-      fromUserId: appointment.patientId,
-      roomName,
-    });
-
-    navigate(`/call/${roomName}`, {
+  const handleAccept = () => {
+    navigate(`/call/${incomingCall.roomName}`, {
       state: {
-        identity: appointment.patientId,
-        role: "patient",
+        identity: doctorId,
+        role: "doctor",
       },
     });
   };
