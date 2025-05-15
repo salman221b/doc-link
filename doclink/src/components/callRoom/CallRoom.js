@@ -1,47 +1,41 @@
-import { LiveKitRoom, VideoConference } from "@livekit/components-react";
-import "@livekit/components-styles"; // import default LiveKit UI styles
+import { HMSRoomProvider, HMSPrebuilt } from "@100mslive/react-sdk";
+import { useState } from "react";
+import { useEffect } from "react";
 import { useLocation, useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
 
 const CallRoom = () => {
   const { roomName } = useParams();
-  const { identity, role, userName } = useLocation().state;
-  const [token, setToken] = useState(null);
+  const { identity, role } = useLocation().state;
+
+  const [token, setToken] = useState("");
 
   useEffect(() => {
-    const getToken = async () => {
-      try {
-        const res = await fetch(
-          "https://doc-link-backend.onrender.com/get-livekit-token",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ identity, roomName }),
-          }
-        );
+    const fetchToken = async () => {
+      const res = await fetch(
+        "https://doc-link-backend.onrender.com/get-100ms-token",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            user_id: identity,
+            room_id: roomName,
+            role,
+          }),
+        }
+      );
 
-        const data = await res.json();
-        setToken(data.token);
-      } catch (error) {
-        console.error("Failed to fetch token:", error);
-      }
+      const data = await res.json();
+      setToken(data.token);
     };
 
-    getToken();
-  }, [identity, roomName]);
+    fetchToken();
+  }, [roomName, identity, role]);
 
-  if (!token) return <div>Connecting...</div>;
+  if (!token) return <div>Loading...</div>;
 
   return (
-    <LiveKitRoom
-      token={token}
-      serverUrl="wss://doclink-gzihezdq.livekit.cloud"
-      connect={true}
-      data-lk-theme="default"
-    >
-      <VideoConference />
-    </LiveKitRoom>
+    <HMSRoomProvider>
+      <HMSPrebuilt roomCode={token} />
+    </HMSRoomProvider>
   );
 };
-
-export default CallRoom;

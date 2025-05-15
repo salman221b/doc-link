@@ -8,7 +8,7 @@ const cors = require("cors");
 const jwt = require("jsonwebtoken");
 const http = require("http"); // ✅ For socket.io
 const { Server } = require("socket.io");
-const { AccessToken } = require("livekit-server-sdk");
+const HMS = require("@100mslive/server-sdk");
 
 dotenv.config();
 
@@ -44,23 +44,25 @@ app.use("/", require("./routes/book-appointment"));
 app.use("/", require("./routes/upcomingAppointments"));
 app.use("/", require("./routes/reminders"));
 app.use("/", require("./routes/medical-records"));
-app.post("/get-livekit-token", (req, res) => {
-  const { identity, roomName } = req.body;
+const hms = new HMS({
+  accessKey: process.env.HMS_ACCESS_KEY,
+  secret: process.env.HMS_SECRET,
+});
 
-  if (!identity || !roomName) {
-    return res.status(400).json({ message: "Missing identity or roomName" });
+app.post("/get-100ms-token", async (req, res) => {
+  const { user_id, room_id, role } = req.body;
+
+  try {
+    const token = await hms.getAuthToken({
+      user_id,
+      role, // e.g., "doctor" or "patient"
+      room_id,
+    });
+
+    res.json({ token });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
-
-  const at = new AccessToken(
-    process.env.LIVEKIT_API_KEY,
-    process.env.LIVEKIT_SECRET,
-    { identity }
-  );
-
-  at.addGrant({ roomJoin: true, room: roomName });
-
-  const token = at.toJwt();
-  res.json({ token });
 });
 const onlineUsers = {};
 
