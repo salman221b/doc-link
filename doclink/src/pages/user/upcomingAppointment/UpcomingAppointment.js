@@ -300,6 +300,7 @@ const UpcomingAppointment = () => {
     navigate(`/call/${roomName}`, {
       state: {
         identity: appointment.patientId,
+        role: "patient",
       },
     });
   };

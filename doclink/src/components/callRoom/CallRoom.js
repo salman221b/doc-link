@@ -1,12 +1,11 @@
-import { HMSRoomProvider, HMSPrebuilt } from "@100mslive/react-sdk";
-import { useState } from "react";
-import { useEffect } from "react";
-import { useLocation, useParams } from "react-router-dom";
+// frontend/src/components/callRoom/CallRoom.jsx
+import { HMSPrebuilt } from "@100mslive/roomkit-react";
+import { useEffect, useState } from "react";
+import { useParams, useLocation } from "react-router-dom";
 
 const CallRoom = () => {
   const { roomName } = useParams();
   const { identity, role } = useLocation().state;
-
   const [token, setToken] = useState("");
 
   useEffect(() => {
@@ -19,7 +18,7 @@ const CallRoom = () => {
           body: JSON.stringify({
             user_id: identity,
             room_id: roomName,
-            role,
+            role: role,
           }),
         }
       );
@@ -34,8 +33,10 @@ const CallRoom = () => {
   if (!token) return <div>Loading...</div>;
 
   return (
-    <HMSRoomProvider>
-      <HMSPrebuilt roomCode={token} />
-    </HMSRoomProvider>
+    <div style={{ height: "100vh" }}>
+      <HMSPrebuilt token={token} />
+    </div>
   );
 };
+
+export default CallRoom;

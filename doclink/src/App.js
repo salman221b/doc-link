@@ -73,8 +73,7 @@ const App = () => {
               path="medical-records-doctor"
               element={<MedicalRecordsDoctor />}
             />
-            <Route path="/call/:room" element={<CallRoom />} />
-
+            <Route path="/call/:roomName" element={<CallRoom />} />
             <Route path="/unauthorized" element={<NotFoundPage />} />
 
             <Route path="*" element={<NotFoundPage />} />

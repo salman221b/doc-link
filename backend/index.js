@@ -8,7 +8,7 @@ const cors = require("cors");
 const jwt = require("jsonwebtoken");
 const http = require("http"); // ✅ For socket.io
 const { Server } = require("socket.io");
-const HMS = require("@100mslive/server-sdk");
+const hmsRoutes = require("./routes/100ms");
 
 dotenv.config();
 
@@ -44,26 +44,8 @@ app.use("/", require("./routes/book-appointment"));
 app.use("/", require("./routes/upcomingAppointments"));
 app.use("/", require("./routes/reminders"));
 app.use("/", require("./routes/medical-records"));
-const hms = new HMS({
-  accessKey: process.env.HMS_ACCESS_KEY,
-  secret: process.env.HMS_SECRET,
-});
+app.use("/", hmsRoutes);
 
-app.post("/get-100ms-token", async (req, res) => {
-  const { user_id, room_id, role } = req.body;
-
-  try {
-    const token = await hms.getAuthToken({
-      user_id,
-      role, // e.g., "doctor" or "patient"
-      room_id,
-    });
-
-    res.json({ token });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
 const onlineUsers = {};
 
 io.on("connection", (socket) => {

@@ -23,16 +23,21 @@ const DoctorPopup = ({ doctorId }) => {
     };
   }, [doctorId]);
 
-  const handleAccept = () => {
-    if (incomingCall) {
-      navigate(`/call/${incomingCall.roomName}`, {
-        state: {
-          role: "doctor",
-          userName: doctorId,
-        },
-      });
-      setIncomingCall(null);
-    }
+  const handleJoinCall = (appointment) => {
+    const roomName = `room-${appointment.patientId}-${appointment.doctorId._id}`;
+
+    socket.emit("call-user", {
+      toUserId: appointment.doctorId._id,
+      fromUserId: appointment.patientId,
+      roomName,
+    });
+
+    navigate(`/call/${roomName}`, {
+      state: {
+        identity: appointment.patientId,
+        role: "patient",
+      },
+    });
   };
 
   const handleDecline = () => {
