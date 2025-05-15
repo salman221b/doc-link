@@ -6,18 +6,18 @@ const bodyParser = require("body-parser");
 const startReminderJob = require("./reminderSent/reminderSend");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
-const http = require("http"); // ✅ For socket.io
+const http = require("http");
 const { Server } = require("socket.io");
-const hmsRoutes = require("./routes/100ms");
 
 dotenv.config();
 
 const app = express();
-const server = http.createServer(app); // ✅ Create HTTP server
+const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "*", // or specify your frontend origin
+    origin: ["https://doc-link-hco2.onrender.com", "http://localhost:3000"],
     methods: ["GET", "POST"],
+    credentials: true,
   },
 });
 
@@ -44,7 +44,7 @@ app.use("/", require("./routes/book-appointment"));
 app.use("/", require("./routes/upcomingAppointments"));
 app.use("/", require("./routes/reminders"));
 app.use("/", require("./routes/medical-records"));
-app.use("/", hmsRoutes);
+app.use("/", require("./routes/100ms"));
 
 const onlineUsers = {};
 
