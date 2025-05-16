@@ -34,7 +34,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 connectDB();
-app.options("*", cors());
+app.options(
+  "*",
+  cors({
+    origin: ["http://localhost:3000", "https://doc-link-hco2.onrender.com"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  })
+);
 app.use("/", require("./routes/patientRoute"));
 app.use("/", require("./routes/doctorRoute"));
 app.use("/", require("./routes/verifyOtp"));
