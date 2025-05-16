@@ -9,6 +9,8 @@ const CallRoom = () => {
   const [token, setToken] = useState("");
   useEffect(() => {
     const fetchToken = async () => {
+      console.log("Identity:", identity, "Room:", roomName, "Role:", role);
+
       try {
         const res = await fetch(
           "https://doc-link-backend.onrender.com/get-100ms-token",

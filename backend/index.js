@@ -8,6 +8,7 @@ const cors = require("cors");
 const jwt = require("jsonwebtoken");
 const http = require("http");
 const { Server } = require("socket.io");
+app.use(cors());
 
 dotenv.config();
 
@@ -25,7 +26,6 @@ const PORT = process.env.PORT || 8000;
 
 app.use(bodyParser.json());
 app.use(express.json());
-app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 
 connectDB();
