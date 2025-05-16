@@ -10,7 +10,11 @@ const http = require("http");
 const { Server } = require("socket.io");
 
 dotenv.config();
+
 const app = express();
+const PORT = process.env.PORT || 8000;
+
+// ✅ CORS middleware - applied globally
 app.use(
   cors({
     origin: ["http://localhost:3000", "https://doc-link-hco2.onrender.com"],
@@ -18,6 +22,13 @@ app.use(
     credentials: true,
   })
 );
+
+// ✅ Essential middlewares
+app.use(bodyParser.json());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// ✅ HTTP Server and Socket.IO
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
@@ -27,21 +38,10 @@ const io = new Server(server, {
   },
 });
 
-const PORT = process.env.PORT || 8000;
-
-app.use(bodyParser.json());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
+// ✅ Connect DB
 connectDB();
-app.options(
-  "*",
-  cors({
-    origin: ["http://localhost:3000", "https://doc-link-hco2.onrender.com"],
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true,
-  })
-);
+
+// ✅ Routes
 app.use("/", require("./routes/patientRoute"));
 app.use("/", require("./routes/doctorRoute"));
 app.use("/", require("./routes/verifyOtp"));
@@ -58,6 +58,7 @@ app.use("/", require("./routes/reminders"));
 app.use("/", require("./routes/medical-records"));
 app.use("/", require("./routes/100ms"));
 
+// ✅ WebSocket logic
 const onlineUsers = {};
 
 io.on("connection", (socket) => {
@@ -87,6 +88,7 @@ io.on("connection", (socket) => {
   });
 });
 
+// ✅ Start the server
 server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
   startReminderJob();

@@ -1,11 +1,13 @@
 // frontend/src/components/callRoom/CallRoom.jsx
 import { HMSPrebuilt } from "@100mslive/roomkit-react";
 import { useEffect, useState } from "react";
-import { useParams, useLocation } from "react-router-dom";
+import { useParams, useLocation, useNavigate } from "react-router-dom";
 
 const CallRoom = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
   const { roomName } = useParams();
-  const { identity, role } = useLocation().state;
+  const { identity, role } = location.state || {};
   const [token, setToken] = useState("");
   useEffect(() => {
     const fetchToken = async () => {
