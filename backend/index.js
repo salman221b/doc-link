@@ -8,7 +8,13 @@ const cors = require("cors");
 const jwt = require("jsonwebtoken");
 const http = require("http");
 const { Server } = require("socket.io");
-app.use(cors());
+app.use(
+  cors({
+    origin: ["http://localhost:3000", "https://doc-link-hco2.onrender.com"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  })
+);
 
 dotenv.config();
 
@@ -16,8 +22,8 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "*",
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    origin: ["http://localhost:3000", "https://doc-link-hco2.onrender.com"],
+    methods: ["GET", "POST"],
     credentials: true,
   },
 });
