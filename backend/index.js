@@ -34,7 +34,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 connectDB();
-
+app.options("*", cors());
 app.use("/", require("./routes/patientRoute"));
 app.use("/", require("./routes/doctorRoute"));
 app.use("/", require("./routes/verifyOtp"));
