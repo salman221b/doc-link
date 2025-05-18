@@ -8,6 +8,8 @@ const SECRET = process.env.HMS_SECRET;
 router.post("/get-100ms-token", async (req, res) => {
   const { user_id, room_id, role } = req.body;
 
+  console.log("Received token request:", { user_id, room_id, role });
+
   try {
     const response = await fetch(
       "https://prod-in.100ms.live/hmsapi/salmaan-videoconf-1433.app.100ms.live/api/token",
@@ -28,10 +30,12 @@ router.post("/get-100ms-token", async (req, res) => {
     );
 
     const data = await response.json();
+    console.log("100ms API response:", data);
 
     if (!response.ok) {
-      console.error("100ms error:", data);
-      return res.status(500).json({ error: "Failed to get 100ms token" });
+      return res
+        .status(response.status)
+        .json({ error: data.message || "Failed to get 100ms token" });
     }
 
     res.json({ token: data.token });
