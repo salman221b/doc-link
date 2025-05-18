@@ -1,32 +1,43 @@
 const express = require("express");
 const router = express.Router();
-const HMSAccessToken = require("@100mslive/server-sdk").HMSAccessToken; // get it as a property
+const fetch = require("node-fetch");
 
 const ACCESS_KEY = process.env.HMS_ACCESS_KEY;
 const SECRET = process.env.HMS_SECRET;
 
 router.post("/get-100ms-token", async (req, res) => {
+  const { user_id, room_id, role } = req.body;
+
   try {
-    const { user_id, room_id, role } = req.body;
+    const response = await fetch(
+      "https://prod-in.100ms.live/hmsapi/salmaan-videoconf-1433.app.100ms.live/api/token",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Basic ${Buffer.from(
+            `${ACCESS_KEY}:${SECRET}`
+          ).toString("base64")}`,
+        },
+        body: JSON.stringify({
+          user_id,
+          role,
+          room_id,
+        }),
+      }
+    );
 
-    // Note: HMSAccessToken is not a class constructor, but a factory function:
-    const token = HMSAccessToken({
-      accessKey: ACCESS_KEY,
-      secret: SECRET,
-    });
+    const data = await response.json();
 
-    token
-      .setUserId(user_id)
-      .setRoomId(room_id)
-      .setRole(role)
-      .setExpiration(3600);
+    if (!response.ok) {
+      console.error("100ms error:", data);
+      return res.status(500).json({ error: "Failed to get 100ms token" });
+    }
 
-    const jwt = await token.build();
-
-    res.json({ token: jwt });
+    res.json({ token: data.token });
   } catch (error) {
-    console.error("Error generating 100ms token:", error);
-    res.status(500).json({ error: "Failed to generate token" });
+    console.error("Error fetching 100ms token:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
