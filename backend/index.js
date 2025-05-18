@@ -56,7 +56,7 @@ app.use("/", require("./routes/book-appointment"));
 app.use("/", require("./routes/upcomingAppointments"));
 app.use("/", require("./routes/reminders"));
 app.use("/", require("./routes/medical-records"));
-app.use("/", require("./routes/video-conference"));
+app.use("/", cors(), require("./routes/video-conference"));
 
 // ✅ WebSocket logic
 const onlineUsers = {};

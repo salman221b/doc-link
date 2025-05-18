@@ -1,4 +1,3 @@
-// backend/routes/100ms.js
 const express = require("express");
 const router = express.Router();
 const { HMSAccessToken } = require("@100mslive/server-sdk");
