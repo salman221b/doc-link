@@ -12,12 +12,14 @@ const { Server } = require("socket.io");
 dotenv.config();
 
 const app = express();
+app.set("trust proxy", 1);
+
 const PORT = process.env.PORT || 8000;
 
 // ✅ CORS middleware - applied globally
 app.use(
   cors({
-    origin: ["http://localhost:3000", "https://doc-link-hco2.onrender.com"],
+    origin: "*", // ← TEMPORARY for debugging
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
@@ -36,11 +38,13 @@ const io = new Server(server, {
     methods: ["GET", "POST"],
     credentials: true,
   },
+  transports: ["websocket", "polling"], // <- Add this line
+  allowEIO3: true, // Optional for compatibility with some clients
 });
 
 // ✅ Connect DB
 connectDB();
-
+app.options("*", cors());
 // ✅ Routes
 app.use("/", require("./routes/patientRoute"));
 app.use("/", require("./routes/doctorRoute"));
@@ -56,7 +60,7 @@ app.use("/", require("./routes/book-appointment"));
 app.use("/", require("./routes/upcomingAppointments"));
 app.use("/", require("./routes/reminders"));
 app.use("/", require("./routes/medical-records"));
-app.use("/", cors(), require("./routes/video-conference"));
+app.use("/", require("./routes/video-conference"));
 
 // ✅ WebSocket logic
 const onlineUsers = {};
