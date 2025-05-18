@@ -382,12 +382,12 @@ const UpcomingAppointment = () => {
                         fontWeight: "bold",
                       }}
                       hidden={appointment.mode === "In-Person Consultation"}
-                      disabled={
-                        !isJoinTime(
-                          appointment.scheduledDate,
-                          appointment.scheduledTime
-                        )
-                      }
+                      // disabled={
+                      //   !isJoinTime(
+                      //     appointment.scheduledDate,
+                      //     appointment.scheduledTime
+                      //   )
+                      // }
                       onClick={() => handleJoinCall(appointment)}
                     >
                       Join
