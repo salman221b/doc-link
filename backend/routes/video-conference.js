@@ -1,6 +1,6 @@
 const express = require("express");
-const fetch = require("node-fetch");
 const router = express.Router();
+const fetch = require("node-fetch"); // v2 for CommonJS
 require("dotenv").config();
 
 const ACCESS_KEY = process.env.HMS_ACCESS_KEY;
@@ -8,20 +8,16 @@ const SECRET = process.env.HMS_SECRET;
 
 router.post("/get-100ms-token", async (req, res) => {
   const { user_id, room_id, role } = req.body;
-
   console.log("Received token request:", { user_id, room_id, role });
 
-  if (!user_id || !room_id || !role) {
-    return res.status(400).json({ error: "Missing required fields" });
-  }
-
   try {
-    const response = await fetch("https://api.100ms.live/v2/room-tokens", {
+    const apiResponse = await fetch("https://api.100ms.live/v2/room-tokens", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization:
-          "Basic " + Buffer.from(`${ACCESS_KEY}:${SECRET}`).toString("base64"),
+        Authorization: `Basic ${Buffer.from(`${ACCESS_KEY}:${SECRET}`).toString(
+          "base64"
+        )}`,
       },
       body: JSON.stringify({
         user_id,
@@ -30,18 +26,26 @@ router.post("/get-100ms-token", async (req, res) => {
       }),
     });
 
-    const data = await response.json();
+    const text = await apiResponse.text(); // get raw text
 
-    if (!response.ok) {
-      console.error("100ms API error:", data);
+    try {
+      const data = JSON.parse(text); // try parsing JSON
+      if (!data.token) {
+        console.error("Invalid 100ms response:", data);
+        return res
+          .status(500)
+          .json({ error: "Token not found", details: data });
+      }
+
+      res.json({ token: data.token });
+    } catch (parseError) {
+      console.error("Failed to parse 100ms response as JSON:", text);
       return res
-        .status(response.status)
-        .json({ error: "Token generation failed", details: data });
+        .status(500)
+        .json({ error: "Invalid response from 100ms", raw: text });
     }
-
-    res.json({ token: data.token });
-  } catch (err) {
-    console.error("Error fetching 100ms token:", err);
+  } catch (error) {
+    console.error("Error fetching 100ms token:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 });
