@@ -1,23 +1,52 @@
 const express = require("express");
+const fetch = require("node-fetch");
 const router = express.Router();
-const fetch = require("node-fetch"); // v2 for CommonJS
+
 require("dotenv").config();
 
 const ACCESS_KEY = process.env.HMS_ACCESS_KEY;
 const SECRET = process.env.HMS_SECRET;
 
-router.post("/get-100ms-token", async (req, res) => {
-  const { user_id, room_id, role } = req.body;
-  console.log("Received token request:", { user_id, room_id, role });
+function getAuthToken() {
+  return Buffer.from(`${ACCESS_KEY}:${SECRET}`).toString("base64");
+}
+
+// 1. Create a Room
+router.post("/create-room", async (req, res) => {
+  const { name } = req.body;
 
   try {
-    const apiResponse = await fetch("https://api.100ms.live/v2/room-tokens", {
+    const response = await fetch("https://api.100ms.live/v2/rooms", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Basic ${Buffer.from(`${ACCESS_KEY}:${SECRET}`).toString(
-          "base64"
-        )}`,
+        Authorization: `Basic ${getAuthToken()}`,
+      },
+      body: JSON.stringify({
+        name: name,
+        description: "Room created via API",
+        template_id: "6821b9828102660b706b9a3e",
+      }),
+    });
+
+    const data = await response.json();
+    res.status(200).json(data);
+  } catch (err) {
+    console.error("Error creating room:", err);
+    res.status(500).json({ error: "Failed to create room" });
+  }
+});
+
+// 2. Generate Token for Room
+router.post("/get-100ms-token", async (req, res) => {
+  const { user_id, room_id, role } = req.body;
+
+  try {
+    const response = await fetch("https://api.100ms.live/v2/room-tokens", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Basic ${getAuthToken()}`,
       },
       body: JSON.stringify({
         user_id,
@@ -26,27 +55,17 @@ router.post("/get-100ms-token", async (req, res) => {
       }),
     });
 
-    const text = await apiResponse.text(); // get raw text
+    const data = await response.json();
 
-    try {
-      const data = JSON.parse(text); // try parsing JSON
-      if (!data.token) {
-        console.error("Invalid 100ms response:", data);
-        return res
-          .status(500)
-          .json({ error: "Token not found", details: data });
-      }
-
-      res.json({ token: data.token });
-    } catch (parseError) {
-      console.error("Failed to parse 100ms response as JSON:", text);
-      return res
-        .status(500)
-        .json({ error: "Invalid response from 100ms", raw: text });
+    if (!data.token) {
+      console.error("Failed to get token. Response:", data);
+      return res.status(500).json({ error: "Failed to get token" });
     }
-  } catch (error) {
-    console.error("Error fetching 100ms token:", error);
-    res.status(500).json({ error: "Internal server error" });
+
+    res.json({ token: data.token });
+  } catch (err) {
+    console.error("Error generating token:", err);
+    res.status(500).json({ error: "Failed to generate token" });
   }
 });
 

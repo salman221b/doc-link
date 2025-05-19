@@ -2,6 +2,7 @@
 import { HMSPrebuilt } from "@100mslive/roomkit-react";
 import { useEffect, useState } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
+import { createRoom } from "../../utility/createRoom";
 
 const CallRoom = () => {
   const location = useLocation();
@@ -11,6 +12,8 @@ const CallRoom = () => {
   const [token, setToken] = useState("");
   useEffect(() => {
     const fetchToken = async () => {
+      const roomData = await createRoom(roomName);
+
       console.log("Identity:", identity, "Room:", roomName, "Role:", role);
 
       try {
@@ -21,7 +24,7 @@ const CallRoom = () => {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               user_id: identity,
-              room_id: roomName,
+              room_id: roomData.id,
               role,
             }),
           }
