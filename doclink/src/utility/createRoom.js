@@ -21,11 +21,13 @@ export const createRoom = async (roomName) => {
       throw new Error(data.error || "Room creation failed");
     }
 
-    if (!data.id) {
-      throw new Error("Invalid room ID received");
+    // Handle both response formats
+    const roomId = data.id || data.room?.id;
+    if (!roomId) {
+      throw new Error("Invalid room ID in response");
     }
 
-    return data;
+    return roomId; // Now returns just the ID string
   } catch (error) {
     console.error("Room creation error:", error);
     throw error;

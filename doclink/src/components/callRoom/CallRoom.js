@@ -19,23 +19,16 @@ const CallRoom = () => {
         setLoading(true);
         setError("");
 
-        // 1. Validate required parameters
+        // Validate parameters
         if (!roomName || !identity || !role) {
           throw new Error("Missing required call parameters");
         }
 
-        // 2. Create room
-        let roomData;
-        try {
-          roomData = await createRoom(roomName);
-          if (!roomData?.id) {
-            throw new Error("Invalid room data received");
-          }
-        } catch (err) {
-          throw new Error(`Room creation failed: ${err.message}`);
-        }
+        // Create room and get ID
+        const roomId = await createRoom(roomName);
+        console.log("Created room with ID:", roomId);
 
-        // 3. Get auth token
+        // Get auth token
         const tokenResponse = await fetch(
           "https://doc-link-backend.onrender.com/get-token",
           {
@@ -43,7 +36,7 @@ const CallRoom = () => {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               user_id: identity,
-              room_id: roomData.id,
+              room_id: roomId, // Now using the direct ID
               role,
             }),
           }
@@ -72,17 +65,15 @@ const CallRoom = () => {
   }, [roomName, identity, role]);
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <p className="text-2xl font-bold">Initializing video call...</p>
-      </div>
-    );
+    return <div className="loading-screen">Initializing video call...</div>;
   }
 
   if (error) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <p>{error}</p>
+      <div className="error-screen">
+        <p>Error: {error}</p>
+        <button onClick={() => window.location.reload()}>Retry</button>
+        <button onClick={() => navigate("/appointments")}>Cancel</button>
       </div>
     );
   }
@@ -96,10 +87,6 @@ const CallRoom = () => {
           userName: `${role}-${identity}`,
           muteOnJoin: false,
           videoOnJoin: true,
-          settings: {
-            isAudioMuted: false,
-            isVideoMuted: false,
-          },
         }}
         onLeave={() => navigate("/appointments")}
       />

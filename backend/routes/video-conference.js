@@ -7,7 +7,6 @@ const {
   generateAppToken,
 } = require("../utils/100msAuth");
 
-// Create new consultation room
 router.post("/create-room", async (req, res) => {
   const { name, description } = req.body;
 
@@ -20,17 +19,22 @@ router.post("/create-room", async (req, res) => {
       },
       body: JSON.stringify({
         name,
-        description: description || "Doctor-Patient Consultation",
+        description,
         template_id: process.env.HMS_TEMPLATE_ID,
       }),
     });
 
     const data = await response.json();
+
     if (!response.ok) throw data;
 
+    // Return consistent structure
     res.json({
       success: true,
-      room: data,
+      room: {
+        id: data.id || data.room_id, // Handle different response formats
+        name: data.name,
+      },
     });
   } catch (error) {
     console.error("Room creation failed:", error);
