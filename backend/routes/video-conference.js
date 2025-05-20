@@ -1,63 +1,67 @@
+// routes/hmsRoutes.js
 const express = require("express");
 const router = express.Router();
 const fetch = require("node-fetch");
-const { SDK } = require("@100mslive/server-sdk");
-const { getAuthToken } = require("../utils/100msAuth");
-const token = getAuthToken();
+const {
+  generateManagementToken,
+  generateAppToken,
+} = require("../utils/100msAuth");
 
-const hms = new SDK({
-  accessKey: process.env.HMS_ACCESS_KEY,
-  secret: process.env.HMS_SECRET,
-});
-
-// ✅ CREATE ROOM - via REST API
+// Create new consultation room
 router.post("/create-room", async (req, res) => {
-  const { name } = req.body;
+  const { name, description } = req.body;
 
   try {
     const response = await fetch("https://api.100ms.live/v2/rooms", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`, // 👈 FIXED
+        Authorization: `Bearer ${generateManagementToken()}`,
       },
       body: JSON.stringify({
         name,
-        description: "Room created via API",
-        template_id: "6821b9828102660b706b9a3e",
+        description: description || "Doctor-Patient Consultation",
+        template_id: process.env.HMS_TEMPLATE_ID,
       }),
     });
 
     const data = await response.json();
+    if (!response.ok) throw data;
 
-    if (!response.ok) {
-      console.error("Error creating room:", data);
-      return res.status(response.status).json({ error: data });
-    }
-
-    res.status(200).json(data);
-  } catch (err) {
-    console.error("Error creating room:", err);
-    res.status(500).json({ error: "Failed to create room" });
+    res.json({
+      success: true,
+      room: data,
+    });
+  } catch (error) {
+    console.error("Room creation failed:", error);
+    res.status(500).json({
+      success: false,
+      error: error.message || "Room creation failed",
+    });
   }
 });
 
-// ✅ GET ROOM TOKEN - via 100ms SDK
-router.post("/get-100ms-token", async (req, res) => {
-  const { user_id, room_id, role } = req.body;
+// Generate auth token for participant
+router.post("/get-token", async (req, res) => {
+  const { room_id, user_id, role } = req.body;
 
   try {
-    const token = await hms.auth.getToken({
-      room_id,
-      user_id,
-      role,
-      type: "app",
-    });
+    if (!room_id || !user_id || !role) {
+      throw new Error("Missing required fields");
+    }
 
-    res.json({ token });
+    const token = generateAppToken(room_id, user_id, role);
+
+    res.json({
+      success: true,
+      token,
+    });
   } catch (error) {
-    console.error("Error generating token:", error);
-    res.status(500).json({ error: "Failed to generate token" });
+    console.error("Token generation failed:", error);
+    res.status(400).json({
+      success: false,
+      error: error.message || "Token generation failed",
+    });
   }
 });
 

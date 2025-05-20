@@ -1,20 +1,32 @@
+// utils/100msAuth.js
 const jwt = require("jsonwebtoken");
-const { v4: uuidv4 } = require("uuid"); // for generating unique jti
+const { v4: uuidv4 } = require("uuid");
 
-function getAuthToken() {
-  const accessKey = process.env.HMS_ACCESS_KEY;
-  const secret = process.env.HMS_SECRET;
+const HMS_ACCESS_KEY = process.env.HMS_ACCESS_KEY;
+const HMS_SECRET = process.env.HMS_SECRET;
+const HMS_TEMPLATE_ID = process.env.HMS_TEMPLATE_ID;
 
-  const payload = {
-    access_key: accessKey,
-    type: "management", // required for creating rooms
-    version: 2,
-    iat: Math.floor(Date.now() / 1000),
-    exp: Math.floor(Date.now() / 1000) + 24 * 60 * 60, // 24 hours validity
-    jti: uuidv4(), // 👈 required unique token ID
-  };
+const generateToken = (payload) => {
+  return jwt.sign(
+    {
+      ...payload,
+      access_key: HMS_ACCESS_KEY,
+      version: 2,
+      iat: Math.floor(Date.now() / 1000),
+      exp: Math.floor(Date.now() / 1000) + 3600, // 1 hour expiry
+      jti: uuidv4(),
+    },
+    HMS_SECRET
+  );
+};
 
-  return jwt.sign(payload, secret);
-}
-
-module.exports = { getAuthToken };
+module.exports = {
+  generateManagementToken: () => generateToken({ type: "management" }),
+  generateAppToken: (roomId, userId, role) =>
+    generateToken({
+      room_id: roomId,
+      user_id: userId,
+      role,
+      type: "app",
+    }),
+};

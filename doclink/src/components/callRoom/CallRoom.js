@@ -24,7 +24,7 @@ const CallRoom = () => {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               user_id: identity,
-              room_id: roomData.id,
+              room_id: roomData,
               role,
             }),
           }
