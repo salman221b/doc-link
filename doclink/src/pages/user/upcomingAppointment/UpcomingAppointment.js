@@ -289,9 +289,7 @@ const UpcomingAppointment = () => {
   };
 
   const handleJoinCall = (appointment) => {
-    const roomName = `room-${appointment.patientId}-${
-      appointment.doctorId._id
-    }-${Date.now()}`;
+    const roomName = `room-${appointment.patientId}-${Date.now()}`;
     socket.emit("call-user", {
       toUserId: appointment.doctorId._id,
       fromUserId: appointment.patientId,
