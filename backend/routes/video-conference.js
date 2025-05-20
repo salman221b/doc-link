@@ -1,6 +1,7 @@
 const express = require("express");
 const fetch = require("node-fetch");
 const router = express.Router();
+const { generateAccessToken } = require("@100mslive/server-sdk");
 
 require("dotenv").config();
 
@@ -38,33 +39,23 @@ router.post("/create-room", async (req, res) => {
 });
 
 // 2. Generate Token for Room
-router.post("/get-100ms-token", async (req, res) => {
+router.post("/get-100ms-token", (req, res) => {
   const { user_id, room_id, role } = req.body;
 
   try {
-    const response = await fetch("https://api.100ms.live/v2/room-tokens", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Basic ${getAuthToken()}`,
-      },
-      body: JSON.stringify({
-        user_id,
-        room_id,
-        role,
-      }),
-    });
+    // generateAccessToken params: (accessKey, secret, userId, roomId, role, expiration)
+    const token = generateAccessToken(
+      process.env.HMS_ACCESS_KEY,
+      process.env.HMS_SECRET,
+      user_id,
+      room_id,
+      role,
+      3600 // 1 hour expiration in seconds
+    );
 
-    const data = await response.json();
-
-    if (!data.token) {
-      console.error("Failed to get token. Response:", data);
-      return res.status(500).json({ error: "Failed to get token" });
-    }
-
-    res.json({ token: data.token });
-  } catch (err) {
-    console.error("Error generating token:", err);
+    res.json({ token });
+  } catch (error) {
+    console.error("Error generating token:", error);
     res.status(500).json({ error: "Failed to generate token" });
   }
 });
