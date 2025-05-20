@@ -47,7 +47,7 @@ router.post("/get-100ms-token", async (req, res) => {
   const { user_id, room_id, role } = req.body;
 
   try {
-    const token = await hms.auth.getRoomToken({
+    const token = await hms.auth.getToken({
       room_id,
       user_id,
       role,
