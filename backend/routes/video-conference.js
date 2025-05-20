@@ -4,7 +4,7 @@ const router = express.Router();
 const { generateAccessToken } = require("@100mslive/server-sdk");
 
 require("dotenv").config();
-
+console.log(require("@100mslive/server-sdk"));
 const ACCESS_KEY = process.env.HMS_ACCESS_KEY;
 const SECRET = process.env.HMS_SECRET;
 
