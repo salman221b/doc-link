@@ -3,8 +3,6 @@ import { HMSPrebuilt } from "@100mslive/roomkit-react";
 import { useEffect, useState } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { createRoom } from "../../utility/createRoom";
-import LoadingSpinner from "../common/LoadingSpinner";
-import ErrorMessage from "../common/ErrorMessage";
 
 const CallRoom = () => {
   const location = useLocation();
@@ -76,7 +74,7 @@ const CallRoom = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <LoadingSpinner message="Initializing video call..." />
+        <p className="text-2xl font-bold">Initializing video call...</p>
       </div>
     );
   }
@@ -84,11 +82,7 @@ const CallRoom = () => {
   if (error) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <ErrorMessage
-          message={error}
-          onRetry={() => window.location.reload()}
-          onCancel={() => navigate("/")}
-        />
+        <p>{error}</p>
       </div>
     );
   }
