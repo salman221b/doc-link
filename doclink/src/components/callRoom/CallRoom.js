@@ -18,7 +18,7 @@ const CallRoom = () => {
 
       try {
         const res = await fetch(
-          "https://doc-link-backend.onrender.com/get-100ms-token",
+          "https://doc-link-backend.onrender.com/get-token",
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
