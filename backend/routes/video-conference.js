@@ -1,7 +1,7 @@
 const express = require("express");
 const fetch = require("node-fetch");
 const router = express.Router();
-const { generateAccessToken } = require("@100mslive/server-sdk");
+const { SDK } = require("@100mslive/server-sdk");
 
 require("dotenv").config();
 console.log(require("@100mslive/server-sdk"));
@@ -39,19 +39,22 @@ router.post("/create-room", async (req, res) => {
 });
 
 // 2. Generate Token for Room
-router.post("/get-100ms-token", (req, res) => {
+const hms = new SDK({
+  accessKey: process.env.HMS_ACCESS_KEY,
+  secret: process.env.HMS_SECRET,
+});
+
+router.post("/get-100ms-token", async (req, res) => {
   const { user_id, room_id, role } = req.body;
 
   try {
-    // generateAccessToken params: (accessKey, secret, userId, roomId, role, expiration)
-    const token = generateAccessToken(
-      process.env.HMS_ACCESS_KEY,
-      process.env.HMS_SECRET,
+    console.log("Received token request:", req.body);
+
+    const token = await hms.getAuthToken({
       user_id,
       room_id,
       role,
-      3600 // 1 hour expiration in seconds
-    );
+    });
 
     res.json({ token });
   } catch (error) {
