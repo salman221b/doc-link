@@ -10,47 +10,92 @@ const CallRoom = () => {
   const { roomName } = useParams();
   const { identity, role } = location.state || {};
   const [token, setToken] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
   useEffect(() => {
-    const fetchToken = async () => {
-      const roomData = await createRoom(roomName);
-
-      console.log("Identity:", identity, "Room:", roomName, "Role:", role);
-
+    const initializeCall = async () => {
       try {
-        const res = await fetch(
+        setLoading(true);
+
+        // 1. Create or get the room
+        const roomData = await createRoom(roomName);
+        if (!roomData?.id) {
+          throw new Error("Failed to create room");
+        }
+
+        // 2. Get auth token for the participant
+        const response = await fetch(
           "https://doc-link-backend.onrender.com/get-token",
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               user_id: identity,
-              room_id: roomData,
+              room_id: roomData.id, // Make sure this is the correct room ID
               role,
             }),
           }
         );
 
-        console.log("Token API status:", res.status);
-        const data = await res.json();
-        console.log("Token API response:", data);
-
-        if (!data.token) {
-          throw new Error("No token received");
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || "Failed to get token");
         }
 
-        setToken(data.token);
-      } catch (error) {
-        console.error("Error fetching token:", error);
+        const { token } = await response.json();
+        if (!token) {
+          throw new Error("Invalid token received");
+        }
+
+        setToken(token);
+      } catch (err) {
+        console.error("Call initialization error:", err);
+        setError(err.message || "Failed to initialize call");
+        // Redirect after showing error
+        setTimeout(() => navigate("/"), 5000);
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchToken();
-  }, [roomName, identity, role]);
-  if (!token) return <div>Loading...</div>;
+    // Only initialize if we have required parameters
+    if (roomName && identity && role) {
+      initializeCall();
+    } else {
+      setError("Missing call parameters");
+      setLoading(false);
+    }
+  }, [roomName, identity, role, navigate]);
+
+  if (loading) {
+    return <div className="loading-screen">Loading call room...</div>;
+  }
+
+  if (error) {
+    return (
+      <div className="error-screen">
+        <p>{error}</p>
+        <p>Redirecting to home page...</p>
+      </div>
+    );
+  }
 
   return (
     <div style={{ height: "100vh" }}>
-      <HMSPrebuilt token={token} />
+      {token && (
+        <HMSPrebuilt
+          roomCode={roomName} // Use either roomCode or token
+          token={token} // Providing both is okay but one is sufficient
+          options={{
+            userName: `${role}-${identity}`,
+            muteOnJoin: false,
+            videoOnJoin: true,
+            debugMode: process.env.NODE_ENV === "development",
+          }}
+          onLeave={() => navigate("/")}
+        />
+      )}
     </div>
   );
 };
