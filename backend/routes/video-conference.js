@@ -9,7 +9,7 @@ const {
 
 // Create new consultation room
 router.post("/create-room", async (req, res) => {
-  const { name } = req.body;
+  const { name, description } = req.body;
 
   try {
     const response = await fetch("https://api.100ms.live/v2/rooms", {
@@ -20,6 +20,7 @@ router.post("/create-room", async (req, res) => {
       },
       body: JSON.stringify({
         name,
+        description: description || "Doctor-Patient Consultation",
         template_id: process.env.HMS_TEMPLATE_ID,
       }),
     });

@@ -1,3 +1,4 @@
+// frontend/src/utility/createRoom.js
 export const createRoom = async (roomName) => {
   try {
     const response = await fetch(
@@ -7,19 +8,26 @@ export const createRoom = async (roomName) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ name: roomName }),
+        body: JSON.stringify({
+          name: roomName,
+          description: `Telemedicine consultation - ${new Date().toLocaleString()}`,
+        }),
       }
     );
 
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(data.error || "Failed to create room");
+      throw new Error(data.error || "Room creation failed");
     }
 
-    return data; // contains room_id, name, etc.
+    if (!data.id) {
+      throw new Error("Invalid room ID received");
+    }
+
+    return data;
   } catch (error) {
-    console.error("Error creating room:", error);
-    return null;
+    console.error("Room creation error:", error);
+    throw error;
   }
 };

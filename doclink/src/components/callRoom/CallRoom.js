@@ -3,6 +3,8 @@ import { HMSPrebuilt } from "@100mslive/roomkit-react";
 import { useEffect, useState } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { createRoom } from "../../utility/createRoom";
+import LoadingSpinner from "../common/LoadingSpinner";
+import ErrorMessage from "../common/ErrorMessage";
 
 const CallRoom = () => {
   const location = useLocation();
@@ -17,85 +19,96 @@ const CallRoom = () => {
     const initializeCall = async () => {
       try {
         setLoading(true);
+        setError("");
 
-        // 1. Create or get the room
-        const roomData = await createRoom(roomName);
-        if (!roomData?.id) {
-          throw new Error("Failed to create room");
+        // 1. Validate required parameters
+        if (!roomName || !identity || !role) {
+          throw new Error("Missing required call parameters");
         }
 
-        // 2. Get auth token for the participant
-        const response = await fetch(
+        // 2. Create room
+        let roomData;
+        try {
+          roomData = await createRoom(roomName);
+          if (!roomData?.id) {
+            throw new Error("Invalid room data received");
+          }
+        } catch (err) {
+          throw new Error(`Room creation failed: ${err.message}`);
+        }
+
+        // 3. Get auth token
+        const tokenResponse = await fetch(
           "https://doc-link-backend.onrender.com/get-token",
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               user_id: identity,
-              room_id: roomData.id, // Make sure this is the correct room ID
+              room_id: roomData.id,
               role,
             }),
           }
         );
 
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || "Failed to get token");
+        if (!tokenResponse.ok) {
+          const errorData = await tokenResponse.json().catch(() => ({}));
+          throw new Error(errorData.error || "Token request failed");
         }
 
-        const { token } = await response.json();
+        const { token } = await tokenResponse.json();
         if (!token) {
-          throw new Error("Invalid token received");
+          throw new Error("Empty token received");
         }
 
         setToken(token);
       } catch (err) {
-        console.error("Call initialization error:", err);
-        setError(err.message || "Failed to initialize call");
-        // Redirect after showing error
-        setTimeout(() => navigate("/"), 5000);
+        console.error("Call initialization failed:", err);
+        setError(err.message);
       } finally {
         setLoading(false);
       }
     };
 
-    // Only initialize if we have required parameters
-    if (roomName && identity && role) {
-      initializeCall();
-    } else {
-      setError("Missing call parameters");
-      setLoading(false);
-    }
-  }, [roomName, identity, role, navigate]);
+    initializeCall();
+  }, [roomName, identity, role]);
 
   if (loading) {
-    return <div className="loading-screen">Loading call room...</div>;
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <LoadingSpinner message="Initializing video call..." />
+      </div>
+    );
   }
 
   if (error) {
     return (
-      <div className="error-screen">
-        <p>{error}</p>
-        <p>Redirecting to home page...</p>
+      <div className="flex items-center justify-center h-screen">
+        <ErrorMessage
+          message={error}
+          onRetry={() => window.location.reload()}
+          onCancel={() => navigate("/")}
+        />
       </div>
     );
   }
 
   return (
     <div style={{ height: "100vh" }}>
-      {token && (
-        <HMSPrebuilt
-          roomCode={roomName} // Use either roomCode or token
-          token={token} // Providing both is okay but one is sufficient
-          options={{
-            userName: `${role}-${identity}`,
-            muteOnJoin: false,
-            videoOnJoin: true,
-            debugMode: process.env.NODE_ENV === "development",
-          }}
-          onLeave={() => navigate("/")}
-        />
-      )}
+      <HMSPrebuilt
+        roomCode={roomName}
+        token={token}
+        options={{
+          userName: `${role}-${identity}`,
+          muteOnJoin: false,
+          videoOnJoin: true,
+          settings: {
+            isAudioMuted: false,
+            isVideoMuted: false,
+          },
+        }}
+        onLeave={() => navigate("/appointments")}
+      />
     </div>
   );
 };
