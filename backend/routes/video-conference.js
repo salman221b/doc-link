@@ -3,6 +3,7 @@ const router = express.Router();
 const fetch = require("node-fetch");
 const { SDK } = require("@100mslive/server-sdk");
 const { getAuthToken } = require("../utils/100msAuth");
+const token = getAuthToken();
 
 const hms = new SDK({
   accessKey: process.env.HMS_ACCESS_KEY,
@@ -18,12 +19,12 @@ router.post("/create-room", async (req, res) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Basic ${getAuthToken()}`,
+        Authorization: `Bearer ${token}`, // 👈 FIXED
       },
       body: JSON.stringify({
         name,
         description: "Room created via API",
-        template_id: "6821b9828102660b706b9a3e", // ✅ use your template ID
+        template_id: "6821b9828102660b706b9a3e",
       }),
     });
 
