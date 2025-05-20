@@ -50,9 +50,7 @@ router.post("/get-100ms-token", async (req, res) => {
   try {
     console.log("Received token request:", req.body);
 
-    if (!user_id || !room_id || !role) {
-      return res.status(400).json({ error: "Missing required parameters" });
-    }
+    console.log(room_id, user_id, role);
 
     const token = await hms.getAuthToken({
       user_id,
