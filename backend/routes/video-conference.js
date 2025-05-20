@@ -1,14 +1,15 @@
 const express = require("express");
 const router = express.Router();
+const fetch = require("node-fetch");
 const { SDK } = require("@100mslive/server-sdk");
 const { getAuthToken } = require("../utils/100msAuth");
-// Initialize 100ms SDK with your credentials
+
 const hms = new SDK({
   accessKey: process.env.HMS_ACCESS_KEY,
   secret: process.env.HMS_SECRET,
 });
 
-// POST /create-room
+// ✅ CREATE ROOM - via REST API
 router.post("/create-room", async (req, res) => {
   const { name } = req.body;
 
@@ -22,7 +23,7 @@ router.post("/create-room", async (req, res) => {
       body: JSON.stringify({
         name,
         description: "Room created via API",
-        template_id: "6821b9828102660b706b9a3e",
+        template_id: "6821b9828102660b706b9a3e", // ✅ use your template ID
       }),
     });
 
@@ -39,12 +40,13 @@ router.post("/create-room", async (req, res) => {
     res.status(500).json({ error: "Failed to create room" });
   }
 });
-// POST /get-100ms-token
+
+// ✅ GET ROOM TOKEN - via 100ms SDK
 router.post("/get-100ms-token", async (req, res) => {
   const { user_id, room_id, role } = req.body;
 
   try {
-    const token = await hms.rooms.createToken({
+    const token = await hms.auth.getRoomToken({
       room_id,
       user_id,
       role,
