@@ -6,8 +6,11 @@ const {
   generateManagementToken,
   generateAppToken,
 } = require("../utils/100msAuth");
+
+// Backend: routes/hmsRoutes.js
 router.post("/create-room", async (req, res) => {
   const { name, description } = req.body;
+  console.log("Creating room with name:", name); // Debug log
 
   try {
     const response = await fetch("https://api.100ms.live/v2/rooms", {
@@ -18,21 +21,27 @@ router.post("/create-room", async (req, res) => {
       },
       body: JSON.stringify({
         name,
-        description,
+        description: description || "Doctor-Patient Consultation",
         template_id: process.env.HMS_TEMPLATE_ID,
       }),
     });
 
     const data = await response.json();
+    console.log("100ms API Response:", data); // Debug log
 
-    if (!response.ok) throw data;
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to create room");
+    }
 
-    // Return BOTH id and code
+    if (!data.id) {
+      throw new Error("Room ID not found in response");
+    }
+
     res.json({
       success: true,
       room: {
         id: data.id,
-        code: data.room_code || data.id, // Fallback to id if code not provided
+        code: data.room_code || data.id, // Use room_code if available
         name: data.name,
       },
     });
@@ -41,6 +50,7 @@ router.post("/create-room", async (req, res) => {
     res.status(500).json({
       success: false,
       error: error.message || "Room creation failed",
+      details: error.response?.data, // Include additional error details
     });
   }
 });
