@@ -1,4 +1,3 @@
-// frontend/src/utility/createRoom.js
 export const createRoom = async (roomName) => {
   try {
     const response = await fetch(
@@ -21,13 +20,10 @@ export const createRoom = async (roomName) => {
       throw new Error(data.error || "Room creation failed");
     }
 
-    // Handle both response formats
-    const roomId = data.id || data.room?.id;
-    if (!roomId) {
-      throw new Error("Invalid room ID in response");
-    }
-
-    return roomId; // Now returns just the ID string
+    return {
+      id: data.room.id,
+      code: data.room.code, // This is what we'll use for roomCode
+    };
   } catch (error) {
     console.error("Room creation error:", error);
     throw error;

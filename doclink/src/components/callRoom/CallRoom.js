@@ -19,16 +19,11 @@ const CallRoom = () => {
         setLoading(true);
         setError("");
 
-        // Validate parameters
-        if (!roomName || !identity || !role) {
-          throw new Error("Missing required call parameters");
-        }
+        // Create room and get BOTH id and code
+        const { id: roomId, code: roomCode } = await createRoom(roomName);
+        console.log("Room created:", { roomId, roomCode });
 
-        // Create room and get ID
-        const roomId = await createRoom(roomName);
-        console.log("Created room with ID:", roomId);
-
-        // Get auth token
+        // Get token using the room ID
         const tokenResponse = await fetch(
           "https://doc-link-backend.onrender.com/get-token",
           {
@@ -36,23 +31,16 @@ const CallRoom = () => {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               user_id: identity,
-              room_id: roomId, // Now using the direct ID
+              room_id: roomId, // Use ID for token generation
               role,
             }),
           }
         );
 
-        if (!tokenResponse.ok) {
-          const errorData = await tokenResponse.json().catch(() => ({}));
-          throw new Error(errorData.error || "Token request failed");
-        }
-
         const { token } = await tokenResponse.json();
-        if (!token) {
-          throw new Error("Empty token received");
-        }
+        if (!token) throw new Error("Empty token received");
 
-        setToken(token);
+        setToken({ token, roomCode }); // Store both values
       } catch (err) {
         console.error("Call initialization failed:", err);
         setError(err.message);
@@ -80,16 +68,18 @@ const CallRoom = () => {
 
   return (
     <div style={{ height: "100vh" }}>
-      <HMSPrebuilt
-        roomCode={roomName}
-        token={token}
-        options={{
-          userName: `${role}-${identity}`,
-          muteOnJoin: false,
-          videoOnJoin: true,
-        }}
-        onLeave={() => navigate("/appointments")}
-      />
+      {token && (
+        <HMSPrebuilt
+          roomCode={token.roomCode} // Use the actual room code here
+          token={token.token}
+          options={{
+            userName: `${role}-${identity}`,
+            muteOnJoin: false,
+            videoOnJoin: true,
+          }}
+          onLeave={() => navigate("/appointments")}
+        />
+      )}
     </div>
   );
 };

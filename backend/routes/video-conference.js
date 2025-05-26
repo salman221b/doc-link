@@ -6,7 +6,6 @@ const {
   generateManagementToken,
   generateAppToken,
 } = require("../utils/100msAuth");
-
 router.post("/create-room", async (req, res) => {
   const { name, description } = req.body;
 
@@ -28,11 +27,12 @@ router.post("/create-room", async (req, res) => {
 
     if (!response.ok) throw data;
 
-    // Return consistent structure
+    // Return BOTH id and code
     res.json({
       success: true,
       room: {
-        id: data.id || data.room_id, // Handle different response formats
+        id: data.id,
+        code: data.room_code || data.id, // Fallback to id if code not provided
         name: data.name,
       },
     });
@@ -44,7 +44,6 @@ router.post("/create-room", async (req, res) => {
     });
   }
 });
-
 // Generate auth token for participant
 router.post("/get-token", async (req, res) => {
   const { room_id, user_id, role } = req.body;
