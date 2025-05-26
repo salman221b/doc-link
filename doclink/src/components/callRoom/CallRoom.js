@@ -3,6 +3,7 @@ import { HMSPrebuilt } from "@100mslive/roomkit-react";
 import { useEffect, useState } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { createRoom } from "../../utility/createRoom";
+import { v4 as uuidv4 } from "uuid";
 
 const CallRoom = () => {
   const { roomName } = useParams();
@@ -38,28 +39,37 @@ const CallRoom = () => {
               user_id: state.identity,
               room_id: roomId,
               role: state.role,
+              session_id: uuidv4(),
             }),
           }
         );
+        const { token, room_id: verifiedRoomId } = await tokenResponse.json();
 
-        const tokenData = await tokenResponse.json();
-        console.log("Token response:", tokenData); // Debug log
-
-        if (!tokenResponse.ok || !tokenData.token) {
-          throw new Error(tokenData.error || "Invalid token received");
+        // Verify room ID matches
+        if (verifiedRoomId !== roomId) {
+          throw new Error("Room ID mismatch in token response");
         }
+
+        console.log("Final join parameters:", {
+          roomCode,
+          token: token.slice(0, 50) + "...",
+          roomId: verifiedRoomId,
+        });
 
         setCallState({
           loading: false,
           error: null,
-          token: tokenData.token,
+          token,
           roomCode,
         });
       } catch (error) {
-        console.error("Call initialization failed:", error);
+        console.error("Call initialization failed:", {
+          error: error.message,
+          response: error.response?.data,
+        });
         setCallState({
           loading: false,
-          error: error.message,
+          error: "Failed to join call. Please try again.",
           token: null,
           roomCode: null,
         });
@@ -67,7 +77,7 @@ const CallRoom = () => {
     };
 
     initializeCall();
-  }, [roomName, state]);
+  }, []);
 
   if (callState.loading) {
     return (
@@ -109,13 +119,26 @@ const CallRoom = () => {
           muteOnJoin: false,
           videoOnJoin: true,
         }}
-        onLeave={() => navigate("/appointments")}
         onError={(error) => {
-          console.error("HMSPrebuilt error:", error);
-          setCallState((prev) => ({
-            ...prev,
-            error: error.message || "Call connection failed",
-          }));
+          console.error("100MS SDK Error:", {
+            code: error.code,
+            message: error.message,
+            isTerminal: error.isTerminal,
+          });
+
+          // Handle specific error codes
+          if (error.code === 3001) {
+            // Room not found
+            setCallState((prev) => ({
+              ...prev,
+              error: "Room not found. Please create a new appointment.",
+            }));
+          } else {
+            setCallState((prev) => ({
+              ...prev,
+              error: "Connection error. Please try again.",
+            }));
+          }
         }}
       />
     </div>

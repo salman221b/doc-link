@@ -30,7 +30,8 @@
     "slick-carousel": "^1.8.1",
     "socket.io-client": "^4.8.1",
     "styled-components": "^6.1.13",
-    "sweetalert2": "^11.17.2"
+    "sweetalert2": "^11.17.2",
+    "uuid": "^11.1.0"
   },
   "scripts": {
     "start": "react-scripts start",
