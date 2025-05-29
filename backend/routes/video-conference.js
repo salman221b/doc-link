@@ -1,16 +1,16 @@
-// routes/hmsRoutes.js
 const express = require("express");
 const router = express.Router();
 const fetch = require("node-fetch");
+const jwt = require("jsonwebtoken");
 const {
   generateManagementToken,
   generateAppToken,
 } = require("../utils/100msAuth");
 
-// Backend: routes/hmsRoutes.js
+// Create a new dynamic room
 router.post("/create-room", async (req, res) => {
-  const { name, description } = req.body;
-  console.log("Creating room with name:", name); // Debug log
+  const { name, description, session_id } = req.body;
+  console.log("Creating room:", { name, session_id });
 
   try {
     const response = await fetch("https://api.100ms.live/v2/rooms", {
@@ -20,28 +20,24 @@ router.post("/create-room", async (req, res) => {
         Authorization: `Bearer ${generateManagementToken()}`,
       },
       body: JSON.stringify({
-        name,
+        name: `${name}-${session_id}`, // Unique room name
         description: description || "Doctor-Patient Consultation",
         template_id: process.env.HMS_TEMPLATE_ID,
       }),
     });
 
     const data = await response.json();
-    console.log("100ms API Response:", data); // Debug log
+    console.log("100ms API Response:", data);
 
-    if (!response.ok) {
+    if (!response.ok || !data.id) {
       throw new Error(data.message || "Failed to create room");
-    }
-
-    if (!data.id) {
-      throw new Error("Room ID not found in response");
     }
 
     res.json({
       success: true,
       room: {
         id: data.id,
-        code: data.room_code || data.id, // Use room_code if available
+        code: data.room_code,
         name: data.name,
       },
     });
@@ -50,33 +46,36 @@ router.post("/create-room", async (req, res) => {
     res.status(500).json({
       success: false,
       error: error.message || "Room creation failed",
-      details: error.response?.data, // Include additional error details
     });
   }
 });
-// Generate auth token for participant
+
+// Generate auth token
 router.post("/get-token", async (req, res) => {
+  const { room_id, user_id, role } = req.body;
+
+  if (!room_id || !user_id || !role) {
+    return res.status(400).json({ error: "Missing required fields" });
+  }
+
   try {
-    const { room_id, user_id, role } = req.body;
-
-    // Validate inputs
-    if (!room_id || !user_id || !role) {
-      return res.status(400).json({ error: "Missing required fields" });
-    }
-
-    // Generate token with proper claims
     const token = generateAppToken(room_id, user_id, role);
 
-    // Verify the token looks correct
-    console.log("Generated token payload:", jwt.decode(token));
+    const decoded = jwt.decode(token);
+    console.log("Generated token for:", {
+      room_id,
+      user_id,
+      role,
+      decodedRoomID: decoded?.room_id,
+    });
 
     res.json({
       success: true,
       token,
-      room_id, // Return room_id for verification
+      room_id,
     });
   } catch (error) {
-    console.error("Token generation failed:", error);
+    console.error("Token generation error:", error);
     res.status(500).json({
       success: false,
       error: "Token generation failed",
@@ -84,4 +83,5 @@ router.post("/get-token", async (req, res) => {
     });
   }
 });
+
 module.exports = router;
