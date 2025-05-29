@@ -5,7 +5,6 @@ import Carousel from "./heroSection/Carousel";
 import HeroSection from "./heroSection/HeroSection";
 import TipsSection from "./tipsSection.js/TipsSection";
 import ScrollToTop from "../../components/scrollToTop/ScrollToTop";
-import socket from "../../components/socket/socket";
 import { jwtDecode } from "jwt-decode";
 
 const Dashboard = () => {
@@ -13,11 +12,7 @@ const Dashboard = () => {
   const decoded = token ? jwtDecode(token) : null;
 
   const patientId = decoded?.id;
-  useEffect(() => {
-    if (patientId) {
-      socket.emit("register", { userId: patientId });
-    }
-  }, [patientId]);
+
   return (
     <div>
       <NavBar />

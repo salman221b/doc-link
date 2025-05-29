@@ -20,7 +20,6 @@ import PersonIcon from "@mui/icons-material/Person";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import CloseIcon from "@mui/icons-material/Close";
 import { useNavigate } from "react-router-dom";
-import socket from "../../../components/socket/socket";
 import { jwtDecode } from "jwt-decode";
 
 const ManageAppointments = () => {

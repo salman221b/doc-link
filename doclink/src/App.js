@@ -26,7 +26,6 @@ import CustomizedSwitches from "./components/theme/Theme";
 import { ThemeProvider } from "./context/ThemeContext";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import CallRoom from "./components/callRoom/CallRoom";
 const App = () => {
   const [user, setUser] = useState(null);
 
@@ -52,7 +51,6 @@ const App = () => {
             <Route path="/verify_email" element={<VerifyEmail />} />
             <Route path="/forgot_password" element={<ForgotPassword />} />
             <Route path="/reset_password" element={<ResetPassword />} />
-
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/appointment" element={<Appointment />} />
             <Route
@@ -73,9 +71,8 @@ const App = () => {
               path="medical-records-doctor"
               element={<MedicalRecordsDoctor />}
             />
-            <Route path="/call/:roomName" element={<CallRoom />} />
-            <Route path="/unauthorized" element={<NotFoundPage />} />
 
+            <Route path="/unauthorized" element={<NotFoundPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </div>

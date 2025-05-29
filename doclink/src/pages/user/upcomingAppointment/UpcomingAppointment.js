@@ -11,7 +11,6 @@ import NavBar from "../../../components/userNavbar/NavBar";
 import ScrollToTop from "../../../components/scrollToTop/ScrollToTop";
 import NoData from "../../../static/no_data.png";
 import RescheduleModal from "./RescheduleModal";
-import socket from "../../../components/socket/socket";
 const UpcomingAppointment = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
@@ -288,21 +287,7 @@ const UpcomingAppointment = () => {
     return now >= appointmentDateTime;
   };
 
-  const handleJoinCall = (appointment) => {
-    const roomName = `room-${appointment.patientId}-${Date.now()}`;
-    socket.emit("call-user", {
-      toUserId: appointment.doctorId._id,
-      fromUserId: appointment.patientId,
-      roomName,
-    });
-
-    navigate(`/call/${roomName}`, {
-      state: {
-        identity: appointment.patientId,
-        role: "patient",
-      },
-    });
-  };
+  const handleJoinCall = (appointment) => {};
   return (
     <div style={{ marginBottom: "130px" }}>
       <NavBar hasNotification={hasUpcomingNotification} />
