@@ -54,33 +54,34 @@ router.post("/create-room", async (req, res) => {
     });
   }
 });
-// Generate auth token for participantrouter.post('/get-token', async (req, res) => {
-try {
-  const { room_id, user_id, role } = req.body;
+// Generate auth token for participant
+router.post("/get-token", async (req, res) => {
+  try {
+    const { room_id, user_id, role } = req.body;
 
-  // Validate inputs
-  if (!room_id || !user_id || !role) {
-    return res.status(400).json({ error: "Missing required fields" });
+    // Validate inputs
+    if (!room_id || !user_id || !role) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    // Generate token with proper claims
+    const token = generateAppToken(room_id, user_id, role);
+
+    // Verify the token looks correct
+    console.log("Generated token payload:", jwt.decode(token));
+
+    res.json({
+      success: true,
+      token,
+      room_id, // Return room_id for verification
+    });
+  } catch (error) {
+    console.error("Token generation failed:", error);
+    res.status(500).json({
+      success: false,
+      error: "Token generation failed",
+      details: error.message,
+    });
   }
-
-  // Generate token with proper claims
-  const token = generateAppToken(room_id, user_id, role);
-
-  // Verify the token looks correct
-  console.log("Generated token payload:", jwt.decode(token));
-
-  res.json({
-    success: true,
-    token,
-    room_id, // Return room_id for verification
-  });
-} catch (error) {
-  console.error("Token generation failed:", error);
-  res.status(500).json({
-    success: false,
-    error: "Token generation failed",
-    details: error.message,
-  });
-}
-
+});
 module.exports = router;
