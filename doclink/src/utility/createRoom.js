@@ -1,7 +1,6 @@
-import { v4 as uuidv4 } from "uuid";
-
+// frontend/src/utility/createRoom.js
 export const createRoom = async (roomName) => {
-  const session_id = uuidv4(); // unique ID per session
+  console.log("Creating room with name:", roomName); // Debug log
   try {
     const response = await fetch(
       "https://doc-link-backend.onrender.com/create-room",
@@ -13,23 +12,33 @@ export const createRoom = async (roomName) => {
         body: JSON.stringify({
           name: roomName,
           description: `Consultation-${Date.now()}`,
-          session_id,
         }),
       }
     );
 
     const data = await response.json();
-    if (!response.ok || !data.room?.id) {
-      throw new Error(data.error || "Room creation failed");
+    console.log("Create room response:", data); // Debug log
+
+    if (!response.ok) {
+      const error = new Error(data.error || "Room creation failed");
+      error.details = data;
+      throw error;
+    }
+
+    if (!data.room?.id) {
+      throw new Error("Invalid room ID in response");
     }
 
     return {
       id: data.room.id,
       code: data.room.code,
-      session_id,
+      rawResponse: data, // Include for debugging
     };
   } catch (error) {
-    console.error("Room creation error:", error.message);
+    console.error("Room creation error:", {
+      message: error.message,
+      details: error.details,
+    });
     throw error;
   }
 };
