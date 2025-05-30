@@ -11,6 +11,8 @@ import NavBar from "../../../components/userNavbar/NavBar";
 import ScrollToTop from "../../../components/scrollToTop/ScrollToTop";
 import NoData from "../../../static/no_data.png";
 import RescheduleModal from "./RescheduleModal";
+import VideoCallModal from "../../../components/videoCall/VideoCallModal"; // New component for video calls
+
 const UpcomingAppointment = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
@@ -18,8 +20,10 @@ const UpcomingAppointment = () => {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [showVideoModal, setShowVideoModal] = useState(false); // New state for video modal
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [timers, setTimers] = useState({});
+  const [hasUpcomingNotification, setHasUpcomingNotification] = useState(false);
 
   // Check if the token is expired
   const isTokenExpired = (token) => {
@@ -72,7 +76,9 @@ const UpcomingAppointment = () => {
     };
 
     fetchAppointments();
-  }, [token]); // Ensure API is refetched only when token changes
+  }, [token]);
+
+  // Timer for countdown to appointments
   useEffect(() => {
     const interval = setInterval(() => {
       const updatedTimers = {};
@@ -87,6 +93,8 @@ const UpcomingAppointment = () => {
 
     return () => clearInterval(interval);
   }, [appointments]);
+
+  // Notification for upcoming appointments
   useEffect(() => {
     const checkNotifications = () => {
       const now = new Date();
@@ -117,8 +125,8 @@ const UpcomingAppointment = () => {
     const interval = setInterval(checkNotifications, 60000); // check every 1 minute
     return () => clearInterval(interval);
   }, [appointments]);
-  const [hasUpcomingNotification, setHasUpcomingNotification] = useState(false);
 
+  // Check for upcoming notifications
   useEffect(() => {
     const checkNotify = () => {
       const now = new Date();
@@ -139,30 +147,7 @@ const UpcomingAppointment = () => {
     return () => clearInterval(interval);
   }, [appointments]);
 
-  // Show loading spinner while fetching data
-  if (loading) {
-    return (
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-          flexDirection: "column",
-          color: "#82EAAC", // Light Green Text
-        }}
-      >
-        <CircularProgress
-          size={80}
-          thickness={3}
-          sx={{
-            color: "#F49696", // Light Red Spinner
-          }}
-        />
-        <h2 style={{ marginTop: "20px", color: "#82EAAC" }}>Loading...</h2>
-      </div>
-    );
-  }
+  // Format date for display
   const formatReadableDate = (timestamp) => {
     return new Date(timestamp).toLocaleDateString("en-GB", {
       day: "2-digit",
@@ -170,6 +155,8 @@ const UpcomingAppointment = () => {
       year: "numeric",
     });
   };
+
+  // Cancel appointment handler
   const handleCancelAppointment = async (appointmentId) => {
     const result = await Swal.fire({
       title: "Cancel appointment?",
@@ -209,6 +196,7 @@ const UpcomingAppointment = () => {
     }
   };
 
+  // Open/close reschedule modal
   const handleOpenModal = (appointment) => {
     setSelectedAppointment(appointment);
     setShowModal(true);
@@ -219,8 +207,19 @@ const UpcomingAppointment = () => {
     setSelectedAppointment(null);
   };
 
+  // Open/close video call modal
+  const handleOpenVideoModal = (appointment) => {
+    setSelectedAppointment(appointment);
+    setShowVideoModal(true);
+  };
+
+  const handleCloseVideoModal = () => {
+    setShowVideoModal(false);
+    setSelectedAppointment(null);
+  };
+
+  // Reschedule appointment handler
   const handleReschedule = async (appointmentId, updatedData) => {
-    console.log(updatedData);
     try {
       const res = await fetch(
         `https://doc-link-backend.onrender.com/appointments/${appointmentId}`,
@@ -239,7 +238,8 @@ const UpcomingAppointment = () => {
 
       toast.success("Appointment rescheduled successfully");
       handleCloseModal();
-      // Optionally re-fetch appointments
+
+      // Refresh appointments
       const response = await fetch(
         "https://doc-link-backend.onrender.com/appointments",
         {
@@ -265,10 +265,10 @@ const UpcomingAppointment = () => {
     }
   };
 
+  // Calculate time left until appointment
   const getTimeLeft = (scheduledDate, scheduledTime) => {
-    const dateOnly = new Date(scheduledDate).toISOString().split("T")[0]; // Extract date part in yyyy-mm-dd
-    const appointmentDateTime = new Date(`${dateOnly}T${scheduledTime}:00`); // Build ISO datetime
-
+    const dateOnly = new Date(scheduledDate).toISOString().split("T")[0];
+    const appointmentDateTime = new Date(`${dateOnly}T${scheduledTime}:00`);
     const now = new Date();
     const diff = appointmentDateTime.getTime() - now.getTime();
 
@@ -280,6 +280,8 @@ const UpcomingAppointment = () => {
 
     return `${hours}h ${minutes}m ${seconds}s`;
   };
+
+  // Check if it's time to join the call
   const isJoinTime = (scheduledDate, scheduledTime) => {
     const dateOnly = new Date(scheduledDate).toISOString().split("T")[0];
     const appointmentDateTime = new Date(`${dateOnly}T${scheduledTime}:00`);
@@ -287,7 +289,40 @@ const UpcomingAppointment = () => {
     return now >= appointmentDateTime;
   };
 
-  const handleJoinCall = (appointment) => {};
+  // Handle join call button click
+  const handleJoinCall = (appointment) => {
+    if (!isJoinTime(appointment.scheduledDate, appointment.scheduledTime)) {
+      toast.warning("The appointment time hasn't arrived yet");
+      return;
+    }
+    handleOpenVideoModal(appointment);
+  };
+
+  // Show loading spinner while fetching data
+  if (loading) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+          flexDirection: "column",
+          color: "#82EAAC",
+        }}
+      >
+        <CircularProgress
+          size={80}
+          thickness={3}
+          sx={{
+            color: "#F49696",
+          }}
+        />
+        <h2 style={{ marginTop: "20px", color: "#82EAAC" }}>Loading...</h2>
+      </div>
+    );
+  }
+
   return (
     <div style={{ marginBottom: "130px" }}>
       <NavBar hasNotification={hasUpcomingNotification} />
@@ -366,12 +401,6 @@ const UpcomingAppointment = () => {
                         fontWeight: "bold",
                       }}
                       hidden={appointment.mode === "In-Person Consultation"}
-                      // disabled={
-                      //   !isJoinTime(
-                      //     appointment.scheduledDate,
-                      //     appointment.scheduledTime
-                      //   )
-                      // }
                       onClick={() => handleJoinCall(appointment)}
                     >
                       Join
@@ -413,11 +442,24 @@ const UpcomingAppointment = () => {
           </Row>
         </Container>
       )}
+
+      {/* Modals */}
       <RescheduleModal
         show={showModal}
         handleClose={handleCloseModal}
         appointment={selectedAppointment}
         onReschedule={handleReschedule}
+      />
+
+      <VideoCallModal
+        open={showVideoModal}
+        onClose={handleCloseVideoModal}
+        appointment={selectedAppointment}
+        currentUser={{
+          _id: localStorage.getItem("userId"),
+          role: "patient",
+          name: localStorage.getItem("userName") || "Patient",
+        }}
       />
 
       <ScrollToTop />
