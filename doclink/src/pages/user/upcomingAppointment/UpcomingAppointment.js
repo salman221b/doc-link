@@ -11,7 +11,7 @@ import NavBar from "../../../components/userNavbar/NavBar";
 import ScrollToTop from "../../../components/scrollToTop/ScrollToTop";
 import NoData from "../../../static/no_data.png";
 import RescheduleModal from "./RescheduleModal";
-import VideoCallModal from "../../../components/videoCall/VideoCallModal"; // New component for video calls
+import VideoCallModal from "../../../components/videoCall/PatientVideoCallModal"; // New component for video calls
 
 const UpcomingAppointment = () => {
   const navigate = useNavigate();
