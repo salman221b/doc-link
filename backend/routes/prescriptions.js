@@ -5,7 +5,11 @@ const Prescription = require("../models/prescriptionsModel");
 
 router.get("/prescriptions", authMiddleware, async (req, res) => {
   try {
-    const prescriptions = await Prescription.find({ patientId: req.user.id });
+    const prescriptions = await Prescription.find({
+      patientId: req.user.id,
+    }).sort({
+      createdAt: -1,
+    });
     res.json(prescriptions);
   } catch (error) {
     console.error(error);

@@ -26,6 +26,7 @@ import CustomizedSwitches from "./components/theme/Theme";
 import { ThemeProvider } from "./context/ThemeContext";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import PaymentHistory from "./pages/user/payment-history/PaymentHistory";
 const App = () => {
   const [user, setUser] = useState(null);
 
@@ -63,6 +64,7 @@ const App = () => {
               element={<MedicalRecords />}
             />
             <Route path="/prescriptions" element={<Prescriptions />} />
+            <Route path="/payment-history" element={<PaymentHistory />} />
             <Route
               path="/manage-appointments"
               element={<ManageAppointments />}

@@ -186,6 +186,7 @@ const Appointment = () => {
   const handlePayment = async () => {
     try {
       setIsLoading(true);
+
       // Step 1: Call backend to create a payment order
       const response = await fetch(
         "https://doc-link-backend.onrender.com/create-payment",
@@ -200,7 +201,6 @@ const Appointment = () => {
       if (!data.order_id) {
         toast.error("Failed to create payment order", { autoClose: 3000 });
         setIsLoading(false);
-
         return;
       }
 
@@ -224,8 +224,27 @@ const Appointment = () => {
 
             const verifyResponse = await verify.json();
             if (verifyResponse.success) {
-              setIsNavigating(true);
+              // 🆕 Step 2.5: Save Payment History
+              await fetch(
+                "https://doc-link-backend.onrender.com/payment-history",
+                {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    userId,
+                    doctorId: selectedDoctor._id,
+                    amount,
+                    payment_mode: verifyResponse.payment_mode,
+                    payment_status: verifyResponse.payment_status,
+                    payment_id: response.razorpay_payment_id,
+                    order_id: response.razorpay_order_id,
+                    created_at: new Date().toISOString(),
+                  }),
+                }
+              );
+
               // Step 3: Save Appointment
+              setIsNavigating(true);
               const bookResponse = await fetch(
                 "https://doc-link-backend.onrender.com/book-appointment",
                 {
@@ -300,7 +319,6 @@ const Appointment = () => {
           autoClose: 3000,
         });
         setIsLoading(false);
-
         return;
       }
 
@@ -310,7 +328,7 @@ const Appointment = () => {
       console.error("Payment Error:", error);
       toast.error("Payment failed. Try again.", { autoClose: 3000 });
     } finally {
-      setIsLoading(false); // Stop loading after process
+      setIsLoading(false);
     }
   };
 

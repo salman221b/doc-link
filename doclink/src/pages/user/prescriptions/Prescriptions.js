@@ -8,6 +8,7 @@ import {
   TextField,
 } from "@mui/material";
 import { CircularProgress } from "@mui/material";
+import NoData from "../../../static/no_data.png";
 
 import PersonIcon from "@mui/icons-material/Person";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
@@ -138,24 +139,71 @@ const Prescriptions = () => {
         </div>
       </form>
 
-      <Container className="mt-4">
-        {records.length > 0 ? (
-          records.map((record) => (
-            <Row key={record._id}>
-              <Col md={6} xs={12} className="mb-3">
-                <Card>
+      {records.length === 0 ? (
+        <div style={{ textAlign: "center", marginBottom: "80px" }}>
+          <img
+            src={NoData}
+            alt="No Data"
+            style={{ width: "300px", display: "block", margin: "auto" }}
+          />
+          <p className="text" style={{ marginTop: "20px" }}>
+            Oops, No Prescriptions Found!
+          </p>
+        </div>
+      ) : (
+        <Container className="mt-4">
+          <Row>
+            {records.map((rec) => (
+              <Col md={6} xs={12} className="mb-5">
+                <Card key={rec._id}>
                   <Card.Body>
-                    <Card.Title>{record.name}</Card.Title>
-                    <Card.Text>{record.prescription}</Card.Text>
+                    <div className="text">
+                      <Card.Title>
+                        {rec.doctorName ? (
+                          <span>
+                            <PersonIcon /> {rec.doctorName}
+                          </span>
+                        ) : (
+                          <span>
+                            <PersonIcon /> Unknown
+                          </span>
+                        )}
+                      </Card.Title>
+                      <Card.Text>
+                        <strong>Specialization:</strong>{" "}
+                        {rec.specialization || "N/A"}
+                      </Card.Text>
+                    </div>
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      onClick={() => window.open(rec.file, "_blank")}
+                    >
+                      View
+                    </Button>{" "}
+                    <Button
+                      variant="success"
+                      size="sm"
+                      // onClick={() => downloadFile(rec.file)}
+                    >
+                      Download
+                    </Button>
+                    <Button
+                      variant="danger"
+                      size="sm"
+                      // onClick={() => deleteFile(rec._id)}
+                      style={{ marginRight: "10px", float: "right" }}
+                    >
+                      Delete
+                    </Button>
                   </Card.Body>
                 </Card>
               </Col>
-            </Row>
-          ))
-        ) : (
-          <p>No prescriptions found.</p>
-        )}
-        {/* <Row>
+            ))}
+          </Row>
+        </Container>
+      )}
+      {/* <Row>
           <Col md={6} xs={12} className="mb-3">
             <Card>
               <Card.Body>
@@ -250,7 +298,6 @@ const Prescriptions = () => {
           </Col>
 
         </Row> */}
-      </Container>
     </div>
   );
 };
