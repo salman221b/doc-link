@@ -60,6 +60,7 @@ app.use("/", require("./routes/book-appointment"));
 app.use("/", require("./routes/upcomingAppointments"));
 app.use("/", require("./routes/reminders"));
 app.use("/", require("./routes/medical-records"));
+app.use("/", require("./routes/prescriptions"));
 
 // Start the server with HTTP (for Socket.io) instead of Express
 httpServer.listen(PORT, () => {
