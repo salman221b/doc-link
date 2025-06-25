@@ -8,6 +8,7 @@
   --font-weight-secondary: 100;
   --navbar-text-color: #030e82;
   --navbar-icons-color: #030e82;
+ 
 }
 
 /* Dark Mode */
@@ -18,6 +19,7 @@
   --text-color-secondary: #F1F9F1;
   --navbar-text-color: #F1F9F1;
   --navbar-icons-color: #F1F9F1;
+
 }
 
 body{
@@ -62,3 +64,6 @@ body{
 #close-icon {
 fill: var(--navbar-icons-color) !important; /* Set icon color */
 }
+/* Table Styles */
+
+/**/

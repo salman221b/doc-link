@@ -234,6 +234,7 @@ const Appointment = () => {
                   headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${token}`,
+                    Role: "patient",
                   },
                   body: JSON.stringify({
                     doctorId: selectedDoctor._id,

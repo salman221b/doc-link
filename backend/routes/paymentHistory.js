@@ -53,5 +53,29 @@ router.post("/payment-history", authMiddleware, async (req, res) => {
       .json({ success: false, message: "Failed to save payment history" });
   }
 });
+router.get("/search-payment-history", authMiddleware, async (req, res) => {
+  const { startDate, endDate } = req.query;
+
+  if (!startDate || !endDate) {
+    return res.status(400).json({ message: "Start and End dates required." });
+  }
+
+  try {
+    const payments = await PaymentHistory.find({
+      userId: req.user.id, // assuming token middleware adds this
+      created_at: {
+        $gte: new Date(startDate),
+        $lt: new Date(
+          new Date(endDate).setDate(new Date(endDate).getDate() + 1)
+        ),
+      },
+    }).sort({ created_at: -1 });
+
+    res.status(200).json(payments);
+  } catch (error) {
+    console.error("Search error:", error);
+    res.status(500).json({ message: "Failed to fetch records!" });
+  }
+});
 
 module.exports = router;
