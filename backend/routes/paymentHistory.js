@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const PaymentHistory = require("../models/paymentHistoryModel"); // Adjust path
-const authMiddleware = require("../middleware/authMiddleware");
+const PaymentHistory = require("../models/paymentHistoryModel");
+const authMiddleware = require("../middlewares/authMiddleware");
 
 router.get("/payment-history", authMiddleware, async (req, res) => {
   try {
