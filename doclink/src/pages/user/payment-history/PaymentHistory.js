@@ -182,11 +182,15 @@ const PaymentHistory = () => {
           </button>
         </div>
       </form>
+      {error && (
+        <div style={{ textAlign: "center", color: "red" }}>{error}</div>
+      )}
       <div
         style={{ padding: "20px", textAlign: "center", marginBottom: "240px" }}
         className="text"
       >
         <h2>Payment History</h2>
+
         {payments.length === 0 ? (
           <div style={{ textAlign: "center", marginBottom: "80px" }}>
             <img

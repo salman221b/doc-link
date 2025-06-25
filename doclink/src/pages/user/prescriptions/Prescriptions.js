@@ -14,12 +14,16 @@ import PersonIcon from "@mui/icons-material/Person";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { Card, Button, Container, Row, Col } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Prescriptions = () => {
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
   const [records, setRecords] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [error, setError] = useState("");
   const isTokenExpired = (token) => {
     if (!token) return true;
     const decoded = JSON.parse(atob(token.split(".")[1]));
@@ -76,12 +80,61 @@ const Prescriptions = () => {
       </div>
     );
   }
+  const handleSearch = async (e) => {
+    e.preventDefault();
+    console.log(startDate, endDate);
+
+    if (!startDate || !endDate) {
+      setError("Select both Start and End dates please.");
+      return;
+    }
+
+    if (startDate > endDate) {
+      setError("Start date should be lesser than end date.");
+      return;
+    }
+
+    setError("");
+
+    try {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        console.error("Token not found. Redirecting to login...");
+        navigate("/login");
+        return;
+      }
+
+      const response = await fetch(
+        `https://doc-link-backend.onrender.com/search-prescription?startDate=${startDate}&endDate=${endDate}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Role: "patient",
+          },
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setRecords(data);
+        toast.success("Files fetched successfully!");
+      } else {
+        toast.error(data?.message || "Failed to fetch records");
+      }
+    } catch (error) {
+      console.error("Fetch error:", error);
+      toast.error("Something went wrong while fetching records.");
+    }
+  };
   return (
     <div>
       <NavBar />
       <h1 className="title1">Your Health,</h1>
       <h1 className="title2">Just a Click Away.</h1>
-      <form>
+      <form onSubmit={handleSearch}>
         <div
           className="searchArea"
           style={{
@@ -95,6 +148,7 @@ const Prescriptions = () => {
             label="Start date"
             variant="outlined"
             type="date"
+            onChange={(e) => setStartDate(e.target.value)}
             style={{
               marginLeft: "20px",
               marginBottom: "20px",
@@ -110,6 +164,7 @@ const Prescriptions = () => {
             label="End date"
             variant="outlined"
             type="date"
+            onChange={(e) => setEndDate(e.target.value)}
             style={{
               marginLeft: "20px",
               marginBottom: "20px",
@@ -138,6 +193,17 @@ const Prescriptions = () => {
           </button>
         </div>
       </form>
+      {error && (
+        <div
+          style={{
+            textAlign: "center",
+            color: "red",
+            marginBottom: "20px",
+          }}
+        >
+          {error}
+        </div>
+      )}
 
       {records.length === 0 ? (
         <div style={{ textAlign: "center", marginBottom: "80px" }}>
