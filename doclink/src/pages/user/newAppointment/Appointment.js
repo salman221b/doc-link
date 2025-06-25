@@ -212,6 +212,8 @@ const Appointment = () => {
         order_id: data.order_id,
         handler: async function (response) {
           try {
+            console.log("Payment Success Response:", response);
+
             // Step 2: Verify payment on backend
             const verify = await fetch(
               "https://doc-link-backend.onrender.com/verify-payment",
@@ -229,7 +231,10 @@ const Appointment = () => {
                 "https://doc-link-backend.onrender.com/payment-history",
                 {
                   method: "POST",
-                  headers: { "Content-Type": "application/json" },
+                  headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                  },
                   body: JSON.stringify({
                     doctorId: selectedDoctor._id,
                     amount,

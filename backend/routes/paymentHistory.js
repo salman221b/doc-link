@@ -21,6 +21,7 @@ router.get("/payment-history", authMiddleware, async (req, res) => {
 // POST: Save a new payment record
 router.post("/payment-history", authMiddleware, async (req, res) => {
   try {
+    console.log("Received payment POST body:", req.body);
     const {
       doctorId,
       amount,
