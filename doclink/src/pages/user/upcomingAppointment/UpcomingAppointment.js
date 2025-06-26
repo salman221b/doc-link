@@ -357,7 +357,8 @@ const UpcomingAppointment = () => {
                         <PersonIcon />
                         <span style={{ marginLeft: "20px" }}>
                           {appointment.doctorId.firstName}{" "}
-                          {appointment.doctorId.lastName}
+                          {appointment.doctorId.lastName},{" "}
+                          {appointment.doctorId.qualification}
                         </span>
                         <span
                           style={{
@@ -369,6 +370,7 @@ const UpcomingAppointment = () => {
                           {appointment.specialization}
                         </span>
                       </Card.Title>
+                      <hr />
 
                       <Card.Text>
                         {formatReadableDate(appointment.scheduledDate)} •{" "}
