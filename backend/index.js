@@ -62,6 +62,7 @@ app.use("/", require("./routes/reminders"));
 app.use("/", require("./routes/medical-records"));
 app.use("/", require("./routes/prescriptions"));
 app.use("/", require("./routes/paymentHistory"));
+app.use("/", require("./routes/manage-appointments"));
 // Start the server with HTTP (for Socket.io) instead of Express
 httpServer.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
