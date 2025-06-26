@@ -484,7 +484,10 @@ const ManageAppointments = () => {
                     <div
                       className="text"
                       style={{ cursor: "pointer" }}
-                      onClick={() => setOpen(true)}
+                      onClick={() => {
+                        setOpen(true);
+                        setSelectedAppointment(appointment);
+                      }}
                     >
                       <Card.Title>
                         <PersonIcon />{" "}
@@ -567,6 +570,7 @@ const ManageAppointments = () => {
               color="secondary"
             />
             <div
+              className="card"
               style={{
                 display: "flex",
                 alignItems: "center",
@@ -574,7 +578,7 @@ const ManageAppointments = () => {
                 padding: "20px",
                 borderRadius: "10px",
                 // boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
-                backgroundColor: "#fff",
+                // backgroundColor: "#fff",
               }}
             >
               {/* Left: Profile Picture */}
@@ -589,24 +593,31 @@ const ManageAppointments = () => {
               />
 
               {/* Right: Name & Contacts */}
-              <div style={{ marginLeft: "20px", width: "80%" }}>
-                {appointments.map((appointment) => (
-                  <div key={appointment._id}>
-                    <h3 style={{ margin: "0", color: "#333" }}>
-                      {appointment.patientName} ({appointment.patientAge})
-                    </h3>
+              <div
+                style={{ marginLeft: "20px", width: "80%" }}
+                className="text"
+              >
+                <div>
+                  <h3 style={{ margin: "0", color: "#333" }}>
+                    {selectedAppointment.patientId.firstName}{" "}
+                    {selectedAppointment.patientId.lastName} (
+                    {selectedAppointment.patientId.age})
+                  </h3>
 
-                    <p style={{ margin: "5px 0", fontSize: "1rem" }}>
-                      specialization: {appointment.specialization}
-                    </p>
-                    <p style={{ margin: "5px 0", fontSize: "1rem" }}>
-                      📞 {appointment.phone}
-                    </p>
-                    <p style={{ margin: "5px 0", fontSize: "1rem" }}>
-                      ✉️ {appointment.email}
-                    </p>
-                  </div>
-                ))}
+                  <p style={{ margin: "5px 0", fontSize: "1rem" }}>
+                    specialization: {selectedAppointment.specialization}
+                  </p>
+                  <p style={{ margin: "5px 0", fontSize: "1rem" }}>
+                    📞 {selectedAppointment.patientId.phone}
+                  </p>
+                  <p style={{ margin: "5px 0", fontSize: "1rem" }}>
+                    ✉️ {selectedAppointment.patientId.email}
+                  </p>
+                  <p>
+                    {selectedAppointment.patientId.district},{" "}
+                    {selectedAppointment.patientId.state}
+                  </p>
+                </div>
               </div>
             </div>
           </DialogTitle>
