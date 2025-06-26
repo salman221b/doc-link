@@ -38,7 +38,7 @@ const ManageAppointments = () => {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [showVideoModal, setShowVideoModal] = useState(false); // New state for video modal
-  const [selectedAppointment, setSelectedAppointment] = useState(null);
+  const [selectedAppointment, setSelectedAppointment] = useState({});
   const [timers, setTimers] = useState({});
   const [hasUpcomingNotification, setHasUpcomingNotification] = useState(false);
 
@@ -486,7 +486,18 @@ const ManageAppointments = () => {
                       style={{ cursor: "pointer" }}
                       onClick={() => {
                         setOpen(true);
-                        setSelectedAppointment(appointment);
+                        setSelectedAppointment({
+                          patientId: appointment.patientId || {},
+                          name: `${appointment.patientId.firstName} ${appointment.patientId.lastName}`,
+                          age: appointment.patientId.age || "N/A",
+                          specialization: appointment.specialization || "N/A",
+                          phone: appointment.patientId.phone || "N/A",
+                          email: appointment.patientId.email || "N/A",
+                          district: appointment.patientId.district || "N/A",
+                          state: appointment.patientId.state || "N/A",
+                          reason: appointment.reason || "N/A",
+                          symptoms: appointment.symptoms || "N/A",
+                        });
                       }}
                     >
                       <Card.Title>
@@ -503,6 +514,7 @@ const ManageAppointments = () => {
                         <span style={{ float: "right", marginRight: "30px" }}>
                           Status: {appointment.status}
                         </span>
+                        <p>specialization: {appointment.specialization}</p>
                         <p>Mode: {appointment.mode}</p>
                         <p>Prescription / Notes</p>
                       </Card.Text>
@@ -598,32 +610,36 @@ const ManageAppointments = () => {
                 className="text"
               >
                 <div>
-                  <h3 style={{ margin: "0", color: "#333" }}>
-                    {selectedAppointment.patientId.firstName}{" "}
-                    {selectedAppointment.patientId.lastName} (
-                    {selectedAppointment.patientId.age})
+                  <h3 style={{ margin: "0" }}>
+                    {selectedAppointment.name} ({selectedAppointment.age})
                   </h3>
+                  <hr />
 
                   <p style={{ margin: "5px 0", fontSize: "1rem" }}>
                     specialization: {selectedAppointment.specialization}
                   </p>
                   <p style={{ margin: "5px 0", fontSize: "1rem" }}>
-                    📞 {selectedAppointment.patientId.phone}
+                    📞 {selectedAppointment.phone}
                   </p>
                   <p style={{ margin: "5px 0", fontSize: "1rem" }}>
-                    ✉️ {selectedAppointment.patientId.email}
+                    ✉️ {selectedAppointment.email}
                   </p>
                   <p>
-                    {selectedAppointment.patientId.district},{" "}
-                    {selectedAppointment.patientId.state}
+                    📌 {selectedAppointment.district},{" "}
+                    {selectedAppointment.state}
                   </p>
                 </div>
               </div>
             </div>
           </DialogTitle>
           <DialogContent>
-            <div>Symptoms</div>
-            <div style={{ marginTop: "20px" }}>Reason for Visit</div>
+            <div>
+              Symptoms:
+              <p>{selectedAppointment.symptoms}</p>
+            </div>
+            <div style={{ marginTop: "20px" }}>
+              Reason for Appointment:<p>{selectedAppointment.reason}</p>
+            </div>
           </DialogContent>
           <DialogActions>
             <div style={{ width: "100%" }}>

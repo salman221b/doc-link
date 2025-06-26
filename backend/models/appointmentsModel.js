@@ -16,6 +16,8 @@ const appointmentSchema = new mongoose.Schema({
   paymentMode: String,
   paymentStatus: String,
   amount: Number,
+  reason: String,
+  symptoms: String,
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });

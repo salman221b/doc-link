@@ -376,7 +376,9 @@ const UpcomingAppointment = () => {
                         <span style={{ float: "right", marginRight: "30px" }}>
                           Status: {appointment.status}
                         </span>
-                        <p>{appointment.mode}</p>
+                        <p>Mode: {appointment.mode}</p>
+                        <p>Reason: {appointment.reason}</p>
+                        <p>Symptoms: {appointment.symptoms}</p>
                         <p>Prescription / Notes</p>
                       </Card.Text>
                       {getTimeLeft(

@@ -39,6 +39,8 @@ const Appointment = () => {
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [openModal, setOpenModal] = useState(false);
   const [amount, setAmount] = useState(0);
+  const [reason, setReason] = useState("");
+  const [symptoms, setSymptoms] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isNavigating, setIsNavigating] = useState(false);
 
@@ -265,6 +267,8 @@ const Appointment = () => {
                     payment_mode: verifyResponse.payment_mode,
                     payment_status: verifyResponse.payment_status,
                     amount,
+                    reason,
+                    symptoms,
                   }),
                 }
               );
@@ -536,6 +540,28 @@ const Appointment = () => {
               >
                 Amount:<span style={{ fontWeight: "bold" }}> {amount}/-</span>
               </helperText>
+            </FormControl>
+            <FormControl sx={{ minWidth: "100%", marginTop: "20px" }}>
+              <TextField
+                label="Reason for Appointment"
+                type="text"
+                variant="outlined"
+                fullWidth
+                name="reason"
+                onChange={(e) => setReason(e.target.value)}
+                style={{ backgroundColor: "white", borderRadius: "10px" }}
+              />
+            </FormControl>
+            <FormControl sx={{ minWidth: "100%", marginTop: "20px" }}>
+              <TextField
+                label="Symptoms"
+                type="text"
+                variant="outlined"
+                fullWidth
+                name="reason"
+                onChange={(e) => setSymptoms(e.target.value)}
+                style={{ backgroundColor: "white", borderRadius: "10px" }}
+              />
             </FormControl>
             <TextField
               label="Date of Appointment"

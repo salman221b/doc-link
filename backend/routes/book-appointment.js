@@ -13,6 +13,8 @@ router.post("/book-appointment", async (req, res) => {
       payment_mode,
       payment_status,
       amount,
+      reason,
+      symptoms,
     } = req.body;
 
     // Create a new appointment entry
@@ -26,6 +28,8 @@ router.post("/book-appointment", async (req, res) => {
       paymentMode: payment_mode,
       paymentStatus: payment_status,
       amount,
+      reason,
+      symptoms,
     });
 
     // Save to the database
