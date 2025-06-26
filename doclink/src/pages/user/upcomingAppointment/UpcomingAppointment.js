@@ -357,8 +357,12 @@ const UpcomingAppointment = () => {
                         <PersonIcon />
                         <span style={{ marginLeft: "20px" }}>
                           {appointment.doctorId.firstName}{" "}
-                          {appointment.doctorId.lastName},{" "}
-                          {appointment.doctorId.qualification}
+                          {appointment.doctorId.lastName}{" "}
+                          <span
+                            style={{ fontSize: ".9rem", fontStyle: "italic" }}
+                          >
+                            {appointment.doctorId.qualification}
+                          </span>
                         </span>
                         <span
                           style={{

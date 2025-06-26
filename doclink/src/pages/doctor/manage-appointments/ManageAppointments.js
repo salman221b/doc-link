@@ -185,9 +185,9 @@ const ManageAppointments = () => {
     if (!result.isConfirmed) return;
     try {
       const response = await fetch(
-        `https://doc-link-backend.onrender.com/manage-appointments/${appointmentId}`,
+        `https://doc-link-backend.onrender.com/cancel-appointment/${appointmentId}`,
         {
-          method: "DELETE",
+          method: "PUT",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
@@ -196,10 +196,10 @@ const ManageAppointments = () => {
         }
       );
       if (response.ok) {
-        toast.success("Appointment cancelled successfully!");
+        toast.success("Appointment cancel successfully!");
         setAppointments((prevAppointments) =>
-          prevAppointments.filter(
-            (appointment) => appointment._id !== appointmentId
+          prevAppointments.map((appt) =>
+            appt._id === appointmentId ? { ...appt, status: "Cancelled" } : appt
           )
         );
       } else {
@@ -233,51 +233,6 @@ const ManageAppointments = () => {
   };
 
   // Reschedule appointment handler
-  const handleReschedule = async (appointmentId, updatedData) => {
-    try {
-      const res = await fetch(
-        `https://doc-link-backend.onrender.com/manage-appointments/${appointmentId}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-            Role: "patient",
-          },
-          body: JSON.stringify(updatedData),
-        }
-      );
-
-      if (!res.ok) throw new Error("Failed to reschedule");
-
-      toast.success("Appointment rescheduled successfully");
-      handleCloseModal();
-
-      // Refresh appointments
-      const response = await fetch(
-        "https://doc-link-backend.onrender.com/manage-appointments",
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-            Role: "patient",
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(
-          `Failed to fetch appointments. Status: ${response.status}`
-        );
-      }
-
-      const data = await response.json();
-      setAppointments(data);
-    } catch (err) {
-      toast.error(err.message);
-    }
-  };
 
   // Calculate time left until appointment
   const getTimeLeft = (scheduledDate, scheduledTime) => {
@@ -311,7 +266,44 @@ const ManageAppointments = () => {
     }
     handleOpenVideoModal(appointment);
   };
+  const handleAccept = async (appointmentId) => {
+    const result = await Swal.fire({
+      title: "Accept appointment?",
+      text: "Are you sure you want to accept this appointment?",
+      icon: "success",
+      showCancelButton: true,
+      confirmButtonColor: "green",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, Accept it!",
+    });
 
+    if (!result.isConfirmed) return;
+    try {
+      const response = await fetch(
+        `https://doc-link-backend.onrender.com/accept-appointment/${appointmentId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+            Role: "doctor",
+          },
+        }
+      );
+      if (response.ok) {
+        toast.success("Appointment accepted successfully!");
+        setAppointments((prevAppointments) =>
+          prevAppointments.map((appt) =>
+            appt._id === appointmentId ? { ...appt, status: "Accepted" } : appt
+          )
+        );
+      } else {
+        toast.error("Failed to Accept appointment.");
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
   // Show loading spinner while fetching data
   if (loading) {
     return (
@@ -534,26 +526,25 @@ const ManageAppointments = () => {
                     <Button
                       style={{
                         width: "100%",
-                        color: "#030E82",
-                        backgroundColor: "#82EAAC",
+                        backgroundColor: "#030E82",
                         fontWeight: "bold",
                       }}
                       hidden={appointment.mode === "In-Person Consultation"}
                       onClick={() => handleJoinCall(appointment)}
                     >
-                      Join
-                      <ArrowForwardIcon style={{ color: "#F49696" }} />
+                      Join Video Call
+                      <ArrowForwardIcon style={{ color: "#82EAAC" }} />
                     </Button>
                     <Button
                       style={{
                         width: "49%",
                         marginTop: "10px",
-                        backgroundColor: "#030E82",
+                        backgroundColor: "#82EAAC",
                         fontWeight: "bold",
                       }}
-                      onClick={() => handleOpenModal(appointment)}
+                      onClick={() => handleAccept(appointment._id)}
                     >
-                      Reschedule
+                      Accept Appointment
                     </Button>
                     <Button
                       style={{
@@ -565,7 +556,7 @@ const ManageAppointments = () => {
                       }}
                       onClick={() => handleCancelAppointment(appointment._id)}
                     >
-                      Cancel
+                      Cancel Appointment
                     </Button>
                   </Card.Body>
                 </Card>
@@ -646,24 +637,24 @@ const ManageAppointments = () => {
               <Button
                 style={{
                   width: "100%",
-                  color: "#030E82",
-                  backgroundColor: "#82EAAC",
+                  backgroundColor: "#030E82",
                   fontWeight: "bold",
                 }}
                 onClick={() => {}}
               >
-                Accept
+                Join Video Call
+                <ArrowForwardIcon style={{ color: "#030E82" }} />
               </Button>
               <br />
               <Button
                 style={{
                   width: "49%",
                   marginTop: "10px",
-                  backgroundColor: "#030E82",
+                  backgroundColor: "#82EAAC",
                   fontWeight: "bold",
                 }}
               >
-                Reschedule
+                Accept Appointment
               </Button>
               <Button
                 style={{
@@ -674,7 +665,7 @@ const ManageAppointments = () => {
                   float: "right",
                 }}
               >
-                Cancel
+                Cancel Appointment
               </Button>
             </div>
           </DialogActions>
