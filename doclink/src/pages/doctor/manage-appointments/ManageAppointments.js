@@ -43,8 +43,7 @@ const ManageAppointments = () => {
   const [timers, setTimers] = useState({});
   const [appointmentId, setAppointmentId] = useState("");
   const [hasUpcomingNotification, setHasUpcomingNotification] = useState(false);
-  const [noRecords, setNoRecords] = useState(false);
-
+  const [searching, setSearching] = useState(false);
   const isTokenExpired = (token) => {
     if (!token) return true;
     try {
@@ -332,12 +331,15 @@ const ManageAppointments = () => {
     );
   }
   const handleSearchById = async () => {
+    setSearching(true);
     if (!appointmentId) {
       toast.error("Please enter an appointment ID.");
+      setSearching(false);
       return;
     }
+
     const response = await fetch(
-      `https://doc-link-backend.onrender.com/manage-appointment/${appointmentId}`,
+      `https://doc-link-backend.onrender.com/manage-appointments/${appointmentId}`,
       {
         method: "GET",
         headers: {
@@ -349,9 +351,11 @@ const ManageAppointments = () => {
     );
     const data = await response.json();
     if (response.ok) {
+      setSearching(false);
       toast.success("Appointment found.");
       setAppointments([data]);
     } else {
+      setSearching(false);
       toast.error("Appointment not found.");
       setAppointments([]);
     }
@@ -483,19 +487,35 @@ const ManageAppointments = () => {
             }}
             onChange={(e) => setAppointmentId(e.target.value)}
           />
-          <ArrowForwardIcon
-            className="input"
-            style={{
-              color: "#82EAAC",
-              fontSize: "30px",
-              float: "right",
-              margin: "2px",
-              cursor: "pointer",
-              // backgroundColor: "rgba(0, 0, 0, 0.3)",
-              borderRadius: "5px",
-            }}
-            onClick={handleSearchById}
-          />
+          {searching ? (
+            <CircularProgress
+              size={24}
+              className="input"
+              style={{
+                color: "#82EAAC",
+                fontSize: "30px",
+                float: "right",
+                margin: "2px",
+                cursor: "pointer",
+                // backgroundColor: "rgba(0, 0, 0, 0.3)",
+                borderRadius: "5px",
+              }}
+            />
+          ) : (
+            <ArrowForwardIcon
+              className="input"
+              style={{
+                color: "#82EAAC",
+                fontSize: "30px",
+                float: "right",
+                margin: "2px",
+                cursor: "pointer",
+                // backgroundColor: "rgba(0, 0, 0, 0.3)",
+                borderRadius: "5px",
+              }}
+              onClick={handleSearchById}
+            />
+          )}
         </div>
         <Container className="mt-4">
           <Row>

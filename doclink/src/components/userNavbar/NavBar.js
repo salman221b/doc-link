@@ -6,6 +6,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import LogoutIcon from "@mui/icons-material/Logout";
 import SettingsIcon from "@mui/icons-material/Settings";
 import PersonIcon from "@mui/icons-material/Person";
+import Swal from "sweetalert2";
 
 import "./NavBar.css";
 import CustomizedSwitches from "../theme/Theme";
@@ -44,7 +45,18 @@ const NavBar = ({ hasNotification }) => {
     document.addEventListener("mousedown", closeDropdown);
     return () => document.removeEventListener("mousedown", closeDropdown);
   }, []);
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    const result = await Swal.fire({
+      title: "Want to Logout?",
+      text: "Are you sure you want to logout?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, Logout it!",
+    });
+    if (!result.isConfirmed) return;
+
     localStorage.clear();
     navigate("/login");
     window.location.reload();

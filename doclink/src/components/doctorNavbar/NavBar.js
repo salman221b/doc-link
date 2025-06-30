@@ -10,6 +10,7 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import PersonIcon from "@mui/icons-material/Person";
 import CustomizedSwitches from "../theme/Theme";
 import { ThemeContext } from "../../context/ThemeContext";
+import Swal from "sweetalert2";
 
 const NavBar = () => {
   const navigate = useNavigate();
@@ -36,7 +37,18 @@ const NavBar = () => {
     document.addEventListener("mousedown", closeDropdown);
     return () => document.removeEventListener("mousedown", closeDropdown);
   }, []);
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    const result = await Swal.fire({
+      title: "Want to Logout?",
+      text: "Are you sure you want to logout?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, Logout it!",
+    });
+    if (!result.isConfirmed) return;
+
     localStorage.clear();
     navigate("/login");
     window.location.reload();
