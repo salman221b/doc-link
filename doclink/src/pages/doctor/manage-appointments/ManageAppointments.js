@@ -25,6 +25,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "react-toastify";
+import NoData from "../../../static/no_data.png";
 
 const ManageAppointments = () => {
   const token = localStorage.getItem("token");
@@ -40,7 +41,9 @@ const ManageAppointments = () => {
   const [showVideoModal, setShowVideoModal] = useState(false); // New state for video modal
   const [selectedAppointment, setSelectedAppointment] = useState({});
   const [timers, setTimers] = useState({});
+  const [appointmentId, setAppointmentId] = useState("");
   const [hasUpcomingNotification, setHasUpcomingNotification] = useState(false);
+  const [noRecords, setNoRecords] = useState(false);
 
   const isTokenExpired = (token) => {
     if (!token) return true;
@@ -328,6 +331,31 @@ const ManageAppointments = () => {
       </div>
     );
   }
+  const handleSearchById = async () => {
+    if (!appointmentId) {
+      toast.error("Please enter an appointment ID.");
+      return;
+    }
+    const response = await fetch(
+      `https://doc-link-backend.onrender.com/manage-appointment/${appointmentId}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+          Role: "doctor",
+        },
+      }
+    );
+    const data = await response.json();
+    if (response.ok) {
+      toast.success("Appointment found.");
+      setAppointments([data]);
+    } else {
+      toast.error("Appointment not found.");
+      setAppointments([]);
+    }
+  };
 
   return (
     <div>
@@ -453,6 +481,7 @@ const ManageAppointments = () => {
               boxShadow: "0px 0px 5px rgba(0, 0, 0, 0)",
               textAlign: "center",
             }}
+            onChange={(e) => setAppointmentId(e.target.value)}
           />
           <ArrowForwardIcon
             className="input"
@@ -465,103 +494,118 @@ const ManageAppointments = () => {
               // backgroundColor: "rgba(0, 0, 0, 0.3)",
               borderRadius: "5px",
             }}
+            onClick={handleSearchById}
           />
         </div>
         <Container className="mt-4">
           <Row>
-            {appointments.map((appointment) => (
-              <Col md={6} xs={12} key={appointment._id} className="mb-3">
-                <Card>
-                  <Card.Body>
-                    <div
-                      className="text"
-                      style={{ cursor: "pointer" }}
-                      onClick={() => {
-                        setOpen(true);
-                        setSelectedAppointment({
-                          patientId: appointment.patientId || {},
-                          name: `${appointment.patientId.firstName} ${appointment.patientId.lastName}`,
-                          age: appointment.patientId.age || "N/A",
-                          specialization: appointment.specialization || "N/A",
-                          phone: appointment.patientId.phone || "N/A",
-                          email: appointment.patientId.email || "N/A",
-                          district: appointment.patientId.district || "N/A",
-                          state: appointment.patientId.state || "N/A",
-                          reason: appointment.reason || "N/A",
-                          symptoms: appointment.symptoms || "N/A",
-                        });
-                      }}
-                    >
-                      <Card.Title>
-                        <PersonIcon />{" "}
-                        <span style={{ marginLeft: "20px" }}>
-                          {appointment.patientId.firstName}{" "}
-                          {appointment.patientId.lastName} (
-                          {appointment.patientId.age})
-                        </span>
-                      </Card.Title>
-                      <Card.Text>
-                        {formatReadableDate(appointment.scheduledDate)} •{" "}
-                        {appointment.scheduledTime}
-                        <span style={{ float: "right", marginRight: "30px" }}>
-                          Status: {appointment.status}
-                        </span>
-                        <p>specialization: {appointment.specialization}</p>
-                        <p>Mode: {appointment.mode}</p>
-                        <p>Prescription / Notes</p>
-                      </Card.Text>
-                      {getTimeLeft(
-                        appointment.scheduledDate,
-                        appointment.scheduledTime
-                      ) && (
-                        <p style={{ color: "green", fontWeight: "bold" }}>
-                          Starts in:{" "}
-                          {getTimeLeft(
-                            appointment.scheduledDate,
-                            appointment.scheduledTime
-                          )}
-                        </p>
-                      )}
-                    </div>
-                    <Button
-                      style={{
-                        width: "100%",
-                        backgroundColor: "#030E82",
-                        fontWeight: "bold",
-                      }}
-                      hidden={appointment.mode === "In-Person Consultation"}
-                      onClick={() => handleJoinCall(appointment)}
-                    >
-                      Join Video Call
-                      <ArrowForwardIcon style={{ color: "#82EAAC" }} />
-                    </Button>
-                    <Button
-                      style={{
-                        width: "49%",
-                        marginTop: "10px",
-                        backgroundColor: "#82EAAC",
-                        fontWeight: "bold",
-                      }}
-                      onClick={() => handleAccept(appointment._id)}
-                    >
-                      Accept Appointment
-                    </Button>
-                    <Button
-                      style={{
-                        width: "49%",
-                        marginTop: "10px",
-                        backgroundColor: "#F49696",
-                        fontWeight: "bold",
-                        float: "right",
-                      }}
-                      onClick={() => handleCancelAppointment(appointment._id)}
-                    >
-                      Cancel Appointment
-                    </Button>
-                  </Card.Body>
-                </Card>
-              </Col>
-            ))}
+            {appointments.length === 0 ? (
+              <div style={{ textAlign: "center", marginBottom: "80px" }}>
+                <img
+                  src={NoData}
+                  alt="No Data"
+                  style={{ width: "300px", display: "block", margin: "auto" }}
+                />
+                <p className="text" style={{ marginTop: "20px" }}>
+                  Oops, No upcoming appointments!
+                </p>
+              </div>
+            ) : (
+              appointments.map((appointment) => (
+                <Col md={6} xs={12} key={appointment._id} className="mb-3">
+                  <Card>
+                    <Card.Body>
+                      <div
+                        className="text"
+                        style={{ cursor: "pointer" }}
+                        onClick={() => {
+                          setOpen(true);
+                          setSelectedAppointment({
+                            _id: appointment._id,
+                            patientId: appointment.patientId || {},
+                            name: `${appointment.patientId.firstName} ${appointment.patientId.lastName}`,
+                            age: appointment.patientId.age || "N/A",
+                            specialization: appointment.specialization || "N/A",
+                            phone: appointment.patientId.phone || "N/A",
+                            email: appointment.patientId.email || "N/A",
+                            district: appointment.patientId.district || "N/A",
+                            state: appointment.patientId.state || "N/A",
+                            reason: appointment.reason || "N/A",
+                            symptoms: appointment.symptoms || "N/A",
+                          });
+                        }}
+                      >
+                        <Card.Title>
+                          <PersonIcon />{" "}
+                          <span style={{ marginLeft: "20px" }}>
+                            {appointment.patientId.firstName}{" "}
+                            {appointment.patientId.lastName} (
+                            {appointment.patientId.age})
+                          </span>
+                        </Card.Title>
+                        <Card.Text>
+                          {formatReadableDate(appointment.scheduledDate)} •{" "}
+                          {appointment.scheduledTime}
+                          <span style={{ float: "right", marginRight: "30px" }}>
+                            Status: {appointment.status}
+                          </span>
+                          <p>specialization: {appointment.specialization}</p>
+                          <p>Mode: {appointment.mode}</p>
+                          <p>Prescription / Notes</p>
+                        </Card.Text>
+                        {getTimeLeft(
+                          appointment.scheduledDate,
+                          appointment.scheduledTime
+                        ) && (
+                          <p style={{ color: "green", fontWeight: "bold" }}>
+                            Starts in:{" "}
+                            {getTimeLeft(
+                              appointment.scheduledDate,
+                              appointment.scheduledTime
+                            )}
+                          </p>
+                        )}
+                      </div>
+                      <Button
+                        style={{
+                          width: "100%",
+                          backgroundColor: "#030E82",
+                          fontWeight: "bold",
+                        }}
+                        hidden={appointment.mode === "In-Person Consultation"}
+                        onClick={() => handleJoinCall(appointment)}
+                      >
+                        Join Video Call
+                        <ArrowForwardIcon style={{ color: "#82EAAC" }} />
+                      </Button>
+                      <Button
+                        style={{
+                          width: "49%",
+                          marginTop: "10px",
+                          backgroundColor: "#82EAAC",
+                          fontWeight: "bold",
+                        }}
+                        onClick={() => handleAccept(appointment._id)}
+                      >
+                        Accept Appointment
+                      </Button>
+                      <Button
+                        style={{
+                          width: "49%",
+                          marginTop: "10px",
+                          backgroundColor: "#F49696",
+                          fontWeight: "bold",
+                          float: "right",
+                        }}
+                        onClick={() => handleCancelAppointment(appointment._id)}
+                      >
+                        Cancel Appointment
+                      </Button>
+                    </Card.Body>
+                  </Card>
+                </Col>
+              ))
+            )}
           </Row>
         </Container>
         {/* Modal Component */}
@@ -653,6 +697,10 @@ const ManageAppointments = () => {
                   backgroundColor: "#82EAAC",
                   fontWeight: "bold",
                 }}
+                onClick={() => {
+                  setOpen(false);
+                  handleAccept(selectedAppointment._id);
+                }}
               >
                 Accept Appointment
               </Button>
@@ -663,6 +711,10 @@ const ManageAppointments = () => {
                   backgroundColor: "#F49696",
                   fontWeight: "bold",
                   float: "right",
+                }}
+                onClick={() => {
+                  setOpen(false);
+                  handleCancelAppointment(selectedAppointment._id);
                 }}
               >
                 Cancel Appointment

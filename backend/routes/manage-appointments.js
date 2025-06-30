@@ -26,5 +26,28 @@ router.get("/manage-appointments", authMiddleware, async (req, res) => {
     res.status(500).json({ message: "Failed to fetch appointments" });
   }
 });
+router.get("/manage-appointments/:id", authMiddleware, async (req, res) => {
+  try {
+    const appointmentId = req.params.id;
+    const userId = req.user.id;
+
+    const appointment = await Appointment.findOne({
+      _id: appointmentId,
+      doctorId: userId,
+    }).populate(
+      "patientId",
+      "firstName lastName age phone email state district"
+    );
+
+    if (!appointment) {
+      return res.status(404).json({ message: "Appointment not found" });
+    }
+
+    res.json(appointment);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to fetch appointment" });
+  }
+});
 
 module.exports = router;
