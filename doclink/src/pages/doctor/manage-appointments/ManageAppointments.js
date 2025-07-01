@@ -393,11 +393,10 @@ const ManageAppointments = () => {
       const data = await response.json();
       if (response.ok) {
         setSearchTwo(false);
-        toast.success("Appointments found.");
+
         setAppointments(data);
       } else {
         setSearchTwo(false);
-        toast.error("No appointments found.");
         setAppointments([]);
       }
     } catch (error) {

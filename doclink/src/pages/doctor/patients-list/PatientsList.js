@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import NavBar from "../../../components/doctorNavbar/NavBar";
 import {
   Button,
@@ -11,17 +11,72 @@ import {
   MenuItem,
   Select,
 } from "@mui/material";
+import { jwtDecode } from "jwt-decode";
+import { toast } from "react-toastify";
+
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { blue } from "@mui/material/colors";
 import FilterPatients from "../../../components/filter/FilterPatients";
 import CloseIcon from "@mui/icons-material/Close";
 import { Card, Col, Container, Row } from "react-bootstrap";
 import PersonIcon from "@mui/icons-material/Person";
+import { useNavigate } from "react-router-dom";
 
 const PatientsList = () => {
   const [filter, setFilter] = React.useState(false);
-  const [open, setOpen] = useState(false); // State to track modal visibility
+  const [open, setOpen] = useState(false);
+  const token = localStorage.getItem("token");
+  const navigate = useNavigate();
+  const [patients, setPatients] = useState([]);
+  const [loading, setLoading] = useState(true);
 
+  const isTokenExpired = (token) => {
+    if (!token) return true;
+    try {
+      const decoded = JSON.parse(atob(token.split(".")[1]));
+      return decoded.exp * 1000 < Date.now();
+    } catch (error) {
+      return true; // Invalid token format
+    }
+  };
+  useEffect(() => {
+    if (!token || isTokenExpired(token)) {
+      toast.error("Session expired. Please log in again.");
+      navigate("/login");
+    }
+  }, [token, navigate]);
+  useEffect(() => {
+    const fetchPatients = async () => {
+      try {
+        const response = await fetch(
+          "https://doc-link-backend.onrender.com/patients",
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+              Role: "doctor",
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(
+            `Failed to fetch patients. Status: ${response.status}`
+          );
+        }
+
+        const data = await response.json();
+        setPatients(data);
+      } catch (error) {
+        toast.error(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPatients();
+  }, [token]);
   return (
     <div>
       <NavBar />
@@ -160,39 +215,43 @@ const PatientsList = () => {
         {/* ------------------------------------------------------------------------------------------------------------------------- */}
         <Container className="mt-4">
           <Row>
-            <Col md={6} xs={12} className="mb-3">
-              <Card>
-                <Card.Body>
-                  <Card.Title>
-                    <PersonIcon className="text" />{" "}
-                    <span className="text" style={{ marginLeft: "20px" }}>
-                      Patient Name (Age), Male
-                    </span>
-                    <span className="text" style={{ float: "right" }}>
-                      ID: 123
-                    </span>
-                  </Card.Title>
-                  <Card.Text className="text">
-                    Contact Information
-                    <p>Last Visit</p>
-                    <p>Medical Condition (if available)</p>
-                    <p>Appointment History (upcoming & past visits)</p>
-                  </Card.Text>
-                  <Button
-                    style={{
-                      width: "100%",
-                      color: "#030E82",
-                      backgroundColor: "#82EAAC",
-                      fontWeight: "bold",
-                    }}
-                    onClick={() => setOpen(true)}
-                  >
-                    View Profile
-                    <ArrowForwardIcon style={{ color: "#F49696" }} />
-                  </Button>
-                </Card.Body>
-              </Card>
-            </Col>
+            {patients.map((patient) => (
+              <Col md={6} xs={12} className="mb-3">
+                <Card>
+                  <Card.Body>
+                    <Card.Title>
+                      <PersonIcon className="text" />{" "}
+                      <span className="text" style={{ marginLeft: "20px" }}>
+                        {patient.patientId.firstName}
+                        {""}
+                        {patient.patientId.lastName} {patient.patientId.age}
+                      </span>
+                      <span className="text" style={{ float: "right" }}>
+                        {patient.patientId._id}
+                      </span>
+                    </Card.Title>
+                    <Card.Text className="text">
+                      Contact Information
+                      <p>Last Visit</p>
+                      <p>Medical Condition (if available)</p>
+                      <p>Appointment History (upcoming & past visits)</p>
+                    </Card.Text>
+                    <Button
+                      style={{
+                        width: "100%",
+                        color: "#030E82",
+                        backgroundColor: "#82EAAC",
+                        fontWeight: "bold",
+                      }}
+                      onClick={() => setOpen(true)}
+                    >
+                      View Profile
+                      <ArrowForwardIcon style={{ color: "#F49696" }} />
+                    </Button>
+                  </Card.Body>
+                </Card>
+              </Col>
+            ))}
           </Row>
         </Container>
         {/* Modal Component */}
