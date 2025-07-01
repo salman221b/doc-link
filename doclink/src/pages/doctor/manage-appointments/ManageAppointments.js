@@ -367,8 +367,12 @@ const ManageAppointments = () => {
   const handleSearch = async (e) => {
     e.preventDefault();
 
-    if (!status && !startDate && !endDate) {
+    if (!status || !startDate || !endDate) {
       setError("Please select at status or date range.");
+      return;
+    }
+    if (new Date(startDate) > new Date(endDate)) {
+      setError("Start date must be before end date.");
       return;
     }
     setError("");
@@ -376,7 +380,7 @@ const ManageAppointments = () => {
     try {
       setSearchTwo(true);
       const response = await fetch(
-        `https://doc-link-backend.onrender.com/manage-appointments?status=${status}&startDate=${startDate}&endDate=${endDate}`,
+        `https://doc-link-backend.onrender.com/search-appointments-by-date?status=${status}&startDate=${startDate}&endDate=${endDate}`,
         {
           method: "GET",
           headers: {
@@ -489,19 +493,7 @@ const ManageAppointments = () => {
               className="text"
             >
               {searchTwo ? (
-                <CircularProgress
-                  size={24}
-                  className="input"
-                  style={{
-                    color: "#82EAAC",
-                    fontSize: "30px",
-                    float: "right",
-                    margin: "2px",
-                    cursor: "pointer",
-                    // backgroundColor: "rgba(0, 0, 0, 0.3)",
-                    borderRadius: "5px",
-                  }}
-                />
+                <CircularProgress size={24} color="inherit" />
               ) : (
                 "Search"
               )}

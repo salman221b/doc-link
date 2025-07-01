@@ -49,7 +49,7 @@ router.get("/manage-appointments/:id", authMiddleware, async (req, res) => {
     res.status(500).json({ message: "Failed to fetch appointment" });
   }
 });
-router.get("/manage-appointments", authMiddleware, async (req, res) => {
+router.get("/search-appointments-by-date", authMiddleware, async (req, res) => {
   try {
     const { startDate, endDate, status } = req.query;
     const userId = req.user.id;
