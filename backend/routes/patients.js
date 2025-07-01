@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Appointment = require("../models/appointmentsModel");
-const { isAuthenticated } = require("../middlewares/authMiddleware");
+const isAuthenticated = require("../middlewares/authMiddleware");
 
 router.get("/patients", isAuthenticated, async (req, res) => {
   const doctorId = req.user.id;
