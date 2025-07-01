@@ -2,7 +2,6 @@ const express = require("express");
 const router = express.Router();
 const Appointment = require("../models/appointmentsModel");
 const authMiddleware = require("../middlewares/authMiddleware");
-const Doctor = require("../models/doctorsModel");
 
 router.get("/manage-appointments", authMiddleware, async (req, res) => {
   try {

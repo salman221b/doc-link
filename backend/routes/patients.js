@@ -6,7 +6,7 @@ const { isAuthenticated } = require("../middlewares/authMiddleware");
 router.get("/patients", isAuthenticated, async (req, res) => {
   const doctorId = req.user.id;
   try {
-    const patients = await Appointment.find({ doctor: doctorId })
+    const patients = await Appointment.find({ doctorId: doctorId })
       .populate(
         "patientId",
         "firstName lastName age phone email state district _id createdAt"
