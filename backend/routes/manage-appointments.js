@@ -54,10 +54,10 @@ router.get("/search-appointments-by-date", authMiddleware, async (req, res) => {
     const { startDate, endDate, status } = req.query;
     const userId = req.user.id;
 
-    const appointments = await Appointment.find({
+    let appointments = await Appointment.find({
       doctorId: userId,
       scheduledDate: { $gte: startDate, $lte: endDate },
-      status: status ? status : { $exists: true },
+      status: status === "all" ? { $exists: true } : status,
     })
       .populate(
         "patientId",
