@@ -493,7 +493,12 @@ const ManageAppointments = () => {
               className="text"
             >
               {searchTwo ? (
-                <CircularProgress size={24} color="inherit" />
+                <>
+                  <CircularProgress size={14} color="inherit" />{" "}
+                  <span style={{ marginLeft: "0px", fontSize: "14px" }}>
+                    Searching
+                  </span>
+                </>
               ) : (
                 "Search"
               )}
