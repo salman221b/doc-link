@@ -379,7 +379,18 @@ const UpcomingAppointment = () => {
                       <Card.Text>
                         {formatReadableDate(appointment.scheduledDate)} •{" "}
                         {appointment.scheduledTime}
-                        <span style={{ float: "right", marginRight: "30px" }}>
+                        <span
+                          style={{
+                            float: "right",
+                            marginRight: "30px",
+                            color:
+                              appointment.status === "Accepted"
+                                ? "green"
+                                : appointment.status === "Cancelled"
+                                ? "red"
+                                : "",
+                          }}
+                        >
                           Status: {appointment.status}
                         </span>
                         <p>Mode: {appointment.mode}</p>

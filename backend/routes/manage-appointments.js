@@ -49,5 +49,26 @@ router.get("/manage-appointments/:id", authMiddleware, async (req, res) => {
     res.status(500).json({ message: "Failed to fetch appointment" });
   }
 });
+router.get("/manage-appointments", authMiddleware, async (req, res) => {
+  try {
+    const { startDate, endDate, status } = req.query;
+    const userId = req.user.id;
+
+    const appointments = await Appointment.find({
+      doctorId: userId,
+      scheduledDate: { $gte: startDate, $lte: endDate },
+      status: status ? status : { $exists: true },
+    })
+      .populate(
+        "patientId",
+        "firstName lastName age phone email state district"
+      )
+      .sort({ scheduledDate: 1 });
+    res.json(appointments);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to fetch appointments" });
+  }
+});
 
 module.exports = router;

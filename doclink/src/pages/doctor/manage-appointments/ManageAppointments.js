@@ -44,6 +44,11 @@ const ManageAppointments = () => {
   const [appointmentId, setAppointmentId] = useState("");
   const [hasUpcomingNotification, setHasUpcomingNotification] = useState(false);
   const [searching, setSearching] = useState(false);
+  const [searchTwo, setSearchTwo] = useState(false);
+  const [status, setStatus] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [error, setError] = useState("");
   const isTokenExpired = (token) => {
     if (!token) return true;
     try {
@@ -306,7 +311,6 @@ const ManageAppointments = () => {
       toast.error(error.message);
     }
   };
-  // Show loading spinner while fetching data
   if (loading) {
     return (
       <div
@@ -360,6 +364,40 @@ const ManageAppointments = () => {
       setAppointments([]);
     }
   };
+  const handleSearch = async (e) => {
+    e.preventDefault();
+    setSearchTwo(true);
+    if (!status && !startDate && !endDate) {
+      setError("Please select at status or date range.");
+      return;
+    }
+    setError("");
+    try {
+      const response = await fetch(
+        `https://doc-link-backend.onrender.com/manage-appointments?status=${status}&startDate=${startDate}&endDate=${endDate}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+            Role: "doctor",
+          },
+        }
+      );
+      const data = await response.json();
+      if (response.ok) {
+        setSearchTwo(false);
+        toast.success("Appointments found.");
+        setAppointments(data);
+      } else {
+        setSearchTwo(false);
+        toast.error("No appointments found.");
+        setAppointments([]);
+      }
+    } catch (error) {
+      setError(error.message);
+    }
+  };
 
   return (
     <div>
@@ -373,7 +411,7 @@ const ManageAppointments = () => {
         </p>
       </div>
       <div className="search-area">
-        <form>
+        <form onSubmit={handleSearch}>
           <div
             className="searchArea"
             style={{
@@ -394,13 +432,14 @@ const ManageAppointments = () => {
                 label="Status"
                 name="status"
                 // onChange={handleChange}
+                onChange={(e) => setStatus(e.target.value)}
               >
                 <MenuItem value={"all"} selected>
                   All
                 </MenuItem>
-                <MenuItem value={"upcoming"}>Upcoming</MenuItem>
-                <MenuItem value={"completed"}>Completed</MenuItem>
-                <MenuItem value={"cancelled"}>Cancelled</MenuItem>
+                <MenuItem value={"Pending"}>Pending</MenuItem>
+                <MenuItem value={"Accepted"}>Accepted</MenuItem>
+                <MenuItem value={"Cancelled"}>Cancelled</MenuItem>
               </Select>
             </FormControl>
             <TextField
@@ -417,6 +456,7 @@ const ManageAppointments = () => {
               InputLabelProps={{
                 shrink: true, // This removes the default dd-mm-yyyy placeholder
               }}
+              onChange={(e) => setStartDate(e.target.value)}
             />
             <TextField
               style={{
@@ -432,6 +472,7 @@ const ManageAppointments = () => {
               InputLabelProps={{
                 shrink: true, // This removes the default dd-mm-yyyy placeholder
               }}
+              onChange={(e) => setEndDate(e.target.value)}
             />
             <button
               type="submit"
@@ -445,7 +486,23 @@ const ManageAppointments = () => {
               }}
               className="text"
             >
-              Search
+              {searchTwo ? (
+                <CircularProgress
+                  size={24}
+                  className="input"
+                  style={{
+                    color: "#82EAAC",
+                    fontSize: "30px",
+                    float: "right",
+                    margin: "2px",
+                    cursor: "pointer",
+                    // backgroundColor: "rgba(0, 0, 0, 0.3)",
+                    borderRadius: "5px",
+                  }}
+                />
+              ) : (
+                "Search"
+              )}
             </button>
           </div>
         </form>
@@ -566,7 +623,18 @@ const ManageAppointments = () => {
                         <Card.Text>
                           {formatReadableDate(appointment.scheduledDate)} •{" "}
                           {appointment.scheduledTime}
-                          <span style={{ float: "right", marginRight: "30px" }}>
+                          <span
+                            style={{
+                              float: "right",
+                              marginRight: "30px",
+                              color:
+                                appointment.status === "Accepted"
+                                  ? "green"
+                                  : appointment.status === "Cancelled"
+                                  ? "red"
+                                  : "",
+                            }}
+                          >
                             Status: {appointment.status}
                           </span>
                           <p>specialization: {appointment.specialization}</p>
