@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const Appointment = require("../models/appointmentModel");
+const Appointment = require("../models/appointmentsModel");
 const { isAuthenticated } = require("../middlewares/authMiddleware");
 
 router.get("/patients", isAuthenticated, async (req, res) => {
