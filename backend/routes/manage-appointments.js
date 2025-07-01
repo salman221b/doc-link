@@ -64,6 +64,7 @@ router.get("/manage-appointments", authMiddleware, async (req, res) => {
         "firstName lastName age phone email state district"
       )
       .sort({ scheduledDate: 1 });
+
     res.json(appointments);
   } catch (error) {
     console.error(error);

@@ -366,13 +366,15 @@ const ManageAppointments = () => {
   };
   const handleSearch = async (e) => {
     e.preventDefault();
-    setSearchTwo(true);
+
     if (!status && !startDate && !endDate) {
       setError("Please select at status or date range.");
       return;
     }
     setError("");
+
     try {
+      setSearchTwo(true);
       const response = await fetch(
         `https://doc-link-backend.onrender.com/manage-appointments?status=${status}&startDate=${startDate}&endDate=${endDate}`,
         {
@@ -506,6 +508,7 @@ const ManageAppointments = () => {
             </button>
           </div>
         </form>
+        <p style={{ color: "red", textAlign: "center" }}>{error}</p>
         <div
           className="searchById"
           style={{
