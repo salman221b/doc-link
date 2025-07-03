@@ -11,6 +11,7 @@ const patientSchema = new mongoose.Schema(
     email: { type: String, require: [true, "Email is required"], unique: true },
     age: { type: String, require: [true, "Age is required"] },
     phone: { type: String, require: [true, "Phone number is required"] },
+    gender: { type: String, require: [true, "Gender is required"] },
     state: { type: String, require: [true, "State is required"] },
     district: { type: String, require: [true, "District is required"] },
     password: { type: String, require: [true, "Password is required"] },

@@ -26,6 +26,7 @@ const Registration = () => {
     lastName: "",
     email: "",
     phone: "",
+    gender: "",
     age: "",
     state: "",
     district: "",
@@ -120,6 +121,9 @@ const Registration = () => {
     }
     if (formData.phone.length < 10 || formData.phone.length > 10) {
       tempErrors.phone = "Phone number is not valid";
+    }
+    if (formData.gender === "") {
+      tempErrors.gender = "Gender is required";
     }
     if (!formData.password) {
       tempErrors.password = "Password is required";
@@ -444,6 +448,29 @@ const Registration = () => {
               type="number"
             />
             {errors.phone && <p style={{ color: "red" }}>{errors.phone}</p>}
+            <FormControl sx={{ minWidth: "100%", marginTop: "20px" }}>
+              <InputLabel id="demo-simple-select-helper-label">
+                Gender{" "}
+              </InputLabel>
+              <Select
+                style={{ backgroundColor: "white", borderRadius: "8px" }}
+                labelId="demo-simple-select-helper-label"
+                id="demo-simple-select-helper"
+                value={formData.gender}
+                label="Gender"
+                name="gender"
+                onChange={handleChange}
+              >
+                <MenuItem value="" disabled>
+                  <em>None</em>
+                </MenuItem>
+                <MenuItem value={"Male"}>Male</MenuItem>
+                <MenuItem value={"Female"}>Female</MenuItem>
+                <MenuItem value={"Other"}>Other</MenuItem>
+              </Select>
+            </FormControl>
+            {errors.gender && <p style={{ color: "red" }}>{errors.gender}</p>}
+
             <TextField
               fullWidth
               style={{

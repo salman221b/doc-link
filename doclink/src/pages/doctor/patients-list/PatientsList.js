@@ -13,6 +13,7 @@ import {
 } from "@mui/material";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "react-toastify";
+import NoData from "../../../static/no_data.png";
 
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { blue } from "@mui/material/colors";
@@ -29,6 +30,7 @@ const PatientsList = () => {
   const navigate = useNavigate();
   const [patients, setPatients] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedPatient, setSelectedPatient] = useState(null);
 
   const isTokenExpired = (token) => {
     if (!token) return true;
@@ -77,6 +79,13 @@ const PatientsList = () => {
 
     fetchPatients();
   }, [token]);
+  const formatReadableDate = (timestamp) => {
+    return new Date(timestamp).toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+    });
+  };
   return (
     <div>
       <NavBar />
@@ -215,43 +224,92 @@ const PatientsList = () => {
         {/* ------------------------------------------------------------------------------------------------------------------------- */}
         <Container className="mt-4">
           <Row>
-            {patients.map((patient) => (
-              <Col md={6} xs={12} className="mb-3">
-                <Card>
-                  <Card.Body>
-                    <Card.Title>
-                      <PersonIcon className="text" />{" "}
-                      <span className="text" style={{ marginLeft: "20px" }}>
-                        {patient.patientId.firstName}
-                        {""}
-                        {patient.patientId.lastName} {patient.patientId.age}
-                      </span>
-                      <span className="text" style={{ float: "right" }}>
-                        {patient.patientId._id}
-                      </span>
-                    </Card.Title>
-                    <Card.Text className="text">
-                      Contact Information
-                      <p>Last Visit</p>
-                      <p>Medical Condition (if available)</p>
-                      <p>Appointment History (upcoming & past visits)</p>
-                    </Card.Text>
-                    <Button
-                      style={{
-                        width: "100%",
-                        color: "#030E82",
-                        backgroundColor: "#82EAAC",
-                        fontWeight: "bold",
-                      }}
-                      onClick={() => setOpen(true)}
-                    >
-                      View Profile
-                      <ArrowForwardIcon style={{ color: "#F49696" }} />
-                    </Button>
-                  </Card.Body>
-                </Card>
-              </Col>
-            ))}
+            {patients.length === 0 ? (
+              <div style={{ textAlign: "center", marginBottom: "80px" }}>
+                <img
+                  src={NoData}
+                  alt="No Data"
+                  style={{ width: "300px", display: "block", margin: "auto" }}
+                />
+                <p className="text" style={{ marginTop: "20px" }}>
+                  Oops, No patients found.!
+                </p>
+              </div>
+            ) : (
+              patients.map((patient) => (
+                <Col md={6} xs={12} className="mb-3">
+                  <Card>
+                    <Card.Body>
+                      <Card.Title>
+                        <PersonIcon className="text" />{" "}
+                        <span className="text" style={{ marginLeft: "20px" }}>
+                          {patient.patientId.firstName}
+                          {""}
+                          {patient.patientId.lastName} {patient.patientId.age}
+                        </span>
+                        <span className="text" style={{ float: "right" }}>
+                          {patient.patientId._id}
+                        </span>
+                      </Card.Title>
+                      <Card.Text className="text">
+                        Mobile:{" "}
+                        <span style={{ fontWeight: "bold" }}>
+                          {patient.patientId.phone}
+                        </span>
+                        <p>
+                          Last Visit:{" "}
+                          <span style={{ fontWeight: "bold" }}>
+                            {formatReadableDate(patient.scheduledDate)}
+                          </span>
+                        </p>
+                        <p>
+                          Reason for Last Visit:{" "}
+                          <span style={{ fontWeight: "bold" }}>
+                            {patient.reason}
+                          </span>
+                        </p>
+                        <p>
+                          Symptoms:{" "}
+                          <span style={{ fontWeight: "bold" }}>
+                            {patient.symptoms}
+                          </span>
+                        </p>
+                      </Card.Text>
+                      <Button
+                        style={{
+                          width: "100%",
+                          color: "#030E82",
+                          backgroundColor: "#82EAAC",
+                          fontWeight: "bold",
+                        }}
+                        onClick={() => {
+                          setOpen(true);
+                          setSelectedPatient({
+                            scheduledDate: patient.scheduledDate,
+                            reason: patient.reason,
+                            symptoms: patient.symptoms,
+                            appointmentId: patient._id,
+                            phone: patient.patientId.phone,
+                            email: patient.patientId.email,
+                            age: patient.patientId.age,
+                            gender: patient.patientId.gender,
+                            state: patient.patientId.state,
+                            district: patient.patientId.district,
+                            createdAt: patient.patientId.createdAt,
+                            firstName: patient.patientId.firstName,
+                            lastName: patient.patientId.lastName,
+                            id: patient.patientId._id,
+                          });
+                        }}
+                      >
+                        View Profile
+                        <ArrowForwardIcon style={{ color: "#F49696" }} />
+                      </Button>
+                    </Card.Body>
+                  </Card>
+                </Col>
+              ))
+            )}
           </Row>
         </Container>
         {/* Modal Component */}
@@ -291,7 +349,7 @@ const PatientsList = () => {
                 </h3>
 
                 <p style={{ margin: "5px 0", fontSize: "1rem" }}>
-                  📞 +91 98765 43210
+                  {/* 📞 {selectedPatient.patientId.phone} */}
                 </p>
                 <p style={{ margin: "5px 0", fontSize: "1rem" }}>
                   ✉️ johndoe@email.com
