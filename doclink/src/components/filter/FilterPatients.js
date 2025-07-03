@@ -6,8 +6,58 @@ import {
   TextField,
 } from "@mui/material";
 import React from "react";
+import { useEffect } from "react";
 
-const FilterPatients = () => {
+const FilterPatients = ({ allPatients, onFilter }) => {
+  const [age, setAge] = React.useState("");
+  const [gender, setGender] = React.useState("");
+  const [startDate, setStartDate] = React.useState("");
+  const [endDate, setEndDate] = React.useState("");
+  useEffect(() => {
+    let filtered = [...allPatients];
+
+    if (age) {
+      const [min, max] = age.split("-").map(Number);
+      filtered = filtered.filter(
+        (p) => p.patientId.age >= min && p.patientId.age <= max
+      );
+    }
+
+    if (gender) {
+      filtered = filtered.filter((p) => p.patientId.gender === gender);
+    }
+
+    onFilter(filtered); // Pass the full appointment with patientId populated
+  }, [age, gender]);
+
+  const handleDateFilter = () => {
+    let filtered = [...allPatients];
+
+    if (age) {
+      const [min, max] = age.split("-").map(Number);
+      filtered = filtered.filter(
+        (p) => p.patientId.age >= min && p.patientId.age <= max
+      );
+    }
+
+    if (gender) {
+      filtered = filtered.filter((p) => p.patientId.gender === gender);
+    }
+
+    if (startDate) {
+      filtered = filtered.filter(
+        (p) => new Date(p.createdAt) >= new Date(startDate)
+      );
+    }
+
+    if (endDate) {
+      filtered = filtered.filter(
+        (p) => new Date(p.createdAt) <= new Date(endDate)
+      );
+    }
+
+    onFilter(filtered);
+  };
   return (
     <>
       <div
@@ -46,23 +96,21 @@ const FilterPatients = () => {
               // value={formData.specialization}
               label="Age"
               name="age"
-              // onChange={handleChange}
+              onChange={(e) => setAge(e.target.value)}
             >
-              <MenuItem value={"one-to-ten"} selected>
+              <MenuItem value={"1-10"} selected>
                 1 - 10
               </MenuItem>
-              <MenuItem value={"eleven-to-twenty"}>11 - 20</MenuItem>
-              <MenuItem value={"twentyone-to-thirty"}>21 - 30</MenuItem>
-              <MenuItem value={"thirtyone-to-forty"}>31 - 40</MenuItem>
-              <MenuItem value={"fortyone-to-fifty"}>41 - 50</MenuItem>
-              <MenuItem value={"fiftyone-to-sixty"}>51 - 60</MenuItem>
-              <MenuItem value={"sixtyone-to-seventy"}>61 - 70</MenuItem>
-              <MenuItem value={"seventyone-to-eighty"}>71 - 80</MenuItem>
-              <MenuItem value={"eightyone-to-ninety"}>81 - 90</MenuItem>
-              <MenuItem value={"ninetyone-to-onehundred"}>91 - 100</MenuItem>
-              <MenuItem value={"onehundredone-to-onehundredandten"}>
-                101 - 110
-              </MenuItem>
+              <MenuItem value={"11-20"}>11 - 20</MenuItem>
+              <MenuItem value={"21-30"}>21 - 30</MenuItem>
+              <MenuItem value={"31-40"}>31 - 40</MenuItem>
+              <MenuItem value={"41-50"}>41 - 50</MenuItem>
+              <MenuItem value={"51-60"}>51 - 60</MenuItem>
+              <MenuItem value={"61-70"}>61 - 70</MenuItem>
+              <MenuItem value={"71-80"}>71 - 80</MenuItem>
+              <MenuItem value={"81-90"}>81 - 90</MenuItem>
+              <MenuItem value={"91-100"}>91 - 100</MenuItem>
+              <MenuItem value={"101-110"}>101 - 110</MenuItem>
             </Select>
           </FormControl>
           <FormControl
@@ -76,7 +124,7 @@ const FilterPatients = () => {
               // value={formData.specialization}
               label="Gender"
               name="gender"
-              // onChange={handleChange}
+              onChange={(e) => setGender(e.target.value)}
             >
               <MenuItem value={"male"} selected>
                 Male
@@ -113,6 +161,8 @@ const FilterPatients = () => {
             InputLabelProps={{
               shrink: true, // This removes the default dd-mm-yyyy placeholder
             }}
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
           />
           <TextField
             style={{
@@ -128,6 +178,8 @@ const FilterPatients = () => {
             InputLabelProps={{
               shrink: true, // This removes the default dd-mm-yyyy placeholder
             }}
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
           />
           <button
             className="searchButton"
@@ -141,6 +193,7 @@ const FilterPatients = () => {
               width: "100px",
               borderRadius: "10px",
             }}
+            onClick={handleDateFilter}
           >
             Search
           </button>

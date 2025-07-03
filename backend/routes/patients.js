@@ -29,4 +29,75 @@ router.get("/patients", isAuthenticated, async (req, res) => {
     res.status(500).json({ message: "Failed to fetch patients" });
   }
 });
+router.get("/search-patients", isAuthenticated, async (req, res) => {
+  const { searchBy, value } = req.query;
+
+  if (!searchBy || !value) {
+    return res.status(400).json({ message: "Invalid search parameters" });
+  }
+
+  const doctorId = req.user.id;
+  try {
+    const patients = await Appointment.find({ doctorId: doctorId })
+      .populate(
+        "patientId",
+        "firstName lastName age phone email state district _id createdAt"
+      )
+      .sort({ createdAt: -1 });
+
+    const uniquePatients = [];
+    const seen = new Set();
+
+    for (const appt of patients) {
+      const id = appt.patientId._id.toString();
+      if (!seen.has(id)) {
+        seen.add(id);
+        uniquePatients.push(appt);
+      }
+    }
+    const filteredPatients = uniquePatients.filter((appt) => {
+      const patient = appt.patientId;
+      if (searchBy === "name") {
+        return (
+          patient.firstName.toLowerCase().includes(value.toLowerCase()) ||
+          patient.lastName.toLowerCase().includes(value.toLowerCase())
+        );
+      } else if (searchBy === "id") {
+        return patient._id.toString().includes(value);
+      } else if (searchBy === "phone") {
+        return patient.phone.includes(value);
+      }
+      return false;
+    });
+    res.json(filteredPatients);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to fetch patients" });
+  }
+});
+
+router.get("/sort-patients", isAuthenticated, async (req, res) => {
+  const { sortBy } = req.query;
+  let sortField = "";
+  if (sortBy === "name") {
+    sortField = "patientId.firstName";
+  } else if (sortBy === "last-visit") {
+    sortField = "scheduledDate";
+  } else if (sortBy === "appointment-date") {
+    sortField = "createdAt";
+  }
+  const doctorId = req.user.id;
+  try {
+    const patients = await Appointment.find({ doctorId: doctorId })
+      .populate(
+        "patientId",
+        "firstName lastName age phone email state district _id createdAt"
+      )
+      .sort({ [sortField]: 1 });
+    res.json(patients);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Failed to sort patients" });
+  }
+});
 module.exports = router;

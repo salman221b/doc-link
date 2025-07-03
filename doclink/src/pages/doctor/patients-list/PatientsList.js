@@ -3,7 +3,7 @@ import NavBar from "../../../components/doctorNavbar/NavBar";
 import {
   Button,
   Dialog,
-  DialogActions,
+  CircularProgress,
   DialogContent,
   DialogTitle,
   FormControl,
@@ -30,7 +30,11 @@ const PatientsList = () => {
   const navigate = useNavigate();
   const [patients, setPatients] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedPatient, setSelectedPatient] = useState(null);
+  const [selectedPatient, setSelectedPatient] = useState({});
+  const [searchBy, setSearchBy] = useState("");
+  const [value, setValue] = useState("");
+  const [searching, setSearching] = useState(false);
+  const [error, setError] = useState("");
 
   const isTokenExpired = (token) => {
     if (!token) return true;
@@ -50,6 +54,7 @@ const PatientsList = () => {
   useEffect(() => {
     const fetchPatients = async () => {
       try {
+        setLoading(true);
         const response = await fetch(
           "https://doc-link-backend.onrender.com/patients",
           {
@@ -86,6 +91,86 @@ const PatientsList = () => {
       year: "numeric",
     });
   };
+  const handleSearch = async () => {
+    if (!searchBy || !value) {
+      setError("Please select a search criteria and enter a value.");
+      return;
+    }
+    setSearching(true);
+    try {
+      setError("");
+      const response = await fetch(
+        `https://doc-link-backend.onrender.com/search-patients?searchBy=${searchBy}&value=${value}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+            Role: "doctor",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(
+          `Failed to search patients. Status: ${response.status}`
+        );
+      }
+
+      const data = await response.json();
+      setPatients(data);
+      setValue("");
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setSearching(false);
+    }
+  };
+  if (loading) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+          flexDirection: "column",
+          color: "#82EAAC",
+        }}
+      >
+        <CircularProgress
+          size={80}
+          thickness={3}
+          sx={{
+            color: "#F49696",
+          }}
+        />
+        <h2 style={{ marginTop: "20px", color: "#82EAAC" }}>Loading...</h2>
+      </div>
+    );
+  }
+  const handleSort = async (sortBy) => {
+    try {
+      const response = await fetch(
+        `https://doc-link-backend.onrender.com/sort-patients?sortBy=${sortBy}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+            Role: "doctor",
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error(`Failed to sort patients. Status: ${response.status}`);
+      }
+      const data = await response.json();
+      setPatients(data);
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
   return (
     <div>
       <NavBar />
@@ -116,13 +201,13 @@ const PatientsList = () => {
                 // value={formData.specialization}
                 label="Search By"
                 name="search-by"
-                // onChange={handleChange}
+                onChange={(e) => setSearchBy(e.target.value)}
               >
                 <MenuItem value={"name"} selected>
                   Name
                 </MenuItem>
-                <MenuItem value={"id"}>ID</MenuItem>
-                <MenuItem value={"contact-no"}>Contact No.</MenuItem>
+                <MenuItem value={"id"}>Patient ID</MenuItem>
+                <MenuItem value={"phone"}>Contact No.</MenuItem>
               </Select>
             </FormControl>
             <div
@@ -143,7 +228,13 @@ const PatientsList = () => {
               <input
                 className="text"
                 type="text"
-                placeholder="Enter ID "
+                placeholder={
+                  searchBy === "name"
+                    ? "Enter Patient Name"
+                    : searchBy === "id"
+                    ? "Enter Patient ID"
+                    : "Enter Contact No."
+                }
                 style={{
                   width: "75%",
                   border: "none",
@@ -161,19 +252,37 @@ const PatientsList = () => {
                   boxShadow: "0px 0px 5px rgba(0, 0, 0, 0)",
                   textAlign: "center",
                 }}
+                onChange={(e) => setValue(e.target.value)}
               />
-              <ArrowForwardIcon
-                style={{
-                  color: "#82EAAC",
-                  fontSize: "30px",
-                  float: "right",
-                  margin: "2px",
-                  cursor: "pointer",
-                  // backgroundColor: "rgba(0, 0, 0, 0.3)",
-                  borderRadius: "5px",
-                }}
-                className="input"
-              />
+              {searching ? (
+                <CircularProgress
+                  size={24}
+                  className="input"
+                  style={{
+                    color: "#82EAAC",
+                    fontSize: "30px",
+                    float: "right",
+                    margin: "2px",
+                    cursor: "pointer",
+                    // backgroundColor: "rgba(0, 0, 0, 0.3)",
+                    borderRadius: "5px",
+                  }}
+                />
+              ) : (
+                <ArrowForwardIcon
+                  className="input"
+                  style={{
+                    color: "#82EAAC",
+                    fontSize: "30px",
+                    float: "right",
+                    margin: "2px",
+                    cursor: "pointer",
+                    // backgroundColor: "rgba(0, 0, 0, 0.3)",
+                    borderRadius: "5px",
+                  }}
+                  onClick={handleSearch}
+                />
+              )}
             </div>
             <FormControl
               sx={{ width: "200px", marginTop: "-20px", marginLeft: "20px" }}
@@ -188,7 +297,9 @@ const PatientsList = () => {
                 // value={formData.specialization}
                 label="Sort By"
                 name="sort-by"
-                // onChange={handleChange}
+                onChange={(e) => {
+                  handleSort(e.target.value);
+                }}
               >
                 <MenuItem value={"name"} selected>
                   Name
@@ -199,6 +310,9 @@ const PatientsList = () => {
             </FormControl>
           </div>
         </form>
+        <p style={{ color: "red", textAlign: "center", marginTop: "10px" }}>
+          {error}
+        </p>
         <hr className="text" />
         <p
           style={{
@@ -220,9 +334,16 @@ const PatientsList = () => {
           }}
           onClick={() => setFilter(false)}
         />
-        {filter && <FilterPatients />}
+        {filter && (
+          <FilterPatients
+            allPatients={patients}
+            onFilter={(filter) => {
+              setPatients(filter);
+            }}
+          />
+        )}
         {/* ------------------------------------------------------------------------------------------------------------------------- */}
-        <Container className="mt-4">
+        <Container className="mt-4" style={{ marginBottom: "40px" }}>
           <Row>
             {patients.length === 0 ? (
               <div style={{ textAlign: "center", marginBottom: "80px" }}>
@@ -286,6 +407,7 @@ const PatientsList = () => {
                           setOpen(true);
                           setSelectedPatient({
                             scheduledDate: patient.scheduledDate,
+                            scheduledTime: patient.scheduledTime,
                             reason: patient.reason,
                             symptoms: patient.symptoms,
                             appointmentId: patient._id,
@@ -295,10 +417,11 @@ const PatientsList = () => {
                             gender: patient.patientId.gender,
                             state: patient.patientId.state,
                             district: patient.patientId.district,
-                            createdAt: patient.patientId.createdAt,
+                            createdAt: patient.createdAt,
                             firstName: patient.patientId.firstName,
                             lastName: patient.patientId.lastName,
                             id: patient.patientId._id,
+                            status: patient.status,
                           });
                         }}
                       >
@@ -345,44 +468,46 @@ const PatientsList = () => {
               {/* Right: Name & Contacts */}
               <div style={{ marginLeft: "20px", width: "80%" }}>
                 <h3 style={{ margin: "0", color: "#333" }}>
-                  Patient Name (Age), &nbsp; Male
+                  {selectedPatient.firstName} {selectedPatient.lastName} (
+                  {selectedPatient.age}), &nbsp; {selectedPatient.gender}
                 </h3>
 
                 <p style={{ margin: "5px 0", fontSize: "1rem" }}>
-                  {/* 📞 {selectedPatient.patientId.phone} */}
+                  📞 {selectedPatient.phone} &nbsp;{" "}
                 </p>
                 <p style={{ margin: "5px 0", fontSize: "1rem" }}>
-                  ✉️ johndoe@email.com
+                  ✉️ {selectedPatient.email}
                 </p>
                 <p style={{ margin: "5px 0", fontSize: "1rem" }}>
-                  Medical History
+                  📍 {selectedPatient.state}, {selectedPatient.district}
+                </p>
+                <p style={{ margin: "5px 0", fontSize: "1rem" }}>
+                  <strong>Patient ID:</strong> {selectedPatient.id}
                 </p>
               </div>
             </div>
           </DialogTitle>
           <DialogContent>
             <div>
-              Appointments
-              <p> (Upcoming, Completed, and Canceled)</p>
+              <u>Appointments Details</u>
+              <p> Status: {selectedPatient.status}</p>
+              <p>Appointment ID: {selectedPatient.appointmentId}</p>
+              <p>Reason for Last Visit: {selectedPatient.reason}</p>
+              <p>Symptoms: {selectedPatient.symptoms}</p>
             </div>
             <div style={{ marginTop: "20px" }}>
-              Prescriptions(Doctor’s past prescriptions)
+              {"Scheduled Date: "}
+              <strong>
+                {formatReadableDate(selectedPatient.scheduledDate)} at{" "}
+                {selectedPatient.scheduledTime}
+              </strong>
             </div>
             <div style={{ marginTop: "20px" }}>
-              Reports & Test Results (Blood test, X-rays, MRI, etc.)
+              Booked On:{" "}
+              <strong>{formatReadableDate(selectedPatient.createdAt)}</strong>
             </div>
-            <p
-              style={{
-                float: "right",
-                color: "blue",
-                cursor: "pointer",
-                textDecoration: "underline",
-              }}
-            >
-              Download / Print
-            </p>
           </DialogContent>
-          <DialogActions>
+          {/* <DialogActions>
             <div style={{ width: "100%" }}>
               <Button
                 style={{
@@ -422,7 +547,7 @@ const PatientsList = () => {
                 Upload Medical Reports
               </Button>
             </div>
-          </DialogActions>
+          </DialogActions> */}
         </Dialog>
       </div>
     </div>
