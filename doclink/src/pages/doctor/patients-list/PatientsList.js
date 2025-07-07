@@ -119,7 +119,6 @@ const PatientsList = () => {
 
       const data = await response.json();
       setPatients(data);
-      setValue("");
     } catch (error) {
       toast.error(error.message);
     } finally {
