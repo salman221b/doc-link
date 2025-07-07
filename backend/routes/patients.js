@@ -101,46 +101,22 @@ router.get("/sort-patients", isAuthenticated, async (req, res) => {
         uniquePatients.push(appt);
       }
     }
-    const filteredPatients = uniquePatients.filter((appt) => {
-      const patient = appt.patientId;
+
+    uniquePatients.sort((a, b) => {
       if (sortBy === "name") {
-        return (
-          patient.firstName.toLowerCase().includes(value.toLowerCase()) ||
-          patient.lastName.toLowerCase().includes(value.toLowerCase())
-        );
+        return a.patientId.firstName.localeCompare(b.patientId.firstName);
       } else if (sortBy === "last-visit") {
-        return patient.scheduledDate.toString().includes(value);
+        return new Date(a.scheduledDate) - new Date(b.scheduledDate);
       } else if (sortBy === "appointment-date") {
-        return patient.createdAt.toString().includes(value);
+        return new Date(a.createdAt) - new Date(b.createdAt);
       }
-      return false;
+      return 0;
     });
-    res.json(filteredPatients);
+    res.json(uniquePatients);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Failed to fetch patients" });
   }
 });
-// let sortField = "";
-// if (sortBy === "name") {
-//   sortField = "patientId.firstName";
-// } else if (sortBy === "last-visit") {
-//   sortField = "scheduledDate";
-// } else if (sortBy === "appointment-date") {
-//   sortField = "createdAt";
-// }
-// const doctorId = req.user.id;
-// try {
-//   const patients = await Appointment.find({ doctorId: doctorId })
-//     .populate(
-//       "patientId",
-//       "firstName lastName age phone email state district _id createdAt"
-//     )
-//     .sort({ [sortField]: 1 });
-//   res.json(patients);
-// } catch (error) {
-//   console.error(error);
-//   res.status(500).json({ message: "Failed to sort patients" });
-// }
 
 module.exports = router;
