@@ -17,14 +17,12 @@ import NoData from "../../../static/no_data.png";
 
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { blue } from "@mui/material/colors";
-import FilterPatients from "../../../components/filter/FilterPatients";
 import CloseIcon from "@mui/icons-material/Close";
 import { Card, Col, Container, Row } from "react-bootstrap";
 import PersonIcon from "@mui/icons-material/Person";
 import { useNavigate } from "react-router-dom";
 
 const PatientsList = () => {
-  const [filter, setFilter] = React.useState(false);
   const [open, setOpen] = useState(false);
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
@@ -179,7 +177,7 @@ const PatientsList = () => {
         Manage your appointments, patients, and medical records with ease.
       </p>
 
-      <div className="search-area" style={{ marginTop: "50px" }}>
+      <div className="search-area" style={{ marginTop: "90px" }}>
         <form>
           <div
             className="searchArea"
@@ -313,34 +311,7 @@ const PatientsList = () => {
           {error}
         </p>
         <hr className="text" />
-        <p
-          style={{
-            textDecoration: "underline",
-            color: blue[500],
-            cursor: "pointer",
-          }}
-          onClick={() => setFilter(!filter)}
-        >
-          Filters:
-        </p>
 
-        <CloseIcon
-          style={{
-            color: "red",
-            float: "right",
-            cursor: "pointer",
-            display: filter ? "block" : "none",
-          }}
-          onClick={() => setFilter(false)}
-        />
-        {filter && (
-          <FilterPatients
-            allPatients={patients}
-            onFilter={(filter) => {
-              setPatients(filter);
-            }}
-          />
-        )}
         {/* ------------------------------------------------------------------------------------------------------------------------- */}
         <Container className="mt-4" style={{ marginBottom: "40px" }}>
           <Row>
