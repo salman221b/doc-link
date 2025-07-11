@@ -15,3 +15,4 @@ router.get("/medical-records-for-doctor", authMiddleware, async (req, res) => {
     res.status(500).json({ message: "Failed to fetch medical records" });
   }
 });
+module.exports = router;
