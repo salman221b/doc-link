@@ -298,21 +298,6 @@ const MedicalRecords = () => {
                     <div className="text">
                       <Card.Title>
                         {rec.file.endsWith(".pdf") ? (
-                          // <div
-                          //   style={{
-                          //     width: "100%",
-                          //     height: "100px",
-                          //     display: "flex",
-                          //     justifyContent: "center",
-                          //     alignItems: "center",
-                          //     backgroundColor: "#fdecea",
-                          //     borderRadius: "8px",
-                          //     color: "#d32f2f",
-                          //   }}
-                          //   onClick={() => window.open(rec.file, "_blank")}
-                          // >
-                          //   <PictureAsPdfIcon fontSize="large" />
-                          // </div>
                           <embed
                             src={rec.file}
                             width="100%"

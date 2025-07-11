@@ -1,21 +1,212 @@
-import { InputLabel, MenuItem, Select, FormControl } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import NavBar from "../../../components/doctorNavbar/NavBar";
-import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import {
   Button,
   Dialog,
-  DialogActions,
+  CircularProgress,
   DialogContent,
   DialogTitle,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
 } from "@mui/material";
-import { Card, Col, Container, Row } from "react-bootstrap";
-import PersonIcon from "@mui/icons-material/Person";
+import { jwtDecode } from "jwt-decode";
+import { toast } from "react-toastify";
+import NoData from "../../../static/no_data.png";
+
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import { blue } from "@mui/material/colors";
 import CloseIcon from "@mui/icons-material/Close";
+import { Card, Col, Container, Row, Table } from "react-bootstrap";
+import PersonIcon from "@mui/icons-material/Person";
+import { useNavigate } from "react-router-dom";
 
-const MedicalRecords = () => {
-  const [open, setOpen] = useState(false); // State to track modal visibility
+const PatientsList = () => {
+  const [open, setOpen] = useState(false);
+  const token = localStorage.getItem("token");
+  const navigate = useNavigate();
+  const [patients, setPatients] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedPatient, setSelectedPatient] = useState({});
+  const [searchBy, setSearchBy] = useState("");
+  const [value, setValue] = useState("");
+  const [searching, setSearching] = useState(false);
+  const [error, setError] = useState("");
+  const [medicalRecords, setMedicalRecords] = useState([]);
 
+  const isTokenExpired = (token) => {
+    if (!token) return true;
+    try {
+      const decoded = JSON.parse(atob(token.split(".")[1]));
+      return decoded.exp * 1000 < Date.now();
+    } catch (error) {
+      return true; // Invalid token format
+    }
+  };
+  useEffect(() => {
+    if (!token || isTokenExpired(token)) {
+      toast.error("Session expired. Please log in again.");
+      navigate("/login");
+    }
+  }, [token, navigate]);
+  useEffect(() => {
+    const fetchPatients = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(
+          "https://doc-link-backend.onrender.com/patients",
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+              Role: "doctor",
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(
+            `Failed to fetch patients. Status: ${response.status}`
+          );
+        }
+
+        const data = await response.json();
+        setPatients(data);
+      } catch (error) {
+        toast.error(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPatients();
+  }, [token]);
+  const formatReadableDate = (timestamp) => {
+    return new Date(timestamp).toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+    });
+  };
+  const handleSearch = async () => {
+    if (!searchBy || !value) {
+      setError("Please select a search criteria and enter a value.");
+      return;
+    }
+    setSearching(true);
+    try {
+      setError("");
+      const response = await fetch(
+        `https://doc-link-backend.onrender.com/search-patients?searchBy=${searchBy}&value=${value}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+            Role: "doctor",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(
+          `Failed to search patients. Status: ${response.status}`
+        );
+      }
+
+      const data = await response.json();
+      setPatients(data);
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setSearching(false);
+    }
+  };
+  if (loading) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+          flexDirection: "column",
+          color: "#82EAAC",
+        }}
+      >
+        <CircularProgress
+          size={80}
+          thickness={3}
+          sx={{
+            color: "#F49696",
+          }}
+        />
+        <h2 style={{ marginTop: "20px", color: "#82EAAC" }}>Loading...</h2>
+      </div>
+    );
+  }
+  const handleSort = async (sortBy) => {
+    try {
+      const response = await fetch(
+        `https://doc-link-backend.onrender.com/sort-patients?sortBy=${sortBy}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+            Role: "doctor",
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error(`Failed to sort patients. Status: ${response.status}`);
+      }
+      const data = await response.json();
+      setPatients(data);
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+  const handleMedicalRecordDetails = async (patientId) => {
+    try {
+      const response = await fetch(
+        `https://doc-link-backend.onrender.com/medical-records-for-doctor/${patientId}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+            Role: "doctor",
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error(
+          `Failed to fetch medical records. Status: ${response.status}`
+        );
+      }
+      const data = await response.json();
+      setMedicalRecords(data);
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+  function formattedDate(isoDate) {
+    const date = new Date(isoDate);
+    return date
+      .toLocaleString("en-GB", {
+        // timeZone: "Asia/Kolkata", // Optional: use for IST
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      })
+      .replace(",", "");
+  }
   return (
     <div>
       <NavBar />
@@ -25,7 +216,7 @@ const MedicalRecords = () => {
         Manage your appointments, patients, and medical records with ease.
       </p>
 
-      <div className="search-area" style={{ marginTop: "50px" }}>
+      <div className="search-area" style={{ marginTop: "90px" }}>
         <form>
           <div
             className="searchArea"
@@ -46,13 +237,13 @@ const MedicalRecords = () => {
                 // value={formData.specialization}
                 label="Search By"
                 name="search-by"
-                // onChange={handleChange}
+                onChange={(e) => setSearchBy(e.target.value)}
               >
                 <MenuItem value={"name"} selected>
                   Name
                 </MenuItem>
-                <MenuItem value={"id"}>ID</MenuItem>
-                <MenuItem value={"contact-no"}>Contact No.</MenuItem>
+                <MenuItem value={"id"}>Patient ID</MenuItem>
+                <MenuItem value={"phone"}>Contact No.</MenuItem>
               </Select>
             </FormControl>
             <div
@@ -73,7 +264,13 @@ const MedicalRecords = () => {
               <input
                 className="text"
                 type="text"
-                placeholder="Enter ID "
+                placeholder={
+                  searchBy === "name"
+                    ? "Enter Patient Name"
+                    : searchBy === "id"
+                    ? "Enter Patient ID"
+                    : "Enter Contact No."
+                }
                 style={{
                   width: "75%",
                   border: "none",
@@ -91,19 +288,37 @@ const MedicalRecords = () => {
                   boxShadow: "0px 0px 5px rgba(0, 0, 0, 0)",
                   textAlign: "center",
                 }}
+                onChange={(e) => setValue(e.target.value)}
               />
-              <ArrowForwardIcon
-                className="input"
-                style={{
-                  color: "#82EAAC",
-                  fontSize: "30px",
-                  float: "right",
-                  margin: "2px",
-                  cursor: "pointer",
-                  // backgroundColor: "rgba(0, 0, 0, 0.3)",
-                  borderRadius: "5px",
-                }}
-              />
+              {searching ? (
+                <CircularProgress
+                  size={24}
+                  className="input"
+                  style={{
+                    color: "#82EAAC",
+                    fontSize: "30px",
+                    float: "right",
+                    margin: "2px",
+                    cursor: "pointer",
+                    // backgroundColor: "rgba(0, 0, 0, 0.3)",
+                    borderRadius: "5px",
+                  }}
+                />
+              ) : (
+                <ArrowForwardIcon
+                  className="input"
+                  style={{
+                    color: "#82EAAC",
+                    fontSize: "30px",
+                    float: "right",
+                    margin: "2px",
+                    cursor: "pointer",
+                    // backgroundColor: "rgba(0, 0, 0, 0.3)",
+                    borderRadius: "5px",
+                  }}
+                  onClick={handleSearch}
+                />
+              )}
             </div>
             <FormControl
               sx={{ width: "200px", marginTop: "-20px", marginLeft: "20px" }}
@@ -118,253 +333,254 @@ const MedicalRecords = () => {
                 // value={formData.specialization}
                 label="Sort By"
                 name="sort-by"
-                // onChange={handleChange}
+                onChange={(e) => {
+                  handleSort(e.target.value);
+                }}
               >
-                <MenuItem value={"diagnosis"} selected>
-                  Diagnosis
+                <MenuItem value={"name"} selected>
+                  Name
                 </MenuItem>
-                <MenuItem value={"test-type"}>Test type</MenuItem>
-                <MenuItem value={"last-visit"}> Last visit</MenuItem>
-                <MenuItem value={"record-date"}> Record date</MenuItem>
+                <MenuItem value={"last-visit"}>Last Visit</MenuItem>
+                <MenuItem value={"appointment-date"}>Appointment Date</MenuItem>
               </Select>
             </FormControl>
           </div>
         </form>
+        <p style={{ color: "red", textAlign: "center", marginTop: "10px" }}>
+          {error}
+        </p>
         <hr className="text" />
-      </div>
-      <Container className="mt-4">
-        <Row>
-          <Col md={6} xs={12} className="mb-3">
-            <Card>
-              <Card.Body>
-                <Card.Title>
-                  <PersonIcon className="text" />{" "}
-                  <span style={{ marginLeft: "20px" }} className="text">
-                    Patient Name (Age), Male
-                  </span>
-                  <span style={{ float: "right" }} className="text">
-                    ID: 123
-                  </span>
-                </Card.Title>
-                <Card.Text className="text">
-                  Contact Information
-                  <p>Last Visit</p>
-                  <p>Medical Condition (if available)</p>
-                  <p>Appointment History (upcoming & past visits)</p>
-                </Card.Text>
-                <Button
-                  style={{
-                    width: "100%",
-                    color: "#030E82",
-                    backgroundColor: "#82EAAC",
-                    fontWeight: "bold",
-                  }}
-                  onClick={() => setOpen(true)}
-                >
-                  Medical Record Details
-                  <ArrowForwardIcon style={{ color: "#F49696" }} />
-                </Button>
-              </Card.Body>
-            </Card>
-          </Col>
 
-          <Col md={6} xs={12} className="mb-3">
-            <Card>
-              <Card.Body>
-                <Card.Title>
-                  <PersonIcon className="text" />{" "}
-                  <span style={{ marginLeft: "20px" }} className="text">
-                    Patient Name (Age), Male
-                  </span>
-                  <span style={{ float: "right" }} className="text">
-                    ID: 123
-                  </span>
-                </Card.Title>
-                <Card.Text className="text">
-                  Contact Information
-                  <p>Last Visit</p>
-                  <p>Medical Condition (if available)</p>
-                  <p>Appointment History (upcoming & past visits)</p>
-                </Card.Text>
-                <Button
-                  style={{
-                    width: "100%",
-                    color: "#030E82",
-                    backgroundColor: "#82EAAC",
-                    fontWeight: "bold",
-                  }}
-                  onClick={() => setOpen(true)}
-                >
-                  Medical Record Details
-                  <ArrowForwardIcon style={{ color: "#F49696" }} />
-                </Button>
-              </Card.Body>
-            </Card>
-          </Col>
-
-          <Col md={6} xs={12} className="mb-3">
-            <Card>
-              <Card.Body>
-                <Card.Title>
-                  <PersonIcon className="text" />{" "}
-                  <span style={{ marginLeft: "20px" }} className="text">
-                    Patient Name (Age), Male
-                  </span>
-                  <span style={{ float: "right" }} className="text">
-                    ID: 123
-                  </span>
-                </Card.Title>
-                <Card.Text className="text">
-                  Contact Information
-                  <p>Last Visit</p>
-                  <p>Medical Condition (if available)</p>
-                  <p>Appointment History (upcoming & past visits)</p>
-                </Card.Text>
-                <Button
-                  style={{
-                    width: "100%",
-                    color: "#030E82",
-                    backgroundColor: "#82EAAC",
-                    fontWeight: "bold",
-                  }}
-                  onClick={() => setOpen(true)}
-                >
-                  Medical Record Details
-                  <ArrowForwardIcon style={{ color: "#F49696" }} />
-                </Button>
-              </Card.Body>
-            </Card>
-          </Col>
-
-          <Col md={6} xs={12} className="mb-3">
-            <Card>
-              <Card.Body>
-                <Card.Title>
-                  <PersonIcon className="text" />{" "}
-                  <span style={{ marginLeft: "20px" }} className="text">
-                    Patient Name (Age), Male
-                  </span>
-                  <span style={{ float: "right" }} className="text">
-                    ID: 123
-                  </span>
-                </Card.Title>
-                <Card.Text className="text">
-                  Contact Information
-                  <p>Last Visit</p>
-                  <p>Medical Condition (if available)</p>
-                  <p>Appointment History (upcoming & past visits)</p>
-                </Card.Text>
-                <Button
-                  style={{
-                    width: "100%",
-                    color: "#030E82",
-                    backgroundColor: "#82EAAC",
-                    fontWeight: "bold",
-                  }}
-                  onClick={() => setOpen(true)}
-                >
-                  Medical Record Details
-                  <ArrowForwardIcon style={{ color: "#F49696" }} />
-                </Button>
-              </Card.Body>
-            </Card>
-          </Col>
-        </Row>
-      </Container>
-      {/* Modal Component */}
-      <Dialog open={open} onClose={() => setOpen(false)} fullWidth>
-        <DialogTitle>
-          <CloseIcon
-            style={{ float: "right", cursor: "pointer" }}
-            onClick={() => setOpen(false)}
-            color="secondary"
-          />
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              width: "100%",
-              padding: "20px",
-              borderRadius: "10px",
-              // boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
-              backgroundColor: "#fff",
-            }}
-          >
-            {/* Left: Profile Picture */}
-            <PersonIcon
-              alt="Profile"
-              style={{
-                width: "20%",
-                height: "100px",
-                borderRadius: "50%",
-                objectFit: "cover",
-              }}
+        {/* ------------------------------------------------------------------------------------------------------------------------- */}
+        <Container className="mt-4" style={{ marginBottom: "40px" }}>
+          <Row>
+            {patients.length === 0 ? (
+              <div style={{ textAlign: "center", marginBottom: "80px" }}>
+                <img
+                  src={NoData}
+                  alt="No Data"
+                  style={{ width: "300px", display: "block", margin: "auto" }}
+                />
+                <p className="text" style={{ marginTop: "20px" }}>
+                  Oops, No patients found.!
+                </p>
+              </div>
+            ) : (
+              patients.map((patient) => (
+                <Col md={6} xs={12} className="mb-3">
+                  <Card>
+                    <Card.Body>
+                      <Card.Title>
+                        <PersonIcon className="text" />{" "}
+                        <span className="text" style={{ marginLeft: "20px" }}>
+                          {patient.patientId.firstName}
+                          {""}
+                          {patient.patientId.lastName} {patient.patientId.age}
+                        </span>
+                        <span className="text" style={{ float: "right" }}>
+                          {patient.patientId._id}
+                        </span>
+                      </Card.Title>
+                      <Card.Text className="text">
+                        Mobile:{" "}
+                        <span style={{ fontWeight: "bold" }}>
+                          {patient.patientId.phone}
+                        </span>
+                        <p>
+                          Last Visit:{" "}
+                          <span style={{ fontWeight: "bold" }}>
+                            {formatReadableDate(patient.scheduledDate)}
+                          </span>
+                        </p>
+                        <p>
+                          Reason for Last Visit:{" "}
+                          <span style={{ fontWeight: "bold" }}>
+                            {patient.reason}
+                          </span>
+                        </p>
+                        <p>
+                          Symptoms:{" "}
+                          <span style={{ fontWeight: "bold" }}>
+                            {patient.symptoms}
+                          </span>
+                        </p>
+                      </Card.Text>
+                      <Button
+                        style={{
+                          width: "100%",
+                          color: "#030E82",
+                          backgroundColor: "#82EAAC",
+                          fontWeight: "bold",
+                        }}
+                        onClick={() => {
+                          setOpen(true);
+                          setSelectedPatient({
+                            scheduledDate: patient.scheduledDate,
+                            scheduledTime: patient.scheduledTime,
+                            reason: patient.reason,
+                            symptoms: patient.symptoms,
+                            appointmentId: patient._id,
+                            phone: patient.patientId.phone,
+                            email: patient.patientId.email,
+                            age: patient.patientId.age,
+                            gender: patient.patientId.gender,
+                            state: patient.patientId.state,
+                            district: patient.patientId.district,
+                            createdAt: patient.createdAt,
+                            firstName: patient.patientId.firstName,
+                            lastName: patient.patientId.lastName,
+                            id: patient.patientId._id,
+                            status: patient.status,
+                          });
+                          handleMedicalRecordDetails(patient.patientId._id);
+                        }}
+                      >
+                        Medical Record Details
+                        <ArrowForwardIcon style={{ color: "#F49696" }} />
+                      </Button>
+                    </Card.Body>
+                  </Card>
+                </Col>
+              ))
+            )}
+          </Row>
+        </Container>
+        {/* Modal Component */}
+        <Dialog open={open} onClose={() => setOpen(false)} fullWidth>
+          <DialogTitle>
+            <CloseIcon
+              style={{ float: "right", cursor: "pointer" }}
+              onClick={() => setOpen(false)}
+              color="secondary"
             />
-
-            {/* Right: Name & Contacts */}
-            <div style={{ marginLeft: "20px", width: "80%" }}>
-              <h3 style={{ margin: "0", color: "#333" }}>
-                Patient Name (Age), &nbsp; Male
-              </h3>
-              <p style={{ margin: "5px 0", fontSize: "1rem" }}>ID</p>
-              <p style={{ margin: "5px 0", fontSize: "1rem" }}>
-                📞 +91 98765 43210
-              </p>
-              <p style={{ margin: "5px 0", fontSize: "1rem" }}>
-                ✉️ johndoe@email.com
-              </p>
-              <p style={{ margin: "5px 0", fontSize: "1rem" }}>
-                Medical History
-              </p>
-            </div>
-          </div>
-        </DialogTitle>
-        <DialogContent>
-          <p> Diagnosis History (Previous and ongoing conditions)</p>
-
-          <div style={{ marginTop: "20px" }}>
-            Prescriptions (Medications prescribed by the doctor)
-          </div>
-          <div style={{ marginTop: "20px" }}>
-            Lab Reports & Test Results (Blood tests, X-rays, MRI, ECG, etc.)
-          </div>
-          <div style={{ marginTop: "20px" }}>
-            Surgical & Treatment History (Past surgeries and procedures){" "}
-          </div>
-          <div style={{ marginTop: "20px" }}>
-            Doctor’s Notes & Observations (Doctors can add/update notes)
-          </div>
-          <p
-            style={{
-              float: "right",
-              color: "blue",
-              cursor: "pointer",
-              textDecoration: "underline",
-            }}
-          >
-            Download / Print
-          </p>
-        </DialogContent>
-        <DialogActions>
-          <div style={{ width: "100%" }}>
-            <Button
+            <div
               style={{
+                display: "flex",
+                alignItems: "center",
                 width: "100%",
-                color: "#030E82",
-                backgroundColor: "#82EAAC",
-                fontWeight: "bold",
-              }}
-              onClick={() => {
-                alert(" join clicked");
+                padding: "20px",
+                borderRadius: "10px",
+                // boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+                backgroundColor: "#fff",
               }}
             >
-              Add New Record{" "}
-            </Button>
-          </div>
-        </DialogActions>
-      </Dialog>
+              {/* Left: Profile Picture */}
+              <PersonIcon
+                alt="Profile"
+                style={{
+                  width: "20%",
+                  height: "100px",
+                  borderRadius: "50%",
+                  objectFit: "cover",
+                }}
+              />
+
+              {/* Right: Name & Contacts */}
+              <div style={{ marginLeft: "20px", width: "80%" }}>
+                <h3 style={{ margin: "0", color: "#333" }}>
+                  {selectedPatient.firstName} {selectedPatient.lastName} (
+                  {selectedPatient.age}), &nbsp; {selectedPatient.gender}
+                </h3>
+
+                <p style={{ margin: "5px 0", fontSize: "1rem" }}>
+                  📞 {selectedPatient.phone} &nbsp;{" "}
+                </p>
+                <p style={{ margin: "5px 0", fontSize: "1rem" }}>
+                  ✉️ {selectedPatient.email}
+                </p>
+                <p style={{ margin: "5px 0", fontSize: "1rem" }}>
+                  📍 {selectedPatient.state}, {selectedPatient.district}
+                </p>
+                <p style={{ margin: "5px 0", fontSize: "1rem" }}>
+                  <strong>Patient ID:</strong> {selectedPatient.id}
+                </p>
+              </div>
+            </div>
+          </DialogTitle>
+          <DialogContent>
+            <div>
+              <Row>
+                {medicalRecords.map((rec) => (
+                  <Col md={6} xs={12} className="mb-5">
+                    <Card key={rec._id}>
+                      <Card.Body>
+                        <div className="text">
+                          <Card.Title>
+                            {rec.file.endsWith(".pdf") ? (
+                              <embed
+                                src={rec.file}
+                                width="100%"
+                                height="100px"
+                                type="application/pdf"
+                                onClick={() => window.open(rec.file, "_blank")}
+                              />
+                            ) : (
+                              <img
+                                src={rec.file}
+                                alt={rec.fileName}
+                                style={{
+                                  width: "100%",
+                                  height: "100px",
+                                  objectFit: "cover",
+                                }}
+                                onClick={() => window.open(rec.file, "_blank")}
+                              />
+                            )}
+                          </Card.Title>
+                          <Card.Text>
+                            <Table>
+                              <tr>
+                                <td>Name:</td>
+                                <td>{rec.fileName}</td>
+                              </tr>
+                              <tr>
+                                <td>Category:</td>
+                                <td>{rec.category}</td>
+                              </tr>
+                              <tr>
+                                <td>Remarks:</td>
+                                <td> {rec.remarks ? rec.remarks : "-"}</td>
+                              </tr>
+                              <tr>
+                                <td>Created At:</td>
+                                <td> {formattedDate(rec.createdAt)}</td>
+                              </tr>
+                            </Table>
+                          </Card.Text>
+                        </div>
+                        <Button
+                          variant="primary"
+                          size="sm"
+                          onClick={() => window.open(rec.file, "_blank")}
+                        >
+                          View
+                        </Button>{" "}
+                        <Button
+                          variant="success"
+                          size="sm"
+                          // onClick={() => downloadFile(rec.file)}
+                        >
+                          Download
+                        </Button>
+                        <Button
+                          variant="danger"
+                          size="sm"
+                          // onClick={() => deleteFile(rec._id)}
+                          style={{ marginRight: "10px", float: "right" }}
+                        >
+                          Delete
+                        </Button>
+                      </Card.Body>
+                    </Card>
+                  </Col>
+                ))}
+              </Row>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </div>
     </div>
   );
 };
 
-export default MedicalRecords;
+export default PatientsList;
