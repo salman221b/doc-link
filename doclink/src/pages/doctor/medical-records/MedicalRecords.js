@@ -414,6 +414,7 @@ const PatientsList = () => {
                           fontWeight: "bold",
                         }}
                         onClick={() => {
+                          handleMedicalRecordDetails(patient.patientId._id);
                           setOpen(true);
                           setSelectedPatient({
                             scheduledDate: patient.scheduledDate,
@@ -433,7 +434,6 @@ const PatientsList = () => {
                             id: patient.patientId._id,
                             status: patient.status,
                           });
-                          handleMedicalRecordDetails(patient.patientId._id);
                         }}
                       >
                         Medical Record Details
