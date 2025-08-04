@@ -18,7 +18,7 @@ const storage = new CloudinaryStorage({
 const upload = multer({ storage });
 router.post("/medical-records", upload.single("file"), async (req, res) => {
   try {
-    const { fileName, category, remarks, patientId } = req.body;
+    const { fileName, category, remarks, patientId, doctorId } = req.body;
 
     if (!req.file) {
       return res.status(400).json({ message: "File is required" });
@@ -26,6 +26,7 @@ router.post("/medical-records", upload.single("file"), async (req, res) => {
 
     const newRecord = new MedicalRecords({
       patientId,
+      doctorId,
       file: req.file.path, // Cloudinary URL
       fileName,
       category,

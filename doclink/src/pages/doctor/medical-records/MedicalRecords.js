@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import NavBar from "../../../components/doctorNavbar/NavBar";
 import {
-  Button,
   Dialog,
   CircularProgress,
   DialogContent,
@@ -11,6 +10,7 @@ import {
   MenuItem,
   Select,
 } from "@mui/material";
+import { Button } from "react-bootstrap";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "react-toastify";
 import NoData from "../../../static/no_data.png";
@@ -21,7 +21,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { Card, Col, Container, Row, Table } from "react-bootstrap";
 import PersonIcon from "@mui/icons-material/Person";
 import { useNavigate } from "react-router-dom";
-
+import UploadButtonDoctor from "../../../components/uploadButton/UploadButtonDoctor";
 const PatientsList = () => {
   const [open, setOpen] = useState(false);
   const token = localStorage.getItem("token");
@@ -207,6 +207,29 @@ const PatientsList = () => {
         hour12: true,
       })
       .replace(",", "");
+  }
+  function downloadFile(url) {
+    fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/octet-stream",
+      },
+    })
+      .then((response) => response.blob())
+      .then((blob) => {
+        const blobUrl = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = blobUrl;
+        // Extract filename from the URL
+        const filename = url.substring(url.lastIndexOf("/") + 1);
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        // Cleanup blob
+        window.URL.revokeObjectURL(blobUrl);
+      })
+      .catch((err) => console.error("Download failed:", err));
   }
   return (
     <div>
@@ -439,6 +462,9 @@ const PatientsList = () => {
                         Medical Record Details
                         <ArrowForwardIcon style={{ color: "#F49696" }} />
                       </Button>
+                      <div style={{ marginTop: "10px", textAlign: "center" }}>
+                        <UploadButtonDoctor patientId={selectedPatient.id} />
+                      </div>
                     </Card.Body>
                   </Card>
                 </Col>
@@ -500,82 +526,72 @@ const PatientsList = () => {
           </DialogTitle>
           <DialogContent>
             <div>
-              <Row>
-                {medicalRecords.map((rec) => (
-                  <Col md={6} xs={12} className="mb-5">
-                    <Card key={rec._id}>
-                      <Card.Body>
-                        <div className="text">
-                          <Card.Title>
-                            {rec.file.endsWith(".pdf") ? (
-                              <embed
-                                src={rec.file}
-                                width="100%"
-                                height="100px"
-                                type="application/pdf"
-                                onClick={() => window.open(rec.file, "_blank")}
-                              />
-                            ) : (
-                              <img
-                                src={rec.file}
-                                alt={rec.fileName}
-                                style={{
-                                  width: "100%",
-                                  height: "100px",
-                                  objectFit: "cover",
-                                }}
-                                onClick={() => window.open(rec.file, "_blank")}
-                              />
-                            )}
-                          </Card.Title>
-                          <Card.Text>
-                            <Table>
-                              <tr>
-                                <td>Name:</td>
-                                <td>{rec.fileName}</td>
-                              </tr>
-                              <tr>
-                                <td>Category:</td>
-                                <td>{rec.category}</td>
-                              </tr>
-                              <tr>
-                                <td>Remarks:</td>
-                                <td> {rec.remarks ? rec.remarks : "-"}</td>
-                              </tr>
-                              <tr>
-                                <td>Created At:</td>
-                                <td> {formattedDate(rec.createdAt)}</td>
-                              </tr>
-                            </Table>
-                          </Card.Text>
-                        </div>
-                        <Button
-                          variant="primary"
-                          size="sm"
-                          onClick={() => window.open(rec.file, "_blank")}
-                        >
-                          View
-                        </Button>{" "}
-                        <Button
-                          variant="success"
-                          size="sm"
-                          // onClick={() => downloadFile(rec.file)}
-                        >
-                          Download
-                        </Button>
-                        <Button
-                          variant="danger"
-                          size="sm"
-                          // onClick={() => deleteFile(rec._id)}
-                          style={{ marginRight: "10px", float: "right" }}
-                        >
-                          Delete
-                        </Button>
-                      </Card.Body>
-                    </Card>
-                  </Col>
-                ))}
-              </Row>
+              {medicalRecords.map((rec) => (
+                <Col className="mb-5">
+                  <Card key={rec._id}>
+                    <Card.Body>
+                      <div className="text">
+                        <Card.Title>
+                          {rec.file.endsWith(".pdf") ? (
+                            <embed
+                              src={rec.file}
+                              width="100%"
+                              height="100px"
+                              type="application/pdf"
+                              onClick={() => window.open(rec.file, "_blank")}
+                            />
+                          ) : (
+                            <img
+                              src={rec.file}
+                              alt={rec.fileName}
+                              style={{
+                                width: "100%",
+                                height: "100px",
+                                objectFit: "cover",
+                              }}
+                              onClick={() => window.open(rec.file, "_blank")}
+                            />
+                          )}
+                        </Card.Title>
+                        <Card.Text>
+                          <Table>
+                            <tr>
+                              <td>Name:</td>
+                              <td>{rec.fileName}</td>
+                            </tr>
+                            <tr>
+                              <td>Category:</td>
+                              <td>{rec.category}</td>
+                            </tr>
+                            <tr>
+                              <td>Remarks:</td>
+                              <td> {rec.remarks ? rec.remarks : "-"}</td>
+                            </tr>
+                            <tr>
+                              <td>Created At:</td>
+                              <td> {formattedDate(rec.createdAt)}</td>
+                            </tr>
+                          </Table>
+                        </Card.Text>
+                      </div>
+                      <Button
+                        variant="primary"
+                        size="sm"
+                        onClick={() => window.open(rec.file, "_blank")}
+                      >
+                        View
+                      </Button>{" "}
+                      <Button
+                        variant="success"
+                        size="sm"
+                        onClick={() => downloadFile(rec.file)}
+                      >
+                        Download
+                      </Button>
+                    </Card.Body>
+                  </Card>
+                </Col>
+              ))}
             </div>
           </DialogContent>
         </Dialog>

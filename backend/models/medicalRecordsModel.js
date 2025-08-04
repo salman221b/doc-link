@@ -2,6 +2,11 @@ const mongoose = require("mongoose");
 
 const medicalRecordsSchema = new mongoose.Schema({
   patientId: { type: mongoose.Schema.Types.ObjectId, ref: "Patient" },
+  doctorId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Doctor",
+    default: null,
+  },
   file: String,
   fileName: String,
   category: String,
