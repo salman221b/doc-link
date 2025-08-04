@@ -170,6 +170,7 @@ const PatientsList = () => {
     }
   };
   const handleMedicalRecordDetails = async (patientId) => {
+    console.log("Fetching medical records for patient:", patientId);
     try {
       const response = await fetch(
         `https://doc-link-backend.onrender.com/medical-records-for-doctor/${patientId}`,
@@ -190,7 +191,7 @@ const PatientsList = () => {
       const data = await response.json();
       setMedicalRecords(data);
     } catch (error) {
-      toast.error(error.message);
+      console.log(error.message);
     }
   };
   function formattedDate(isoDate) {

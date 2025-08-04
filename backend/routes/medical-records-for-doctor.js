@@ -5,9 +5,8 @@ const MedicalRecords = require("../models/medicalRecordsModel");
 
 router.get("/medical-records-for-doctor", authMiddleware, async (req, res) => {
   try {
-    const userId = req.user.id;
     const medicalRecords = await MedicalRecords.find({
-      patientId: req.query,
+      patientId: req.params.patientId,
     }).sort({ createdAt: -1 });
     res.json(medicalRecords);
   } catch (error) {
