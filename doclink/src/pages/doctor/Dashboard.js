@@ -5,8 +5,6 @@ import Carousel from "./heroSection/Carousel";
 import TipsSection from "./tipsSection.js/TipsSection";
 import ScrollToTop from "../../components/scrollToTop/ScrollToTop";
 import { jwtDecode } from "jwt-decode";
-import DoctorVideoCallModal from "../../components/videoCall/DoctorVideoCallModal";
-import CallNotification from "../../components/videoCall/DoctorCallNotification";
 import { io } from "socket.io-client";
 
 const Dashboard = () => {
@@ -68,21 +66,7 @@ const Dashboard = () => {
       <div>
         <TipsSection />
       </div>
-      <CallNotification
-        callRequest={callRequest}
-        onResponse={handleCallResponse}
-      />
 
-      <DoctorVideoCallModal
-        open={!!activeCall}
-        onClose={handleEndCall}
-        appointment={activeCall}
-        currentUser={{
-          _id: localStorage.getItem("userId"),
-          role: "doctor",
-          name: localStorage.getItem("userName") || "Doctor",
-        }}
-      />
       <ScrollToTop />
     </div>
   );

@@ -1,175 +1,69 @@
-const { v4: uuidv4 } = require("uuid");
-
 module.exports = (io) => {
-  const activeRooms = new Map();
-  const pendingCalls = new Map(); // Stores pending call requests
-  const doctorSockets = new Map(); // Maps doctor IDs to their socket IDs
+  const connectedUsers = {}; // userId: socket.id
 
   io.on("connection", (socket) => {
     console.log(`User connected: ${socket.id}`);
 
-    // Track user role and ID when they first connect
-    socket.on("register-user", ({ userId, userType }) => {
-      if (userType === "doctor") {
-        doctorSockets.set(userId, socket.id);
-      }
+    // When a user connects and registers
+    socket.on("register", ({ userId, userType }) => {
       socket.userId = userId;
       socket.userType = userType;
+      connectedUsers[userId] = socket.id;
+      socket.join(userId); // join personal room for direct communication
+      console.log(`${userType} registered with ID: ${userId}`);
     });
 
-    // Join video call room
-    socket.on("join-room", ({ roomId, userId, userType }) => {
-      // Initialize room if it doesn't exist
-      if (!activeRooms.has(roomId)) {
-        activeRooms.set(roomId, {
-          participants: [],
-          offers: {},
-          answers: {},
-          iceCandidates: {},
+    // Patient initiates call to Doctor
+    socket.on("call-request", ({ doctorId, appointmentId, patientName }) => {
+      const doctorSocketId = connectedUsers[doctorId];
+      if (doctorSocketId) {
+        io.to(doctorId).emit("call-request", {
+          appointmentId,
+          patientName,
+          fromUserId: socket.userId,
         });
-      }
-
-      const room = activeRooms.get(roomId);
-      room.participants.push({ socketId: socket.id, userId, userType });
-      socket.join(roomId);
-
-      // If doctor joins, check for pending call request
-      if (userType === "doctor") {
-        const pendingCall = pendingCalls.get(roomId);
-        if (pendingCall) {
-          socket.emit("call-request", {
-            fromUserId: pendingCall.fromUserId,
-            appointmentId: roomId,
-            patientName: pendingCall.patientName,
-          });
-        }
-      }
-
-      // Notify other participants
-      socket.to(roomId).emit("user-connected", { userId, userType });
-
-      // Send existing participants to the new user
-      const others = room.participants.filter((p) => p.userId !== userId);
-      socket.emit("existing-users", others);
-    });
-
-    // Patient initiates a call request
-    socket.on("request-call", ({ appointmentId, userId, patientName }) => {
-      pendingCalls.set(appointmentId, {
-        fromUserId: userId,
-        patientName,
-        timestamp: Date.now(),
-      });
-
-      // Notify doctor if online
-      const room = activeRooms.get(appointmentId);
-      if (room) {
-        const doctor = room.participants.find((p) => p.userType === "doctor");
-        if (doctor) {
-          io.to(doctor.socketId).emit("call-request", {
-            fromUserId: userId,
-            appointmentId,
-            patientName,
-          });
-        }
-      }
-    });
-
-    // Doctor responds to call request
-    socket.on("call-response", ({ appointmentId, response, toUserId }) => {
-      if (response === "accept") {
-        // Initialize room if not already exists
-        if (!activeRooms.has(appointmentId)) {
-          activeRooms.set(appointmentId, {
-            participants: [],
-            offers: {},
-            answers: {},
-            iceCandidates: {},
-          });
-        }
-
-        // Notify patient
-        io.to(toUserId).emit("call-accepted", { appointmentId });
+        console.log(
+          `Call request sent from patient ${socket.userId} to doctor ${doctorId}`
+        );
       } else {
-        // Notify patient call was declined
-        io.to(toUserId).emit("call-declined", { appointmentId });
-      }
-
-      // Remove pending call
-      pendingCalls.delete(appointmentId);
-    });
-
-    // WebRTC Signaling
-    socket.on("offer", ({ roomId, offer, toUserId }) => {
-      const room = activeRooms.get(roomId);
-      if (room) {
-        room.offers[toUserId] = offer;
-        socket.to(roomId).emit("offer", { offer, fromUserId: socket.userId });
+        socket.emit("doctor-unavailable");
       }
     });
 
-    socket.on("answer", ({ roomId, answer, toUserId }) => {
-      const room = activeRooms.get(roomId);
-      if (room) {
-        room.answers[toUserId] = answer;
-        socket.to(roomId).emit("answer", { answer, fromUserId: socket.userId });
-      }
+    // Doctor accepts the call
+    socket.on("call-accept", ({ patientId, appointmentId }) => {
+      io.to(patientId).emit("call-accepted", { appointmentId });
+      console.log(
+        `Doctor ${socket.userId} accepted the call with patient ${patientId}`
+      );
     });
 
-    socket.on("ice-candidate", ({ roomId, candidate, toUserId }) => {
-      socket.to(roomId).emit("ice-candidate", {
-        candidate,
-        fromUserId: socket.userId,
-      });
+    // Doctor declines the call
+    socket.on("call-decline", ({ patientId, reason }) => {
+      io.to(patientId).emit("call-declined", { reason });
+      console.log(
+        `Doctor ${socket.userId} declined the call with patient ${patientId}`
+      );
     });
 
-    // Leave room
-    socket.on("leave-room", ({ roomId, userId }) => {
-      const room = activeRooms.get(roomId);
-      if (room) {
-        room.participants = room.participants.filter(
-          (p) => p.socketId !== socket.id
-        );
-        socket.to(roomId).emit("user-disconnected", { userId });
-
-        if (room.participants.length === 0) {
-          activeRooms.delete(roomId);
-        }
-      }
+    // Join the WebRTC room
+    socket.on("join-call-room", ({ roomId, userId }) => {
+      socket.join(roomId);
+      socket.to(roomId).emit("user-joined", { userId });
+      console.log(`${userId} joined room ${roomId}`);
     });
 
-    // Cleanup on disconnect
+    // Signaling data (WebRTC)
+    socket.on("signal", ({ roomId, data, userId }) => {
+      socket.to(roomId).emit("signal", { data, userId });
+    });
+
+    // On disconnect
     socket.on("disconnect", () => {
-      // Remove from doctor tracking
-      if (socket.userType === "doctor") {
-        doctorSockets.delete(socket.userId);
+      console.log(`User disconnected: ${socket.id}`);
+      if (socket.userId) {
+        delete connectedUsers[socket.userId];
       }
-
-      // Clean up pending calls
-      for (const [appointmentId, call] of pendingCalls.entries()) {
-        if (call.fromUserId === socket.userId) {
-          pendingCalls.delete(appointmentId);
-        }
-      }
-
-      // Clean up active rooms
-      activeRooms.forEach((room, roomId) => {
-        const participant = room.participants.find(
-          (p) => p.socketId === socket.id
-        );
-        if (participant) {
-          room.participants = room.participants.filter(
-            (p) => p.socketId !== socket.id
-          );
-          io.to(roomId).emit("user-disconnected", {
-            userId: participant.userId,
-          });
-
-          if (room.participants.length === 0) {
-            activeRooms.delete(roomId);
-          }
-        }
-      });
     });
   });
 };

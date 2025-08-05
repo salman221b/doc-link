@@ -27,6 +27,7 @@ import { ThemeProvider } from "./context/ThemeContext";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import PaymentHistory from "./pages/user/payment-history/PaymentHistory";
+import SocketProvider from "./components/socket/SocketProvider";
 const App = () => {
   const [user, setUser] = useState(null);
 
@@ -44,6 +45,7 @@ const App = () => {
       <ToastContainer />
       <ThemeProvider>
         <div className="container">
+          <SocketProvider />
           <Routes>
             <Route path="/" element={user ? <Dashboard /> : <LandingPage />} />
             <Route path="/landing" element={<LandingPage />} />

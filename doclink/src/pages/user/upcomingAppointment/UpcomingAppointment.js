@@ -11,7 +11,8 @@ import NavBar from "../../../components/userNavbar/NavBar";
 import ScrollToTop from "../../../components/scrollToTop/ScrollToTop";
 import NoData from "../../../static/no_data.png";
 import RescheduleModal from "./RescheduleModal";
-import VideoCallModal from "../../../components/videoCall/PatientVideoCallModal"; // New component for video calls
+import { io } from "socket.io-client";
+const socket = io("https://doc-link-backend.onrender.com");
 
 const UpcomingAppointment = () => {
   const navigate = useNavigate();
@@ -41,6 +42,31 @@ const UpcomingAppointment = () => {
     if (!token || isTokenExpired(token)) {
       toast.error("Session expired. Please log in again.");
       navigate("/login");
+    }
+    if (token && !isTokenExpired(token)) {
+      const decoded = JSON.parse(atob(token.split(".")[1]));
+      const userId = decoded.id;
+
+      socket.emit("register", { userId, userType: "patient" });
+
+      socket.on("call-accepted", ({ appointmentId }) => {
+        toast.success("Doctor accepted the call!");
+        navigate(`/video-room/${appointmentId}`);
+      });
+
+      socket.on("call-declined", ({ reason }) => {
+        toast.error(reason || "Doctor declined the call.");
+      });
+
+      socket.on("doctor-unavailable", () => {
+        toast.warning("Doctor is currently unavailable.");
+      });
+
+      return () => {
+        socket.off("call-accepted");
+        socket.off("call-declined");
+        socket.off("doctor-unavailable");
+      };
     }
   }, [token, navigate]);
 
@@ -291,11 +317,26 @@ const UpcomingAppointment = () => {
 
   // Handle join call button click
   const handleJoinCall = (appointment) => {
-    if (!isJoinTime(appointment.scheduledDate, appointment.scheduledTime)) {
-      toast.warning("The appointment time hasn't arrived yet");
+    // if (!isJoinTime(appointment.scheduledDate, appointment.scheduledTime)) {
+    //   toast.warning("The appointment time hasn't arrived yet");
+    //   return;
+    // }
+    const decoded = JSON.parse(atob(token.split(".")[1]));
+    const userId = decoded.id;
+    const patientName = decoded.name || "Patient"; // Optional
+
+    if (appointment.status !== "Accepted") {
+      toast.warning("Appointment not yet accepted by doctor.");
       return;
     }
-    handleOpenVideoModal(appointment);
+
+    socket.emit("call-request", {
+      doctorId: appointment.doctorId._id,
+      appointmentId: appointment._id,
+      patientName,
+    });
+
+    toast.info("Calling doctor...");
   };
 
   // Show loading spinner while fetching data
@@ -468,17 +509,6 @@ const UpcomingAppointment = () => {
         handleClose={handleCloseModal}
         appointment={selectedAppointment}
         onReschedule={handleReschedule}
-      />
-
-      <VideoCallModal
-        open={showVideoModal}
-        onClose={handleCloseVideoModal}
-        appointment={selectedAppointment}
-        currentUser={{
-          _id: localStorage.getItem("userId"),
-          role: "patient",
-          name: localStorage.getItem("userName") || "Patient",
-        }}
       />
 
       <ScrollToTop />
