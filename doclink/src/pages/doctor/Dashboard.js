@@ -5,51 +5,50 @@ import Carousel from "./heroSection/Carousel";
 import TipsSection from "./tipsSection.js/TipsSection";
 import ScrollToTop from "../../components/scrollToTop/ScrollToTop";
 import { jwtDecode } from "jwt-decode";
-import { io } from "socket.io-client";
+import { initializeDoctorSocket } from "../../utils/doctorSocket"; // Your global socket handler
+import CallPopup from "../../components/callPopup/CallPopup"; // Make sure this is created
 
 const Dashboard = () => {
-  const token = localStorage.getItem("token");
-  const decoded = token ? jwtDecode(token) : null;
-
-  const doctorId = decoded?.id; // Extract user ID
-  console.log(doctorId);
   const [callRequest, setCallRequest] = useState(null);
-  const [activeCall, setActiveCall] = useState(null);
   const socketRef = useRef();
 
   useEffect(() => {
-    socketRef.current = io("https://doc-link-backend.onrender.com");
+    const token = localStorage.getItem("token");
+    if (!token) return;
 
-    // Listen for call requests
-    socketRef.current.on("call-request", ({ fromUserId, appointmentId }) => {
-      // Fetch appointment details if needed
-      setCallRequest({
-        appointmentId,
-        patientId: fromUserId,
-        patientName: "Patient Name", // You might want to fetch this
-      });
+    const decoded = jwtDecode(token);
+    const doctorId = decoded?.id;
+    if (!doctorId) return;
+
+    // Initialize socket and register doctor
+    socketRef.current = initializeDoctorSocket(doctorId, (data) => {
+      setCallRequest(data);
     });
 
     return () => {
-      socketRef.current.disconnect();
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+      }
     };
   }, []);
-  const handleCallResponse = (response) => {
-    socketRef.current.emit("call-response", {
-      appointmentId: callRequest.appointmentId,
-      response,
-      toUserId: callRequest.patientId,
-    });
 
-    if (response === "accept") {
-      setActiveCall(callRequest);
-    }
+  const handleAccept = () => {
+    socketRef.current.emit("call-accept", {
+      patientId: callRequest.fromUserId,
+      appointmentId: callRequest.appointmentId,
+    });
+    setCallRequest(null);
+    window.location.href = `/video-room/${callRequest.appointmentId}`;
+  };
+
+  const handleDecline = () => {
+    socketRef.current.emit("call-decline", {
+      patientId: callRequest.fromUserId,
+      reason: "Doctor declined the call",
+    });
     setCallRequest(null);
   };
 
-  const handleEndCall = () => {
-    setActiveCall(null);
-  };
   return (
     <div>
       <NavBar />
@@ -62,12 +61,19 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* -----------------------------Heath Tips Section--------------------------------- */}
       <div>
         <TipsSection />
       </div>
 
       <ScrollToTop />
+
+      {callRequest && (
+        <CallPopup
+          patientName={callRequest.patientName}
+          onAccept={handleAccept}
+          onDecline={handleDecline}
+        />
+      )}
     </div>
   );
 };
