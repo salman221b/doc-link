@@ -334,6 +334,7 @@ const UpcomingAppointment = () => {
       doctorId: appointment.doctorId._id,
       appointmentId: appointment._id,
       patientName,
+      fromUserId: userId,
     });
 
     toast.info("Calling doctor...");

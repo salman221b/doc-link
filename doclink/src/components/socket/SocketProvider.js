@@ -2,8 +2,10 @@ import React, { useEffect, useRef } from "react";
 import { jwtDecode } from "jwt-decode";
 import { io } from "socket.io-client";
 import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 
 const SocketProvider = () => {
+  const navigate = useNavigate();
   const token = localStorage.getItem("token");
   const decoded = token ? jwtDecode(token) : null;
   const userId = decoded?.id;
@@ -32,14 +34,17 @@ const SocketProvider = () => {
         }).then((result) => {
           const response = result.isConfirmed ? "accept" : "reject";
 
-          socketRef.current.emit("call-response", {
-            appointmentId,
-            response,
-            toUserId: fromUserId,
-          });
-
           if (response === "accept") {
-            window.location.href = `/doctor/video-call/${appointmentId}`;
+            socketRef.current.emit("call-accept", {
+              patientId: fromUserId,
+              appointmentId,
+            });
+            navigate(`/doctor/video-call/${appointmentId}`);
+          } else {
+            socketRef.current.emit("call-decline", {
+              patientId: fromUserId,
+              reason: "Doctor declined the call",
+            });
           }
         });
       }

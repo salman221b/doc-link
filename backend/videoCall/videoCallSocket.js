@@ -14,21 +14,25 @@ module.exports = (io) => {
     });
 
     // Patient initiates call to Doctor
-    socket.on("call-request", ({ doctorId, appointmentId, patientName }) => {
-      const doctorSocketId = connectedUsers[doctorId];
-      if (doctorSocketId) {
-        io.to(doctorId).emit("call-request", {
-          appointmentId,
-          patientName,
-          fromUserId: socket.userId,
-        });
-        console.log(
-          `Call request sent from patient ${socket.userId} to doctor ${doctorId}`
-        );
-      } else {
-        socket.emit("doctor-unavailable");
+
+    socket.on(
+      "call-request",
+      ({ doctorId, appointmentId, patientName, fromUserId }) => {
+        const doctorSocketId = connectedUsers[doctorId];
+        if (doctorSocketId) {
+          io.to(doctorId).emit("call-request", {
+            appointmentId,
+            patientName,
+            fromUserId,
+          });
+          console.log(
+            `Call request sent from patient ${fromUserId} to doctor ${doctorId}`
+          );
+        } else {
+          socket.emit("doctor-unavailable");
+        }
       }
-    });
+    );
 
     // Doctor accepts the call
     socket.on("call-accept", ({ patientId, appointmentId }) => {
@@ -47,10 +51,10 @@ module.exports = (io) => {
     });
 
     // Join the WebRTC room
-    socket.on("join-call-room", ({ roomId, userId }) => {
-      socket.join(roomId);
-      socket.to(roomId).emit("user-joined", { userId });
-      console.log(`${userId} joined room ${roomId}`);
+    socket.on("join-room", ({ userId, role }) => {
+      connectedUsers[userId] = socket.id;
+      socket.join(userId);
+      console.log(`${role} joined room ${userId}`);
     });
 
     // Signaling data (WebRTC)
