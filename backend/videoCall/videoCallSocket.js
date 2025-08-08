@@ -30,6 +30,7 @@ module.exports = (io) => {
           );
         } else {
           socket.emit("doctor-unavailable");
+          console.log(`Doctor ${doctorId} is unavailable`);
         }
       }
     );

@@ -39,7 +39,7 @@ const SocketProvider = () => {
               patientId: fromUserId,
               appointmentId,
             });
-            navigate(`/doctor/video-call/${appointmentId}`);
+            navigate(`/video-call/${appointmentId}`);
           } else {
             socketRef.current.emit("call-decline", {
               patientId: fromUserId,
