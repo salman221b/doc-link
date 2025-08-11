@@ -1,8 +1,10 @@
+// SocketProvider.jsx
 import React, { useEffect, useRef } from "react";
 import { jwtDecode } from "jwt-decode";
 import { io } from "socket.io-client";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const SocketProvider = () => {
   const navigate = useNavigate();
@@ -14,46 +16,91 @@ const SocketProvider = () => {
   const socketRef = useRef();
 
   useEffect(() => {
-    if (!userId || role !== "doctor") return;
+    if (!userId) return;
 
     socketRef.current = io("https://doc-link-backend.onrender.com");
 
-    socketRef.current.emit("join-room", { userId, role });
+    // 🔹 Register with correct type
+    socketRef.current.emit("register", { userId, userType: role });
 
-    socketRef.current.on(
-      "call-request",
-      ({ fromUserId, appointmentId, patientName }) => {
+    if (role === "doctor") {
+      socketRef.current.on(
+        "call-request",
+        ({ fromUserId, appointmentId, patientName }) => {
+          Swal.fire({
+            title: `Incoming Call from ${patientName}`,
+            text: "Accept the call?",
+            iconHtml: '<i class="fa fa-phone"></i>',
+            showCancelButton: true,
+            confirmButtonText: '<i class="fa fa-phone"></i> Accept',
+            cancelButtonText: '<i class="fa fa-phone-slash"></i> Reject',
+            confirmButtonColor: "#82EAAC",
+            cancelButtonColor: "#F49696",
+            allowOutsideClick: false,
+          }).then((result) => {
+            if (result.isConfirmed) {
+              socketRef.current.emit("call-accept", {
+                patientId: fromUserId,
+                appointmentId,
+              });
+              navigate(`/video-call/${appointmentId}`);
+            } else {
+              socketRef.current.emit("call-decline", {
+                patientId: fromUserId,
+                reason: "Doctor declined the call",
+              });
+            }
+          });
+        }
+      );
+    }
+
+    if (role === "patient") {
+      socketRef.current.on("call-accepted", ({ appointmentId }) => {
+        toast.success("Doctor accepted the call!");
+        navigate(`/video-room/${appointmentId}`);
+      });
+
+      socketRef.current.on("call-declined", ({ reason }) => {
+        toast.error(reason || "Doctor declined the call.");
+      });
+
+      socketRef.current.on("doctor-unavailable", () => {
+        toast.warning("Doctor is currently unavailable.");
+      });
+
+      socketRef.current.on("call-request", (data) => {
         Swal.fire({
-          title: `Incoming Call from ${patientName}`,
+          title: `Incoming Call from Doctor`,
           text: "Accept the call?",
           icon: "info",
           showCancelButton: true,
-          confirmButtonText: "Accept",
-          cancelButtonText: "Reject",
+          confirmButtonText: '<i class="fas fa-phone"></i> Accept',
+          cancelButtonText: '<i class="fas fa-phone-slash"></i> Reject',
+          confirmButtonColor: "#28a745",
+          cancelButtonColor: "#dc3545",
           allowOutsideClick: false,
         }).then((result) => {
-          const response = result.isConfirmed ? "accept" : "reject";
-
-          if (response === "accept") {
+          if (result.isConfirmed) {
             socketRef.current.emit("call-accept", {
-              patientId: fromUserId,
-              appointmentId,
+              patientId: data.fromUserId,
+              appointmentId: data.appointmentId,
             });
-            navigate(`/video-call/${appointmentId}`);
+            navigate(`/video-room/${data.appointmentId}`);
           } else {
             socketRef.current.emit("call-decline", {
-              patientId: fromUserId,
-              reason: "Doctor declined the call",
+              patientId: data.fromUserId,
+              reason: "Patient declined the call",
             });
           }
         });
-      }
-    );
+      });
+    }
 
     return () => {
       socketRef.current.disconnect();
     };
-  }, [userId, role]);
+  }, [userId, role, navigate]);
 
   return null;
 };

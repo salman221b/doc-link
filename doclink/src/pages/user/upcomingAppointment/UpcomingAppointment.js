@@ -43,31 +43,6 @@ const UpcomingAppointment = () => {
       toast.error("Session expired. Please log in again.");
       navigate("/login");
     }
-    if (token && !isTokenExpired(token)) {
-      const decoded = JSON.parse(atob(token.split(".")[1]));
-      const userId = decoded.id;
-
-      socket.emit("register", { userId, userType: "patient" });
-
-      socket.on("call-accepted", ({ appointmentId }) => {
-        toast.success("Doctor accepted the call!");
-        navigate(`/video-room/${appointmentId}`);
-      });
-
-      socket.on("call-declined", ({ reason }) => {
-        toast.error(reason || "Doctor declined the call.");
-      });
-
-      socket.on("doctor-unavailable", () => {
-        toast.warning("Doctor is currently unavailable.");
-      });
-
-      return () => {
-        socket.off("call-accepted");
-        socket.off("call-declined");
-        socket.off("doctor-unavailable");
-      };
-    }
   }, [token, navigate]);
 
   // Fetch upcoming appointments
@@ -317,16 +292,35 @@ const UpcomingAppointment = () => {
 
   // Handle join call button click
   const handleJoinCall = (appointment) => {
-    // if (!isJoinTime(appointment.scheduledDate, appointment.scheduledTime)) {
-    //   toast.warning("The appointment time hasn't arrived yet");
-    //   return;
-    // }
     const decoded = JSON.parse(atob(token.split(".")[1]));
     const userId = decoded.id;
-    const patientName = decoded.name || "Patient"; // Optional
+    const patientName = decoded.name || "Patient";
 
     if (appointment.status !== "Accepted") {
       toast.warning("Appointment not yet accepted by doctor.");
+      return;
+    }
+
+    // ✅ Step 3: Restrict joining time window
+    const dateOnly = new Date(appointment.scheduledDate)
+      .toISOString()
+      .split("T")[0];
+    const appointmentDateTime = new Date(
+      `${dateOnly}T${appointment.scheduledTime}:00`
+    );
+    const now = new Date();
+    const minutesUntilStart = (appointmentDateTime - now) / 60000;
+
+    if (minutesUntilStart > 5) {
+      // e.g., allow only 5 mins before start
+      toast.warning(
+        "You can only join the call within 5 minutes of your appointment."
+      );
+      return;
+    }
+    if (minutesUntilStart < -30) {
+      // e.g., disallow if more than 30 mins late
+      toast.warning("This appointment has already ended.");
       return;
     }
 

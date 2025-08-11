@@ -13,24 +13,25 @@ module.exports = (io) => {
       console.log(`${userType} registered with ID: ${userId}`);
     });
 
-    // Patient initiates call to Doctor
-
+    // Patient OR Doctor initiates call
     socket.on(
       "call-request",
-      ({ doctorId, appointmentId, patientName, fromUserId }) => {
-        const doctorSocketId = connectedUsers[doctorId];
-        if (doctorSocketId) {
-          io.to(doctorId).emit("call-request", {
+      ({ doctorId, patientId, appointmentId, patientName, fromUserId }) => {
+        let targetUserId = doctorId || patientId; // pick whichever is provided
+        const targetSocketId = connectedUsers[targetUserId];
+
+        if (targetSocketId) {
+          io.to(targetUserId).emit("call-request", {
             appointmentId,
             patientName,
             fromUserId,
           });
           console.log(
-            `Call request sent from patient ${fromUserId} to doctor ${doctorId}`
+            `Call request sent from ${fromUserId} to ${targetUserId}`
           );
         } else {
           socket.emit("doctor-unavailable");
-          console.log(`Doctor ${doctorId} is unavailable`);
+          console.log(`User ${targetUserId} is unavailable`);
         }
       }
     );

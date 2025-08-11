@@ -26,6 +26,9 @@ import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "react-toastify";
 import NoData from "../../../static/no_data.png";
+import { io } from "socket.io-client";
+
+const socket = io("https://doc-link-backend.onrender.com");
 
 const ManageAppointments = () => {
   const token = localStorage.getItem("token");
@@ -217,30 +220,6 @@ const ManageAppointments = () => {
     }
   };
 
-  // Open/close reschedule modal
-  const handleOpenModal = (appointment) => {
-    setSelectedAppointment(appointment);
-    setShowModal(true);
-  };
-
-  const handleCloseModal = () => {
-    setShowModal(false);
-    setSelectedAppointment(null);
-  };
-
-  // Open/close video call modal
-  const handleOpenVideoModal = (appointment) => {
-    setSelectedAppointment(appointment);
-    setShowVideoModal(true);
-  };
-
-  const handleCloseVideoModal = () => {
-    setShowVideoModal(false);
-    setSelectedAppointment(null);
-  };
-
-  // Reschedule appointment handler
-
   // Calculate time left until appointment
   const getTimeLeft = (scheduledDate, scheduledTime) => {
     const dateOnly = new Date(scheduledDate).toISOString().split("T")[0];
@@ -271,7 +250,20 @@ const ManageAppointments = () => {
       toast.warning("The appointment time hasn't arrived yet");
       return;
     }
-    handleOpenVideoModal(appointment);
+
+    const token = localStorage.getItem("token");
+    const decoded = JSON.parse(atob(token.split(".")[1]));
+    const doctorId = decoded.id;
+    const doctorName = decoded.name || "Doctor";
+
+    socket.emit("call-request", {
+      patientId: appointment.patientId._id, // <-- Send to patient
+      appointmentId: appointment._id,
+      patientName: doctorName, // this will show on patient popup
+      fromUserId: doctorId,
+    });
+
+    toast.info("Calling patient...");
   };
   const handleAccept = async (appointmentId) => {
     const result = await Swal.fire({
