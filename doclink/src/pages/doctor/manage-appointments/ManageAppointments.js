@@ -246,10 +246,10 @@ const ManageAppointments = () => {
 
   // Handle join call button click
   const handleJoinCall = (appointment) => {
-    if (!isJoinTime(appointment.scheduledDate, appointment.scheduledTime)) {
-      toast.warning("The appointment time hasn't arrived yet");
-      return;
-    }
+    // if (!isJoinTime(appointment.scheduledDate, appointment.scheduledTime)) {
+    //   toast.warning("The appointment time hasn't arrived yet");
+    //   return;
+    // }
 
     const token = localStorage.getItem("token");
     const decoded = JSON.parse(atob(token.split(".")[1]));

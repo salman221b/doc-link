@@ -23,6 +23,9 @@ const SocketProvider = () => {
     // 🔹 Register with correct type
     socketRef.current.emit("register", { userId, userType: role });
 
+    /** ---------------------------
+     * Doctor Side Listeners
+     * -------------------------- */
     if (role === "doctor") {
       socketRef.current.on(
         "call-request",
@@ -43,6 +46,7 @@ const SocketProvider = () => {
                 patientId: fromUserId,
                 appointmentId,
               });
+              // ✅ Doctor navigates immediately
               navigate(`/video-call/${appointmentId}`);
             } else {
               socketRef.current.emit("call-decline", {
@@ -53,22 +57,23 @@ const SocketProvider = () => {
           });
         }
       );
-    }
 
-    if (role === "patient") {
+      // ✅ If doctor initiated the call, this will trigger when patient accepts
       socketRef.current.on("call-accepted", ({ appointmentId }) => {
-        toast.success("Doctor accepted the call!");
-        navigate(`/video-room/${appointmentId}`);
+        toast.success("Patient accepted the call!");
+        navigate(`/video-call/${appointmentId}`);
       });
 
       socketRef.current.on("call-declined", ({ reason }) => {
-        toast.error(reason || "Doctor declined the call.");
+        Swal.fire({
+          icon: "error",
+          title: "Call Declined",
+          text: reason || "Patient declined the call.",
+        });
       });
+    }
 
-      socketRef.current.on("doctor-unavailable", () => {
-        toast.warning("Doctor is currently unavailable.");
-      });
-
+    if (role === "patient") {
       socketRef.current.on("call-request", (data) => {
         Swal.fire({
           title: `Incoming Call from Doctor`,
@@ -83,22 +88,43 @@ const SocketProvider = () => {
         }).then((result) => {
           if (result.isConfirmed) {
             socketRef.current.emit("call-accept", {
-              patientId: data.fromUserId,
+              doctorId: data.fromUserId,
               appointmentId: data.appointmentId,
             });
+            // ✅ Patient navigates immediately
             navigate(`/video-room/${data.appointmentId}`);
           } else {
             socketRef.current.emit("call-decline", {
-              patientId: data.fromUserId,
+              doctorId: data.fromUserId,
               reason: "Patient declined the call",
             });
           }
         });
       });
+
+      // ✅ If patient initiated the call, this will trigger when doctor accepts
+      socketRef.current.on("call-accepted", ({ appointmentId }) => {
+        toast.success("Doctor accepted the call!");
+        navigate(`/video-room/${appointmentId}`);
+      });
+
+      socketRef.current.on("call-declined", ({ reason }) => {
+        toast.error(reason || "Doctor declined the call.");
+      });
+
+      socketRef.current.on("doctor-unavailable", () => {
+        toast.warning("Doctor is currently unavailable.");
+      });
     }
 
     return () => {
-      socketRef.current.disconnect();
+      if (socketRef.current) {
+        socketRef.current.off("call-request");
+        socketRef.current.off("call-accepted");
+        socketRef.current.off("call-declined");
+        socketRef.current.off("doctor-unavailable");
+        socketRef.current.disconnect();
+      }
     };
   }, [userId, role, navigate]);
 

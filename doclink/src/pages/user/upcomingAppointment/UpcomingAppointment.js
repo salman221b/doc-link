@@ -282,14 +282,6 @@ const UpcomingAppointment = () => {
     return `${hours}h ${minutes}m ${seconds}s`;
   };
 
-  // Check if it's time to join the call
-  const isJoinTime = (scheduledDate, scheduledTime) => {
-    const dateOnly = new Date(scheduledDate).toISOString().split("T")[0];
-    const appointmentDateTime = new Date(`${dateOnly}T${scheduledTime}:00`);
-    const now = new Date();
-    return now >= appointmentDateTime;
-  };
-
   // Handle join call button click
   const handleJoinCall = (appointment) => {
     const decoded = JSON.parse(atob(token.split(".")[1]));
@@ -302,27 +294,27 @@ const UpcomingAppointment = () => {
     }
 
     // ✅ Step 3: Restrict joining time window
-    const dateOnly = new Date(appointment.scheduledDate)
-      .toISOString()
-      .split("T")[0];
-    const appointmentDateTime = new Date(
-      `${dateOnly}T${appointment.scheduledTime}:00`
-    );
-    const now = new Date();
-    const minutesUntilStart = (appointmentDateTime - now) / 60000;
+    // const dateOnly = new Date(appointment.scheduledDate)
+    //   .toISOString()
+    //   .split("T")[0];
+    // const appointmentDateTime = new Date(
+    //   `${dateOnly}T${appointment.scheduledTime}:00`
+    // );
+    // const now = new Date();
+    // const minutesUntilStart = (appointmentDateTime - now) / 60000;
 
-    if (minutesUntilStart > 5) {
-      // e.g., allow only 5 mins before start
-      toast.warning(
-        "You can only join the call within 5 minutes of your appointment."
-      );
-      return;
-    }
-    if (minutesUntilStart < -30) {
-      // e.g., disallow if more than 30 mins late
-      toast.warning("This appointment has already ended.");
-      return;
-    }
+    // if (minutesUntilStart > 5) {
+    //   // e.g., allow only 5 mins before start
+    //   toast.warning(
+    //     "You can only join the call within 5 minutes of your appointment."
+    //   );
+    //   return;
+    // }
+    // if (minutesUntilStart < -30) {
+    //   // e.g., disallow if more than 30 mins late
+    //   toast.warning("This appointment has already ended.");
+    //   return;
+    // }
 
     socket.emit("call-request", {
       doctorId: appointment.doctorId._id,
