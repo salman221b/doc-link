@@ -4,12 +4,11 @@ module.exports = (io) => {
   io.on("connection", (socket) => {
     console.log(`User connected: ${socket.id}`);
 
-    // When a user connects and registers
     socket.on("register", ({ userId, userType }) => {
       socket.userId = userId;
       socket.userType = userType;
       connectedUsers[userId] = socket.id;
-      socket.join(userId); // join personal room for direct communication
+      socket.join(userId);
       console.log(`${userType} registered with ID: ${userId}`);
     });
 
@@ -17,7 +16,7 @@ module.exports = (io) => {
     socket.on(
       "call-request",
       ({ doctorId, patientId, appointmentId, patientName, fromUserId }) => {
-        let targetUserId = doctorId || patientId; // pick whichever is provided
+        let targetUserId = doctorId || patientId;
         const targetSocketId = connectedUsers[targetUserId];
 
         if (targetSocketId) {
@@ -36,35 +35,38 @@ module.exports = (io) => {
       }
     );
 
-    // Doctor accepts the call
-    socket.on("call-accept", ({ patientId, appointmentId }) => {
-      io.to(patientId).emit("call-accepted", { appointmentId });
-      console.log(
-        `Doctor ${socket.userId} accepted the call with patient ${patientId}`
-      );
+    // Accept the call (works for doctor or patient)
+    socket.on("call-accept", ({ toUserId, appointmentId }) => {
+      const targetSocketId = connectedUsers[toUserId];
+      if (targetSocketId) {
+        io.to(toUserId).emit("call-accepted", { appointmentId });
+        console.log(
+          `${socket.userType} ${socket.userId} accepted the call with ${toUserId}`
+        );
+      }
     });
 
-    // Doctor declines the call
-    socket.on("call-decline", ({ patientId, reason }) => {
-      io.to(patientId).emit("call-declined", { reason });
-      console.log(
-        `Doctor ${socket.userId} declined the call with patient ${patientId}`
-      );
+    // Decline the call (works for doctor or patient)
+    socket.on("call-decline", ({ toUserId, reason }) => {
+      const targetSocketId = connectedUsers[toUserId];
+      if (targetSocketId) {
+        io.to(toUserId).emit("call-declined", { reason });
+        console.log(
+          `${socket.userType} ${socket.userId} declined the call with ${toUserId}`
+        );
+      }
     });
 
-    // Join the WebRTC room
     socket.on("join-room", ({ userId, role }) => {
       connectedUsers[userId] = socket.id;
       socket.join(userId);
       console.log(`${role} joined room ${userId}`);
     });
 
-    // Signaling data (WebRTC)
     socket.on("signal", ({ roomId, data, userId }) => {
       socket.to(roomId).emit("signal", { data, userId });
     });
 
-    // On disconnect
     socket.on("disconnect", () => {
       console.log(`User disconnected: ${socket.id}`);
       if (socket.userId) {

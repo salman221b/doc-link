@@ -43,14 +43,14 @@ const SocketProvider = () => {
           }).then((result) => {
             if (result.isConfirmed) {
               socketRef.current.emit("call-accept", {
-                patientId: fromUserId,
+                toUserId: fromUserId,
                 appointmentId,
               });
               // ✅ Doctor navigates immediately
               navigate(`/video-call/${appointmentId}`);
             } else {
               socketRef.current.emit("call-decline", {
-                patientId: fromUserId,
+                toUserId: fromUserId,
                 reason: "Doctor declined the call",
               });
             }
@@ -88,14 +88,14 @@ const SocketProvider = () => {
         }).then((result) => {
           if (result.isConfirmed) {
             socketRef.current.emit("call-accept", {
-              doctorId: data.fromUserId,
+              toUserId: data.fromUserId,
               appointmentId: data.appointmentId,
             });
             // ✅ Patient navigates immediately
             navigate(`/video-room/${data.appointmentId}`);
           } else {
             socketRef.current.emit("call-decline", {
-              doctorId: data.fromUserId,
+              toUserId: data.fromUserId,
               reason: "Patient declined the call",
             });
           }
