@@ -37,8 +37,7 @@ module.exports = (io) => {
 
     // Accept the call (works for doctor or patient)
     socket.on("call-accept", ({ toUserId, appointmentId }) => {
-      const targetSocketId = connectedUsers[toUserId];
-      if (targetSocketId) {
+      if (connectedUsers[toUserId]) {
         io.to(toUserId).emit("call-accepted", { appointmentId });
         console.log(
           `${socket.userType} ${socket.userId} accepted the call with ${toUserId}`
@@ -48,8 +47,7 @@ module.exports = (io) => {
 
     // Decline the call (works for doctor or patient)
     socket.on("call-decline", ({ toUserId, reason }) => {
-      const targetSocketId = connectedUsers[toUserId];
-      if (targetSocketId) {
+      if (connectedUsers[toUserId]) {
         io.to(toUserId).emit("call-declined", { reason });
         console.log(
           `${socket.userType} ${socket.userId} declined the call with ${toUserId}`
