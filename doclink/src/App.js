@@ -27,6 +27,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import PaymentHistory from "./pages/user/payment-history/PaymentHistory";
 import SocketProvider from "./components/socket/SocketProvider";
+import VideoCall from "./components/videoCall/VideoCall";
 const App = () => {
   const [user, setUser] = useState(null);
 
@@ -74,6 +75,7 @@ const App = () => {
               path="medical-records-doctor"
               element={<MedicalRecordsDoctor />}
             />
+            <Route path="/video-call/:id" element={<VideoCall />} />
 
             <Route path="/unauthorized" element={<NotFoundPage />} />
             <Route path="*" element={<NotFoundPage />} />

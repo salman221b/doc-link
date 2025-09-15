@@ -1,6 +1,6 @@
 import { io } from "socket.io-client";
 
-const socket = io("https://doc-link-backend.onrender.com"); // Replace with your actual backend
+const socket = io("https://doc-link-backend.onrender.com"); 
 
 export const initializeDoctorSocket = (doctorId, onCallRequest) => {
   socket.emit("register", { userId: doctorId, userType: "doctor" });

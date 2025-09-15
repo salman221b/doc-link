@@ -23,22 +23,21 @@ const SocketProvider = () => {
     // Register user
     socketRef.current.emit("register", { userId, userType: role });
 
-    // 🔹 Common "call-accepted" listener for BOTH doctor & patient
+    // 🔹 Caller feedback (works for both doctor & patient)
     socketRef.current.on("call-accepted", ({ appointmentId }) => {
       toast.success("Call accepted!");
-      navigate(`/video-call/${appointmentId}`);
+      navigate(`/video-call/${appointmentId}`, { state: { isCaller: true } });
     });
 
-    // 🔹 Common "call-declined" listener for BOTH
     socketRef.current.on("call-declined", ({ reason }) => {
       toast.error(reason || "Call was declined.");
     });
 
-    // 🔹 Common "doctor-unavailable" listener
     socketRef.current.on("doctor-unavailable", () => {
       toast.warning("User is currently unavailable.");
     });
 
+    // 🔹 When doctor receives call
     if (role === "doctor") {
       socketRef.current.on(
         "call-request",
@@ -56,13 +55,16 @@ const SocketProvider = () => {
           }).then((result) => {
             if (result.isConfirmed) {
               socketRef.current.emit("call-accept", {
-                patientId: fromUserId,
+                toUserId: fromUserId, // ✅ FIXED
                 appointmentId,
               });
-              navigate(`/video-call/${appointmentId}`); // ✅ Callee navigates
-            } else {
+              navigate(`/video-call/${appointmentId}`, {
+                state: { isCaller: false },
+              }); // ✅ callee
+            } else if (result.dismiss === Swal.DismissReason.cancel) {
+              // only emit decline if user *clicked Reject*
               socketRef.current.emit("call-decline", {
-                patientId: fromUserId,
+                toUserId: fromUserId,
                 reason: "Doctor declined the call",
               });
             }
@@ -71,6 +73,7 @@ const SocketProvider = () => {
       );
     }
 
+    // 🔹 When patient receives call
     if (role === "patient") {
       socketRef.current.on("call-request", (data) => {
         Swal.fire({
@@ -86,13 +89,16 @@ const SocketProvider = () => {
         }).then((result) => {
           if (result.isConfirmed) {
             socketRef.current.emit("call-accept", {
-              patientId: data.fromUserId,
+              toUserId: data.fromUserId, // ✅ FIXED
               appointmentId: data.appointmentId,
             });
-            navigate(`/video-call/${data.appointmentId}`); // ✅ Callee navigates
-          } else {
+            navigate(`/video-call/${data.appointmentId}`, {
+              state: { isCaller: false },
+            }); // ✅ callee
+          } else if (result.dismiss === Swal.DismissReason.cancel) {
+            // only emit decline if user *clicked Reject*
             socketRef.current.emit("call-decline", {
-              patientId: data.fromUserId,
+              toUserId: data.fromUserId, // ✅ FIXED
               reason: "Patient declined the call",
             });
           }
