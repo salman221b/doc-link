@@ -19,63 +19,76 @@ const SocketProvider = () => {
     if (!userId) return;
 
     socketRef.current = io("https://doc-link-backend.onrender.com");
+    const socket = socketRef.current;
+    console.log("SocketProvider mounted, socket id:", socket.id);
 
-    // Register user
-    socketRef.current.emit("register", { userId, userType: role });
+    // Register
+    socket.emit("register", { userId, userType: role });
+    console.log("Emitted register:", userId, role);
 
-    // 🔹 Caller feedback (works for both doctor & patient)
-    socketRef.current.on("call-accepted", ({ appointmentId }) => {
+    // When the other side accepts your call (this is for the caller)
+    socket.on("call-accepted", ({ appointmentId, fromUserId }) => {
+      console.log("call-accepted received:", appointmentId, fromUserId);
       toast.success("Call accepted!");
-      navigate(`/video-call/${appointmentId}`, { state: { isCaller: true } });
+      // Caller should navigate and mark themselves as caller.
+      navigate(`/video-call/${appointmentId}`, {
+        state: { isCaller: true, remoteUserId: fromUserId },
+      });
     });
 
-    socketRef.current.on("call-declined", ({ reason }) => {
+    // When the other side declines
+    socket.on("call-declined", ({ reason, fromUserId }) => {
+      console.log("call-declined received:", reason, fromUserId);
       toast.error(reason || "Call was declined.");
     });
 
-    socketRef.current.on("doctor-unavailable", () => {
+    socket.on("doctor-unavailable", () => {
+      console.log("doctor-unavailable event");
       toast.warning("User is currently unavailable.");
     });
 
-    // 🔹 When doctor receives call
+    // Doctor receives call-request
     if (role === "doctor") {
-      socketRef.current.on(
-        "call-request",
-        ({ fromUserId, appointmentId, patientName }) => {
-          Swal.fire({
-            title: `Incoming Call from ${patientName}`,
-            text: "Accept the call?",
-            iconHtml: '<i class="fa fa-phone"></i>',
-            showCancelButton: true,
-            confirmButtonText: '<i class="fa fa-phone"></i> Accept',
-            cancelButtonText: '<i class="fa fa-phone-slash"></i> Reject',
-            confirmButtonColor: "#82EAAC",
-            cancelButtonColor: "#F49696",
-            allowOutsideClick: false,
-          }).then((result) => {
-            if (result.isConfirmed) {
-              socketRef.current.emit("call-accept", {
-                toUserId: fromUserId, // ✅ FIXED
-                appointmentId,
-              });
-              navigate(`/video-call/${appointmentId}`, {
-                state: { isCaller: false },
-              }); // ✅ callee
-            } else if (result.dismiss === Swal.DismissReason.cancel) {
-              // only emit decline if user *clicked Reject*
-              socketRef.current.emit("call-decline", {
-                toUserId: fromUserId,
-                reason: "Doctor declined the call",
-              });
-            }
-          });
-        }
-      );
+      socket.on("call-request", ({ fromUserId, appointmentId, patientName }) => {
+        console.log("Doctor received call-request:", { fromUserId, appointmentId, patientName });
+        Swal.fire({
+          title: `Incoming Call from ${patientName}`,
+          text: "Accept the call?",
+          iconHtml: '<i class="fa fa-phone"></i>',
+          showCancelButton: true,
+          confirmButtonText: '<i class="fa fa-phone"></i> Accept',
+          cancelButtonText: '<i class="fa fa-phone-slash"></i> Reject',
+          confirmButtonColor: "#82EAAC",
+          cancelButtonColor: "#F49696",
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+        }).then((result) => {
+          console.log("Swal result (doctor):", result);
+          if (result.isConfirmed) {
+            socket.emit("call-accept", {
+              toUserId: fromUserId,
+              appointmentId,
+            });
+            navigate(`/video-call/${appointmentId}`, {
+              state: { isCaller: false, remoteUserId: fromUserId },
+            });
+          } else if (result.dismiss === Swal.DismissReason.cancel) {
+            socket.emit("call-decline", {
+              toUserId: fromUserId,
+              reason: "Doctor declined the call",
+            });
+          } else {
+            // other dismiss reasons (backdrop, esc, timer) -> do NOTHING
+            console.log("Doctor dismissed popup without explicit reject:", result.dismiss);
+          }
+        });
+      });
     }
 
-    // 🔹 When patient receives call
+    // Patient receives call-request
     if (role === "patient") {
-      socketRef.current.on("call-request", (data) => {
+      socket.on("call-request", (data) => {
+        console.log("Patient received call-request:", data);
         Swal.fire({
           title: `Incoming Call from Doctor`,
           text: "Accept the call?",
@@ -86,28 +99,32 @@ const SocketProvider = () => {
           confirmButtonColor: "#28a745",
           cancelButtonColor: "#dc3545",
           allowOutsideClick: false,
+          allowEscapeKey: false,
         }).then((result) => {
+          console.log("Swal result (patient):", result);
           if (result.isConfirmed) {
-            socketRef.current.emit("call-accept", {
-              toUserId: data.fromUserId, // ✅ FIXED
+            socket.emit("call-accept", {
+              toUserId: data.fromUserId,
               appointmentId: data.appointmentId,
             });
             navigate(`/video-call/${data.appointmentId}`, {
-              state: { isCaller: false },
-            }); // ✅ callee
+              state: { isCaller: false, remoteUserId: data.fromUserId },
+            });
           } else if (result.dismiss === Swal.DismissReason.cancel) {
-            // only emit decline if user *clicked Reject*
-            socketRef.current.emit("call-decline", {
-              toUserId: data.fromUserId, // ✅ FIXED
+            socket.emit("call-decline", {
+              toUserId: data.fromUserId,
               reason: "Patient declined the call",
             });
+          } else {
+            console.log("Patient dismissed popup without explicit reject:", result.dismiss);
           }
         });
       });
     }
 
     return () => {
-      socketRef.current.disconnect();
+      console.log("SocketProvider unmount, disconnecting socket");
+      socket.disconnect();
     };
   }, [userId, role, navigate]);
 

@@ -1,33 +1,37 @@
+// videoCallSocket.js
 module.exports = (io) => {
-  const connectedUsers = {}; // userId: socket.id
+  const connectedUsers = {}; // userId -> socket.id
 
   io.on("connection", (socket) => {
     console.log(`User connected: ${socket.id}`);
 
+    // Register user
     socket.on("register", ({ userId, userType }) => {
       socket.userId = userId;
       socket.userType = userType;
       connectedUsers[userId] = socket.id;
       socket.join(userId);
-      console.log(`${userType} registered with ID: ${userId}`);
+      console.log(`${userType} registered with ID: ${userId} -> socket ${socket.id}`);
     });
 
     // Patient OR Doctor initiates call
     socket.on(
       "call-request",
       ({ doctorId, patientId, appointmentId, patientName, fromUserId }) => {
-        let targetUserId = doctorId || patientId;
+        const targetUserId = doctorId || patientId;
         const targetSocketId = connectedUsers[targetUserId];
 
+        console.log(
+          `call-request: from=${fromUserId} toUser=${targetUserId} appointment=${appointmentId}`
+        );
+
         if (targetSocketId) {
-          io.to(targetUserId).emit("call-request", {
+          io.to(targetSocketId).emit("call-request", {
             appointmentId,
             patientName,
             fromUserId,
           });
-          console.log(
-            `Call request sent from ${fromUserId} to ${targetUserId}`
-          );
+          console.log(`Call request forwarded to socket ${targetSocketId}`);
         } else {
           socket.emit("doctor-unavailable");
           console.log(`User ${targetUserId} is unavailable`);
@@ -35,41 +39,65 @@ module.exports = (io) => {
       }
     );
 
-    // Accept the call (works for doctor or patient)
+    // Accept the call (doctor or patient)
     socket.on("call-accept", ({ toUserId, appointmentId }) => {
-      if (connectedUsers[toUserId]) {
-        io.to(toUserId).emit("call-accepted", { appointmentId });
-        console.log(
-          `${socket.userType} ${socket.userId} accepted the call with ${toUserId}`
-        );
+      const targetSocketId = connectedUsers[toUserId];
+      console.log(`call-accept: by=${socket.userId} -> to=${toUserId} appointment=${appointmentId}`);
+      if (targetSocketId) {
+        // include fromUserId so caller knows who accepted
+        io.to(targetSocketId).emit("call-accepted", {
+          appointmentId,
+          fromUserId: socket.userId,
+        });
+        console.log(`call-accepted emitted to socket ${targetSocketId}`);
       }
     });
 
-    // Decline the call (works for doctor or patient)
+    // Decline the call
     socket.on("call-decline", ({ toUserId, reason }) => {
-      if (connectedUsers[toUserId]) {
-        io.to(toUserId).emit("call-declined", { reason });
-        console.log(
-          `${socket.userType} ${socket.userId} declined the call with ${toUserId}`
-        );
+      const targetSocketId = connectedUsers[toUserId];
+      console.log(`call-decline: by=${socket.userId} -> to=${toUserId} reason=${reason}`);
+      if (targetSocketId) {
+        io.to(targetSocketId).emit("call-declined", {
+          reason,
+          fromUserId: socket.userId,
+        });
+        console.log(`call-declined emitted to socket ${targetSocketId}`);
       }
     });
 
+    // Join room for WebRTC signaling (roomId could be appointmentId)
     socket.on("join-room", ({ userId, role }) => {
       connectedUsers[userId] = socket.id;
       socket.join(userId);
-      console.log(`${role} joined room ${userId}`);
+      console.log(`${role} joined signaling room ${userId} (socket ${socket.id})`);
     });
 
+    // End the call: notify the other user
+    socket.on("end-call", ({ toUserId }) => {
+      const targetSocketId = connectedUsers[toUserId];
+      console.log(`end-call: by=${socket.userId} -> to=${toUserId}`);
+      if (targetSocketId) {
+        io.to(targetSocketId).emit("call-ended", {
+          message: "The other person has ended the call",
+          fromUserId: socket.userId,
+        });
+        console.log(`call-ended emitted to socket ${targetSocketId}`);
+      }
+    });
+
+    // Signaling exchange (WebRTC)
     socket.on("signal", ({ roomId, data, userId }) => {
       socket.to(roomId).emit("signal", { data, userId });
     });
 
     socket.on("disconnect", () => {
-      console.log(`User disconnected: ${socket.id}`);
+      console.log(`User disconnected: ${socket.id} (userId=${socket.userId})`);
       if (socket.userId) {
         delete connectedUsers[socket.userId];
       }
+      // Optional: notify everyone that this user disconnected (useful)
+      // socket.broadcast.emit("call-ended", { message: `${socket.userType || 'User'} disconnected`, fromUserId: socket.userId });
     });
   });
 };
